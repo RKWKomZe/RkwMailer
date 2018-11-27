@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2014-11-07T15:00:08Z" product-name="rkw_mailer">
+		<header/>
+		<body>
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_queuemail                 -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail">
+                <source>RKW Mailer: Queue Mail</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status">
+                <source>Mail Status</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status.I.draft">
+                <source>Draft</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status.I.waiting">
+                <source>Waiting</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status.I.sending">
+                <source>Sending</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status.I.sent">
+                <source>Sent</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.status.I.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.type">
+                <source>Mail Type</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.type.I.0">
+                <source>Message</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.type.I.1">
+                <source>Newsletter</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.type.I.2">
+                <source>Alerts</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.queue_recipients">
+                <source>Recipients</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.from_name">
+                <source>From Name</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.from_address">
+                <source>From Address</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.reply_address">
+                <source>Reply Address</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.return_path">
+                <source>Return Path</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.subject">
+                <source>Subject</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.body_text">
+                <source>Mail Text</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.attachment">
+                <source>Attachment</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.attachment_type">
+                <source>Attachment Type</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.attachment_name">
+                <source>Attachment Name</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.plaintext_template">
+                <source>Plaintext Template</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.html_template">
+                <source>Html Template</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.calendar_template">
+                <source>Calendar Template</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.category">
+                <source>Category</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.campaign_parameter">
+                <source>Campaign Parameter</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority">
+                <source>Priority</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority.I.highest">
+                <source>Highest</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority.I.high">
+                <source>High</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority.I.default">
+                <source>Default</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority.I.low">
+                <source>Low</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.priority.I.lowest">
+                <source>Lowest</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.settings_pid">
+                <source>Pid for TypoScript-Configuration</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tstamp_fav_sending">
+                <source>Tstamp Fav Sending</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tstamp_real_sending">
+                <source>Tstamp Real Sending</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tstamp_send_finish">
+                <source>Tstamp Send Finish</source>
+            </trans-unit>
+
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_queuerecipient            -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient">
+                <source>RKW Mailer: Queue Recipient</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.frontend_user">
+                <source>Frontend User</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.email">
+                <source>Email</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.title">
+                <source>Title</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.salutation">
+                <source>Salutation</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.salutation.I.0">
+                <source>Mr.</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.salutation.I.1">
+                <source>Mrs.</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.salutation.I.99">
+                <source>Not set</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.first_name">
+                <source>Firstname</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.last_name">
+                <source>Lastname</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.subject">
+                <source>Subject</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.draft">
+                <source>Draft</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.waiting">
+                <source>Waiting</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.sending">
+                <source>Sending</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.sent">
+                <source>Sent</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.language_code">
+                <source>Language Code</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.plaintext_body">
+                <source>Plaintext- Part</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.html_body">
+                <source>HTML- Part</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.calendar_body">
+                <source>Calendar- Part</source>
+            </trans-unit>
+
+
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_statisticmail             -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_statisticmail">
+                <source>RKW Mailer: Statistic Mail</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.total_count">
+                <source>Recipient Count</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.contacted_count">
+                <source>Contacted Count</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.bounces_count">
+                <source>Bounces Count</source>
+            </trans-unit>
+
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_statisticopening -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_statisticopening">
+                <source>RKW Mailer: Statistic Opening</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_statisticopening.pixel">
+                <source>Pixel</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_statisticopening.click_count">
+                <source>Click Count</source>
+            </trans-unit>
+
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_link                      -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_link">
+                <source>RKW Mailer: Links in E-Mails</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_link.queue_mail">
+                <source>QueueMail</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_link.hash">
+                <source>Hash</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_link.url">
+                <source>Url</source>
+            </trans-unit>
+
+
+            <!-- =================================================== -->
+            <!-- Tabs                                                -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tabs.from">
+                <source>Sender</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tabs.settings">
+                <source>Settings</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuemail.tabs.sending">
+                <source>Sending</source>
+            </trans-unit>
+
+		</body>
+	</file>
+</xliff>

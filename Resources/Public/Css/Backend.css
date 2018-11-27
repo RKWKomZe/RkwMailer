@@ -1,0 +1,16 @@
+table.tx_rkwmailer td,
+table.tx_rkwmailer th { padding:5px;}
+table.tx_rkwmailer tr:hover a,
+table.tx_rkwmailer td:hover a { text-decoration:none;}
+table.tx_rkwmailer tr a { margin-right:2em;}
+table.tx_rkwmailer tr a:last-of-type { margin-right:0;}
+table.tx_rkwmailer tr a:hover {text-decoration:underline;}
+table.tx_rkwmailer td.center {text-align:center;}
+
+.status1 { color:darkblue; }
+.status2 { color:darkorange; }
+.status3,
+.status99,
+.error { color:red; }
+.status4,
+.okay { color:darkgreen; }
