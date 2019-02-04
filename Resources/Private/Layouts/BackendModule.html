@@ -15,11 +15,19 @@
 		<div id="typo3-docbody">
 			<div id="typo3-inner-docbody">
                 <f:flashMessages as="flashMessages">
-                    <ul class="myFlashMessages">
-                        <f:for each="{flashMessages}" as="flashMessage">
-                            <li>{flashMessage.message}</li>
-                        </f:for>
-                    </ul>
+                    <div class="typo3-messages">
+                        <div class="alert alert-danger">
+                            <div class="media">
+                                <div class="media-body">
+                                    <div class="alert-message">
+                                        <f:for each="{flashMessages}" as="flashMessage">
+                                            {flashMessage.message}
+                                        </f:for>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </f:flashMessages>
                 <f:render section="content" />
 			</div>
