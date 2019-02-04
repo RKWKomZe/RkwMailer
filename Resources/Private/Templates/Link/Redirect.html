@@ -13,7 +13,13 @@ List.html: keep
 Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
 <f:section name="main">
-	<f:flashMessages renderMode="div" />
+    <f:flashMessages as="flashMessages">
+        <ul class="myFlashMessages">
+            <f:for each="{flashMessages}" as="flashMessage">
+                <li>{flashMessage.message}</li>
+            </f:for>
+        </ul>
+    </f:flashMessages>
 
 	<f:if condition="{redirectUrl}">
 		<f:link.external uri="{redirectUrl}" target="_blank"><f:translate key="templates_link_redirect.redirect_link" /></f:link.external>
