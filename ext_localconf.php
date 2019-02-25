@@ -18,6 +18,15 @@ if (!defined('TYPO3_MODE')) {
 // register command controller (cronjob)
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = 'RKW\\RkwMailer\\Controller\\MailerCommandController';
 
+// caching
+if( !is_array($GLOBALS['TYPO3_CONF_VARS'] ['SYS']['caching']['cacheConfigurations'][$_EXTKEY] ) ) {
+    $GLOBALS['TYPO3_CONF_VARS'] ['SYS']['caching']['cacheConfigurations'][$_EXTKEY] = array();
+}
+if( !isset($GLOBALS['TYPO3_CONF_VARS'] ['SYS']['caching']['cacheConfigurations'][$_EXTKEY]['frontend'] ) ) {
+    $GLOBALS['TYPO3_CONF_VARS'] ['SYS']['caching']['cacheConfigurations'][$_EXTKEY]['frontend'] = 'TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend';
+}
+
+
 // set logger
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['RKW']['RkwMailer']['writerConfiguration'] = array(
 

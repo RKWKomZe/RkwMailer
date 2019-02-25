@@ -518,7 +518,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the languageCode
      *
-     * @return integer $languageCode
+     * @return string $languageCode
      */
     public function getLanguageCode()
     {
@@ -528,7 +528,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the languageCode
      *
-     * @param integer $languageCode
+     * @param string $languageCode
      * @return void
      */
     public function setLanguageCode($languageCode)

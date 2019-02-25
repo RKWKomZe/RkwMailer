@@ -78,7 +78,7 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
 
             if ($isPlaintext == true) {
 
-                return preg_replace_callback('/(http:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
+                return preg_replace_callback('/(http[s]?:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
                 //===
 
             } else {
@@ -100,6 +100,8 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
      * @param array $matches
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     *
      */
     protected function replaceHtml($matches)
     {
@@ -127,6 +129,7 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
      * @param array $matches
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     protected function replacePlaintext($matches)
     {
@@ -155,6 +158,7 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
      * @param string $link
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     protected function replace($link)
     {
