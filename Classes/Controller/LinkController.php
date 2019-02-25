@@ -136,10 +136,16 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                 $this->persistenceManager->persistAll();
             }
 
+            // build link - anchor has to be added at the end of the link
+            $section = '#'. parse_url($link->getUrl() , PHP_URL_FRAGMENT);
+            $finalLink = str_replace($section, '', $link->getUrl());
+
+            // add queueRecipient and queueMail respectively and THEN add anchor
+            $url = $finalLink . (parse_url($finalLink, PHP_URL_QUERY) ? '&' : '?') . 'tx_rkwmailer[mid]=' . $mailId . '&tx_rkwmailer[uid]=' . $userId . $section;
 
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {
-                $this->redirectToUri($link->getUrl());
+                $this->redirectToUri($url);
 
                 return;
                 //===
@@ -153,7 +159,7 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
             $this->view->assignMultiple(
                 array(
-                    'redirectUrl'     => $link->getUrl(),
+                    'redirectUrl'     => $url,
                     'redirectTimeout' => intval($this->settings['redirectDelay']) * 1000,
                 )
             );

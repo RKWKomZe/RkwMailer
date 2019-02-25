@@ -38,9 +38,10 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
      * @param bool $useFirstName
      * @param string $prependText
      * @param string $appendText
+     * @param string $fallbackText
      * @return string $string
      */
-    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, $useFirstName = false, $prependText = '', $appendText = '')
+    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, $useFirstName = false, $prependText = '', $appendText = '', $fallbackText = '')
     {
 
         return static::renderStatic(
@@ -49,6 +50,7 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
                 'useFirstName'   => $useFirstName,
                 'appendText'     => $appendText,
                 'prependText'    => $prependText,
+                'fallbackText'   => $fallbackText
             ),
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
@@ -71,6 +73,7 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
         $useFirstName = $arguments['useFirstName'];
         $appendText = $arguments['appendText'];
         $prependText = $arguments['prependText'];
+        $fallbackText = $arguments['fallbackText'];
 
         $fullName = array();
         if ($queueRecipient->getLastName()) {
@@ -93,8 +96,15 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
             $fullName[] = ucFirst($queueRecipient->getLastName());
         }
 
+
         $finalName = trim(implode(' ', $fullName));
         if (!$finalName) {
+
+            if ($fallbackText) {
+                return $fallbackText;
+                //===
+            }
+
             return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
             //===
         }

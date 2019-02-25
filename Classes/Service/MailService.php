@@ -220,8 +220,8 @@ class MailService
      * Sets the to
      *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser|\TYPO3\CMS\Extbase\Domain\Model\BackendUser|array $basicData
-     * @param array $additionalData
-     * @param bool $renderTemplates
+     * @param array                                                                                          $additionalData
+     * @param bool                                                                                           $renderTemplates
      * @throws \RKW\RkwMailer\Service\MailException
      * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
@@ -263,9 +263,11 @@ class MailService
             $newRecipient->setFirstName($basicData->getFirstName());
             $newRecipient->setLastName($basicData->getLastName() ? $basicData->getLastName() : $basicData->getUsername());
             $newRecipient->setTitle($basicData->getTitle());
+
             if ($basicData instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
                 $newRecipient->setSalutation($basicData->getTxRkwregistrationGender());
                 $newRecipient->setLanguageCode($basicData->getTxRkwregistrationLanguageKey());
+                $newRecipient->setTitle($basicData->getTitleText());
                 unset($additionalData['txRkwregistrationGender']);
                 unset($additionalData['txRkwregistrationLanguageKey']);
             }
@@ -1185,7 +1187,7 @@ class MailService
      * Does debugging of runtime
      *
      * @param integer $line
-     * @param string $function
+     * @param string  $function
      */
     private static function debugTime($line, $function)
     {
