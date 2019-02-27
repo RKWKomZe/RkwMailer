@@ -27,9 +27,9 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	attachment_type varchar(255) DEFAULT '' NOT NULL,
 	attachment_name varchar(255) DEFAULT '' NOT NULL,
 
-	plaintext_template text NOT NULL,
-	html_template text NOT NULL,
-	calendar_template text NOT NULL,
+	plaintext_template longtext NOT NULL,
+	html_template longtext NOT NULL,
+	calendar_template longtext NOT NULL,
 
 	layout_paths text NOT NULL,
 	partial_paths text NOT NULL,
