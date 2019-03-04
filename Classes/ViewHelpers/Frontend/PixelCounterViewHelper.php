@@ -60,8 +60,8 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             // load FrontendUriBuilder
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-            /** @var \RKW\RkwMailer\Helper\FrontendUriBuilder $uriBuilder */
-            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\Helper\\FrontendUriBuilder');
+            /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
             $uriBuilder->reset();
 
             // build link to controller action with needed params

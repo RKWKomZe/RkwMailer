@@ -310,7 +310,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         if ($this->getSalutation() < 99) {
 
-            return \RKW\RkwMailer\Helper\FrontendLocalization::translate(
+            return \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate(
                 'tx_rkwmailer_domain_model_queuerecipient.salutation.I.' . $this->getSalutation(),
                 'rkw_mailer',
                 array(),

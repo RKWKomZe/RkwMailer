@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Helper;
+namespace RKW\RkwMailer\Utility;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -25,9 +25,8 @@ namespace RKW\RkwMailer\Helper;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @see \TYPO3\CMS\Extbase\Utility\LocalizationUtility
- * @deprecated Use \RKW\RkwMailer\Utility\FrontendLocalizationUtility instead
  */
-class FrontendLocalization extends \RKW\RkwMailer\Utility\FrontendLocalizationUtility
+class FrontendLocalizationUtility extends \RKW\RkwBasics\Helper\FrontendLocalization
 {
 
 }

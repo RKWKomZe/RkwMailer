@@ -16,7 +16,7 @@ namespace RKW\RkwMailer\Service;
  */
 
 /**
- * Class MailException
+ * Class MailServiceException
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
@@ -24,7 +24,7 @@ namespace RKW\RkwMailer\Service;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class MailException extends \RKW\RkwMailer\Exception
+class MailServiceException extends \RKW\RkwMailer\Exception
 {
 
 }

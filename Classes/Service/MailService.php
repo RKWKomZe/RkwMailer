@@ -139,14 +139,22 @@ class MailService
 
 
     /**
-     * validateMailService
+     * QueueMailValidator
      *
-     * @var \RKW\RkwMailer\Service\ValidateMailService
+     * @var \RKW\RkwMailer\Validation\QueueMailValidator
      * @inject
      */
-    protected $validateMailService = null;
+    protected $queueMailValidator = null;
 
 
+    /**
+     * QueueMailValidator
+     *
+     * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
+     * @inject
+     */
+    protected $queueRecipientValidator = null;
+    
     /**
      * Signal-Slot Dispatcher
      *
@@ -209,9 +217,12 @@ class MailService
         if (!$this->statisticMailRepository) {
             $this->statisticMailRepository = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\StatisticMailRepository');
         }
-        if (!$this->validateMailService) {
-            $this->validateMailService = $this->objectManager->get('RKW\\RkwMailer\\Service\\ValidateMailService');
+        if (!$this->queueMailValidator) {
+            $this->queueMailValidator = $this->objectManager->get('RKW\\RkwMailer\\Validation\\QueueMailValidator');
         }
+        if (!$this->queueRecipientValidator) {
+            $this->queueRecipientValidator = $this->objectManager->get('RKW\\RkwMailer\\Validation\\QueueRecipientValidator');
+        }        
 
     }
 
@@ -220,9 +231,9 @@ class MailService
      * Sets the to
      *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser|\TYPO3\CMS\Extbase\Domain\Model\BackendUser|array $basicData
-     * @param array                                                                                          $additionalData
-     * @param bool                                                                                           $renderTemplates
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @param array $additionalData
+     * @param bool  $renderTemplates
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
@@ -357,7 +368,7 @@ class MailService
         // Signal slot
         $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_TO_BEFORE_ATTACH . ($this->getQueueMail()->getCategory() ? '_' . ucFirst($this->getQueueMail()->getCategory()) : ''), array($this->getQueueMail(), &$newRecipient));
 
-        if ($this->validateMailService->validateQueueRecipient($newRecipient)) {
+        if ($this->queueRecipientValidator->validate($newRecipient)) {
 
             // render templates right away?
             if ($renderTemplates) {
@@ -433,20 +444,20 @@ class MailService
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
         // check QueueMail-object
-        if (!$this->validateMailService->validateQueueMail($queueMail)) {
-            throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueMail-object.', 1540186518);
+        if (!$this->queueMailValidator->validate($queueMail)) {
+            throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueMail-object.', 1540186518);
             //===
         }
 
         if ($queueMail->_isNew()) {
-            throw new \RKW\RkwMailer\Service\MailException('The queueMail-object has to be persisted before it can be used.', 1540193242);
+            throw new \RKW\RkwMailer\Service\MailServiceException('The queueMail-object has to be persisted before it can be used.', 1540193242);
             //===
         }
 
@@ -460,7 +471,7 @@ class MailService
      *
      * @return boolean
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
@@ -470,8 +481,8 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
 
         $queueMail = $this->getQueueMail();
-        if (!$this->validateMailService->validateQueueMail($queueMail)) {
-            throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueMail-object.', 1540186577);
+        if (!$this->queueMailValidator->validate($queueMail)) {
+            throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueMail-object.', 1540186577);
             //===
         }
 
@@ -527,7 +538,7 @@ class MailService
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueMailRecipient
      * @return boolean
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
@@ -545,22 +556,22 @@ class MailService
                 $statisticMail = $queueMail->getStatisticMail();
 
                 // validate queueMail
-                if (!$this->validateMailService->validateQueueMail($queueMail)) {
-                    throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueMail-object.', 1438249330);
+                if (!$this->queueMailValidator->validate($queueMail)) {
+                    throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueMail-object.', 1438249330);
                     //===
                 }
                 if ($queueMail->_isNew()) {
-                    throw new \RKW\RkwMailer\Service\MailException('The queueMail-object has to be persisted before it can be used.', 1540187256);
+                    throw new \RKW\RkwMailer\Service\MailServiceException('The queueMail-object has to be persisted before it can be used.', 1540187256);
                     //===
                 }
 
                 // validate user
-                if (!$this->validateMailService->validateQueueRecipient($queueMailRecipient)) {
-                    throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueRecipient-object.', 1438249113);
+                if (!$this->queueRecipientValidator->validate($queueMailRecipient)) {
+                    throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueRecipient-object.', 1438249113);
                     //===
                 }
                 if ($queueMailRecipient->_isNew()) {
-                    throw new \RKW\RkwMailer\Service\MailException('The queueMailRecipient-object has to be persisted before it can be used.', 1540187277);
+                    throw new \RKW\RkwMailer\Service\MailServiceException('The queueMailRecipient-object has to be persisted before it can be used.', 1540187277);
                     //===
                 }
 
@@ -647,7 +658,7 @@ class MailService
 
                         // send message
                         if (!$message->send()) {
-                            throw new \RKW\RkwMailer\Service\MailException('Message could not be sent.', 1438007181);
+                            throw new \RKW\RkwMailer\Service\MailServiceException('Message could not be sent.', 1438007181);
                             //===
                         }
 
@@ -716,7 +727,7 @@ class MailService
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
@@ -728,7 +739,7 @@ class MailService
         // check queueMail-object
         $queueMail = $this->getQueueMail();
         if ($queueMail->_isNew()) {
-            throw new \RKW\RkwMailer\Service\MailException('The queueMail-object has to be persisted before recipients can be added.', 1540186734);
+            throw new \RKW\RkwMailer\Service\MailServiceException('The queueMail-object has to be persisted before recipients can be added.', 1540186734);
             //===
         }
 
@@ -756,7 +767,7 @@ class MailService
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Service\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
@@ -769,18 +780,18 @@ class MailService
 
         // check queueMail-object
         $queueMail = $this->getQueueMail();
-        if (!$this->validateMailService->validateQueueMail($queueMail)) {
-            throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueMail-object.', 1540186558);
+        if (!$this->queueMailValidator->validate($queueMail)) {
+            throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueMail-object.', 1540186558);
             //===
         }
 
         // check queueRecipient
-        if (!$this->validateMailService->validateQueueRecipient($queueRecipient)) {
-            throw new \RKW\RkwMailer\Service\MailException('Invalid or missing data in queueRecipient-object.', 1540186500);
+        if (!$this->queueRecipientValidator->validate($queueRecipient)) {
+            throw new \RKW\RkwMailer\Service\MailServiceException('Invalid or missing data in queueRecipient-object.', 1540186500);
             //===
         }
         if ($queueRecipient->_isNew()) {
-            throw new \RKW\RkwMailer\Service\MailException('The queueRecipient-object has to be persisted before it can be used.', 1540294116);
+            throw new \RKW\RkwMailer\Service\MailServiceException('The queueRecipient-object has to be persisted before it can be used.', 1540294116);
             //===
         }
 

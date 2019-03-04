@@ -89,7 +89,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
              * Here we use a user-specific translation based on the languageKey of the user.
              */
             $mailService->getQueueMail()->setSubject(
-                \RKW\RkwMailer\Helper\FrontendLocalization::translate(
+                \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate(
                     'rkwMailService.exampleEvent.subject',
                     'rkw_registration',
                     null,
@@ -156,7 +156,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
             ));
 
             $mailService->getQueueMail()->setSubject(
-                \RKW\RkwMailer\Helper\FrontendLocalization::translate(
+                \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate(
                     'rkwMailService.adminServiceEvent.subject',
                     'rkw_registration',
                     null,

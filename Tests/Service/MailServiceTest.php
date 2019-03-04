@@ -1,7 +1,7 @@
 <?php
+namespace RKW\RkwMailer\Tests\Service;
 
-namespace RKW\RkwMailer\Helper;
-
+use Nimut\TestingFramework\TestCase\UnitTestCase;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -15,19 +15,18 @@ namespace RKW\RkwMailer\Helper;
  * The TYPO3 project - inspiring people to share!
  */
 
+
 /**
- * FrontendLocalization
- * We can not extend the basic class here, since the methods are used as static methods and this confuses translation-handling
+ * MailService
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @see \TYPO3\CMS\Extbase\Utility\LocalizationUtility
- * @deprecated Use \RKW\RkwMailer\Utility\FrontendLocalizationUtility instead
  */
-class FrontendLocalization extends \RKW\RkwMailer\Utility\FrontendLocalizationUtility
+class MailServiceTest extends UnitTestCase
 {
+
+
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Service;
+namespace RKW\RkwMailer\Validation;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Service;
  */
 
 /**
- * ValidateMailService
+ * QueueRecipientValidator
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
@@ -23,7 +23,7 @@ namespace RKW\RkwMailer\Service;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class ValidateMailService implements \TYPO3\CMS\Core\SingletonInterface
+class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
 
     /**
@@ -33,47 +33,12 @@ class ValidateMailService implements \TYPO3\CMS\Core\SingletonInterface
 
 
     /**
-     * validateQueueMail
-     *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return boolean
-     */
-    public function validateQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
-
-        $valid = true;
-        if (!$queueMail->getFromName()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No FromName is set (Mail UID "%s").', $queueMail->getUid()));
-            $valid = false;
-        }
-
-        if (!$queueMail->getFromAddress()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No FromAddress is set (Mail UID "%s").', $queueMail->getUid()));
-            $valid = false;
-        }
-
-        if (!$queueMail->getSubject()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('No Subject is set (Mail UID "%s").', $queueMail->getUid()));
-        }
-
-        if (!$queueMail->getPlaintextTemplate() && !$queueMail->getHtmlTemplate()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No Template is set (Mail UID "%s").', $queueMail->getUid()));
-            $valid = false;
-        }
-
-        return $valid;
-        //===
-
-    }
-
-
-    /**
      * validateQueueRecipient
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return boolean
      */
-    public function validateQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
+    public function validate(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
     {
 
         $valid = true;
