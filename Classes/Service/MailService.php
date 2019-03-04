@@ -184,9 +184,9 @@ class MailService
      */
     public function __construct()
     {
-        self::debugTime(__LINE__, __METHOD__);
-        $this->initializeService();
-        self::debugTime(__LINE__, __METHOD__);
+        //self::debugTime(__LINE__, __METHOD__);
+        //$this->initializeService();
+        //self::debugTime(__LINE__, __METHOD__);
     }
 
 
@@ -248,97 +248,20 @@ class MailService
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $newRecipient */
         $newRecipient = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\QueueRecipient');
-        $importProperties = array(
-            'email', 'title', 'salutation', 'firstName', 'lastName', 'subject', 'languageCode',
-        );
 
         // if a FrontendUser is given, take it's basic values
         if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\FrontendUser) {
 
-            // set all relevant values according to given data
-            foreach ($importProperties as $property) {
-                $getter = 'get' . ucFirst($property);
-                $setter = 'set' . ucFirst($property);
-                if (
-                    (method_exists($basicData, $getter))
-                    && (method_exists($newRecipient, $setter))
-                    && ($value = $basicData->$getter())
-                ) {
-                    $newRecipient->$setter($value);
-                }
-            }
+           $this->setQueueRecipientByFrontendUser ($newRecipient, $basicData, $additionalData);
 
-            // reset important basic values: name and mail
-            // these data may not be overridden!!!
-            $newRecipient->setEmail($basicData->getEmail() ? $basicData->getEmail() : $basicData->getUsername());
-            $newRecipient->setFirstName($basicData->getFirstName());
-            $newRecipient->setLastName($basicData->getLastName() ? $basicData->getLastName() : $basicData->getUsername());
-            $newRecipient->setTitle($basicData->getTitle());
+         // if a BackendUser is given, take it's basic values
+        } else if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\BackendUser) {
 
-            if ($basicData instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
-                $newRecipient->setSalutation($basicData->getTxRkwregistrationGender());
-                $newRecipient->setLanguageCode($basicData->getTxRkwregistrationLanguageKey());
-                $newRecipient->setTitle($basicData->getTitleText());
-                unset($additionalData['txRkwregistrationGender']);
-                unset($additionalData['txRkwregistrationLanguageKey']);
-            }
+            $this->setQueueRecipientByBackendUser ($newRecipient, $basicData, $additionalData);
 
-            /* @toDo: Leeds to problems since this does an implicit update on the object
-             * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
-             */
-            if (!$basicData->_isNew()) {
-                $newRecipient->setFrontendUser($basicData);
-            }
+        } else if (is_array($basicData)) {
 
-            // unset used values in additionalData
-            foreach ($importProperties as $property) {
-                unset($additionalData[$property]);
-            }
-
-            // if a BackendUser is given, take it's basic values
-        } else {
-            if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\BackendUser) {
-
-                // set all relevant values according to given data
-                foreach ($importProperties as $property) {
-                    if (is_string($property)) {
-                        $getter = 'get' . ucFirst($property);
-                        $setter = 'set' . ucFirst($property);
-                        if (
-                            (method_exists($basicData, $getter))
-                            && (method_exists($newRecipient, $setter))
-                            && ($value = $basicData->$getter())
-                        ) {
-                            $newRecipient->$setter($value);
-                        }
-                    }
-                }
-
-                // reset important basic values: name and mail
-                // these data may not be overridden!!!
-                $newRecipient->setEmail($basicData->getEmail());
-
-                // split name
-                $nameArray = explode(' ', $basicData->getRealName());
-                $newRecipient->setFirstName($nameArray[0] ? $nameArray[0] : '');
-                $newRecipient->setLastName(($nameArray[1] ? $nameArray[1] : ($nameArray[0] ? $nameArray[0] : $basicData->getUserName())));
-
-                if ($basicData instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
-                    $newRecipient->setLanguageCode($basicData->getLang());
-                    unset($additionalData['lang']);
-                }
-
-                // unset used values in additionalData
-                foreach ($importProperties as $property) {
-                    unset($additionalData[$property]);
-                }
-
-                // take data from array
-            } else {
-                if (is_array($basicData)) {
-                    $additionalData = array_merge($additionalData, $basicData);
-                }
-            }
+            $additionalData = array_merge($additionalData, $basicData);
         }
 
 
@@ -388,6 +311,153 @@ class MailService
 
         return false;
         //===
+    }
+
+    /**
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
+     * @param array $additionalData
+     * @return void
+     */
+    public function setQueueRecipientByFrontendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser, &$additionalData = array())
+    {
+
+        // define property mapping - order is important!
+        $importPropertyMapper = array(
+            'username' => 'email',
+            'email' => 'email',
+            'title' => 'title',
+            'salutation' => 'salutation',
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'subject' => 'subject',
+            'languageCode' => 'languageCode'
+        );
+
+        // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
+        if ($frontendUser instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
+            $importPropertyMapper['txRkwregistrationGender'] = 'salutation';
+            $importPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
+            $importPropertyMapper['titleText'] = 'title';
+        }
+
+        // set all relevant values according to given data
+        $this->setQueueRecipientSub($queueRecipient, $frontendUser, $importPropertyMapper, $additionalData);
+
+        /* @toDo: Leeds to problems since this does an implicit update on the object
+         * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
+         */
+        if (!$frontendUser->_isNew()) {
+            $queueRecipient->setFrontendUser($frontendUser);
+        }
+
+    }
+
+
+    /**
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
+     * @param array $additionalData
+     * @return void
+     */
+    public function setQueueRecipientByBackendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser, &$additionalData = array())
+    {
+
+        // define property mapping - order is important!
+        $importPropertyMapper = array(
+            'username' => 'email',
+            'email' => 'email',
+            'title' => 'title',
+            'salutation' => 'salutation',
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'subject' => 'subject',
+            'languageCode' => 'languageCode'
+        );
+
+        // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
+        if ($backendUser instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
+            $importPropertyMapper['lang'] = 'languageCode';
+        }
+
+        // split realName
+        $nameArray = [];
+        if ($backendUser->getRealName()) {
+            $nameArray = explode(' ', $backendUser->getRealName());
+
+        } else if (
+            (isset($additionalData['realName']))
+            && ($additionalData['realName'])
+        ){
+            $nameArray = explode(' ', $additionalData['realName']);
+        }
+        unset($additionalData['realName']);
+
+
+        if (count($nameArray) == 2) {
+            if (isset($nameArray[0])) {
+                $queueRecipient->setFirstName($nameArray[0]);
+            }
+            if (isset($nameArray[1])) {
+                $queueRecipient->setLastName($nameArray[1]);
+            }
+
+        } else if (count($nameArray) == 3) {
+            if (isset($nameArray[0])) {
+                $queueRecipient->setTitle($nameArray[0]);
+            }
+            if (isset($nameArray[1])) {
+                $queueRecipient->setFirstName($nameArray[1]);
+            }
+            if (isset($nameArray[2])) {
+                $queueRecipient->setLastName($nameArray[2]);
+            }
+        } else if (count($nameArray) > 0) {
+            $queueRecipient->setLastName($backendUser->getRealName());
+        }
+
+
+        // set all relevant values according to given data
+        $this->setQueueRecipientSub($queueRecipient, $backendUser, $importPropertyMapper, $additionalData);
+
+    }
+
+    /**
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user
+     * @param array $importPropertyMapper
+     * @param array $additionalData
+     */
+    private function setQueueRecipientSub (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user, $importPropertyMapper, &$additionalData = array()) {
+
+        // set all relevant values according to given data
+        foreach ($importPropertyMapper as $propertySource => $propertyTarget) {
+            $getter = 'get' . ucFirst($propertySource);
+            $setter = 'set' . ucFirst($propertyTarget);
+
+            if (method_exists($queueRecipient, $setter)) {
+
+                // check for getter value
+                if (
+                    (method_exists($user, $getter))
+                    && ($value = $user->$getter())
+                    && ($value !== 99)
+                ) {
+                    $queueRecipient->$setter($value);
+
+                // fallback: check for value in additional data
+                } else if (
+                    (isset($additionalData[$propertySource]))
+                    && ($value = $additionalData[$propertySource])
+                    && ($value !== 99)
+                ){
+                    $queueRecipient->$setter($value);
+                }
+
+                // unset additional data that has been imported
+                unset($additionalData[$propertySource]);
+            }
+        }
     }
 
 
