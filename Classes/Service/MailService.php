@@ -15,7 +15,15 @@ namespace RKW\RkwMailer\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use RKW\RkwMailer\Domain\Repository\StatisticMailRepository;
+use RKW\RkwMailer\Validation\QueueMailValidator;
+use RKW\RkwMailer\Validation\QueueRecipientValidator;
 
 /**
  * MailService
@@ -184,11 +192,10 @@ class MailService
      */
     public function __construct()
     {
-        //self::debugTime(__LINE__, __METHOD__);
-        //$this->initializeService();
-        //self::debugTime(__LINE__, __METHOD__);
+        self::debugTime(__LINE__, __METHOD__);
+        $this->initializeService();
+        self::debugTime(__LINE__, __METHOD__);
     }
-
 
     /**
      * function initializeService
@@ -197,33 +204,33 @@ class MailService
      */
     public function initializeService()
     {
-
         // set objects if they haven't been injected yet
         if (!$this->objectManager) {
-            $this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+            $this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
         }
         if (!$this->configurationManager) {
-            $this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+            $this->configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
         }
         if (!$this->persistenceManager) {
-            $this->persistenceManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
+            $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
         }
         if (!$this->queueMailRepository) {
-            $this->queueMailRepository = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\QueueMailRepository');
+            $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         }
         if (!$this->queueRecipientRepository) {
-            $this->queueRecipientRepository = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\QueueRecipientRepository');
+            $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
         }
         if (!$this->statisticMailRepository) {
-            $this->statisticMailRepository = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\StatisticMailRepository');
+            $this->statisticMailRepository = $this->objectManager->get(StatisticMailRepository::class);
         }
         if (!$this->queueMailValidator) {
-            $this->queueMailValidator = $this->objectManager->get('RKW\\RkwMailer\\Validation\\QueueMailValidator');
+            $this->queueMailValidator = $this->objectManager->get(QueueMailValidator::class);
         }
         if (!$this->queueRecipientValidator) {
-            $this->queueRecipientValidator = $this->objectManager->get('RKW\\RkwMailer\\Validation\\QueueRecipientValidator');
-        }        
+            $this->queueRecipientValidator = $this->objectManager->get(QueueRecipientValidator::class);
+        }
 
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('Please use the objectmanager to load this class.');
     }
 
 
@@ -244,61 +251,45 @@ class MailService
      */
     public function setTo($basicData, $additionalData = array(), $renderTemplates = false)
     {
+
         self::debugTime(__LINE__, __METHOD__);
 
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $newRecipient */
-        $newRecipient = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\QueueRecipient');
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\QueueRecipient');
 
         // if a FrontendUser is given, take it's basic values
         if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\FrontendUser) {
 
-           $this->setQueueRecipientByFrontendUser ($newRecipient, $basicData, $additionalData);
+           $this->setQueueRecipientByFrontendUser($queueRecipient, $basicData, $additionalData);
 
          // if a BackendUser is given, take it's basic values
         } else if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\BackendUser) {
 
-            $this->setQueueRecipientByBackendUser ($newRecipient, $basicData, $additionalData);
+            $this->setQueueRecipientByBackendUser($queueRecipient, $basicData, $additionalData);
 
+        // fallback with array
         } else if (is_array($basicData)) {
 
-            $additionalData = array_merge($additionalData, $basicData);
+            $this->setQueueRecipientByArray($queueRecipient, array_merge($basicData, $additionalData));
         }
 
 
-        // check additional data and add it
-        if (!empty($additionalData)) {
-            foreach ($additionalData as $property => $value) {
-
-                $setter = 'set' . ucFirst($property);
-                if (
-                    (method_exists($newRecipient, $setter))
-                    && ($value)
-                ) {
-
-                    // reduce marker here!
-                    if (strtolower($property) == 'marker') {
-                        $newRecipient->$setter($this->reduceMarker($value));
-                    } else {
-                        $newRecipient->$setter($value);
-                    }
-                }
-            }
+        // set marker
+        if (isset($additionalData['marker'])) {
+            $queueRecipient->setMarker($this->reduceMarker($additionalData['marker']));
         }
-
-        // set storage pid
-        $newRecipient->setPid(intval($this->getSettings('storagePid', 'persistence')));
 
         // Signal slot
-        $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_TO_BEFORE_ATTACH . ($this->getQueueMail()->getCategory() ? '_' . ucFirst($this->getQueueMail()->getCategory()) : ''), array($this->getQueueMail(), &$newRecipient));
+        $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_TO_BEFORE_ATTACH . ($this->getQueueMail()->getCategory() ? '_' . ucFirst($this->getQueueMail()->getCategory()) : ''), array($this->getQueueMail(), &$queueRecipient));
 
-        if ($this->queueRecipientValidator->validate($newRecipient)) {
+        if ($this->queueRecipientValidator->validate($queueRecipient)) {
 
             // render templates right away?
             if ($renderTemplates) {
-                $this->addRecipient($newRecipient);
-                $this->renderTemplates($newRecipient);
+                $this->addRecipient($queueRecipient);
+                $this->renderTemplates($queueRecipient);
             } else {
-                $this->addRecipient($newRecipient);
+                $this->addRecipient($queueRecipient);
             }
 
             self::debugTime(__LINE__, __METHOD__);
@@ -313,36 +304,26 @@ class MailService
         //===
     }
 
+
     /**
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
      * @param array $additionalData
      * @return void
      */
-    public function setQueueRecipientByFrontendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser, &$additionalData = array())
+    public function setQueueRecipientByFrontendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser, $additionalData = array())
     {
 
-        // define property mapping - order is important!
-        $importPropertyMapper = array(
-            'username' => 'email',
-            'email' => 'email',
-            'title' => 'title',
-            'salutation' => 'salutation',
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'subject' => 'subject',
-            'languageCode' => 'languageCode'
-        );
-
-        // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
+         // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
+        $additionalPropertyMapper = [];
         if ($frontendUser instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
-            $importPropertyMapper['txRkwregistrationGender'] = 'salutation';
-            $importPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
-            $importPropertyMapper['titleText'] = 'title';
+            $additionalPropertyMapper['txRkwregistrationGender'] = 'salutation';
+            $additionalPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
+            $additionalPropertyMapper['titleText'] = 'title';
         }
 
         // set all relevant values according to given data
-        $this->setQueueRecipientSub($queueRecipient, $frontendUser, $importPropertyMapper, $additionalData);
+        $this->setQueueRecipientSub($queueRecipient, $frontendUser, $additionalData, $additionalPropertyMapper);
 
         /* @toDo: Leeds to problems since this does an implicit update on the object
          * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
@@ -360,24 +341,13 @@ class MailService
      * @param array $additionalData
      * @return void
      */
-    public function setQueueRecipientByBackendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser, &$additionalData = array())
+    public function setQueueRecipientByBackendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser, $additionalData = array())
     {
 
-        // define property mapping - order is important!
-        $importPropertyMapper = array(
-            'username' => 'email',
-            'email' => 'email',
-            'title' => 'title',
-            'salutation' => 'salutation',
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'subject' => 'subject',
-            'languageCode' => 'languageCode'
-        );
-
         // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
+        $additionalPropertyMapper = [];
         if ($backendUser instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
-            $importPropertyMapper['lang'] = 'languageCode';
+            $additionalPropertyMapper ['lang'] = 'languageCode';
         }
 
         // split realName
@@ -391,8 +361,6 @@ class MailService
         ){
             $nameArray = explode(' ', $additionalData['realName']);
         }
-        unset($additionalData['realName']);
-
 
         if (count($nameArray) == 2) {
             if (isset($nameArray[0])) {
@@ -418,20 +386,51 @@ class MailService
 
 
         // set all relevant values according to given data
-        $this->setQueueRecipientSub($queueRecipient, $backendUser, $importPropertyMapper, $additionalData);
+        $this->setQueueRecipientSub($queueRecipient, $backendUser, $additionalData, $additionalPropertyMapper);
 
     }
+
+
+    /**
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
+     * @param array $data
+     * @return void
+     * @deprecated Do not use this method any more
+     */
+    public function setQueueRecipientByArray (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, $data = array())
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('Support for setting values for queueRecipient via array will be removed soon. Do not use it any more.');
+        $this->setQueueRecipientSub($queueRecipient, null, $data);
+    }
+
 
     /**
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user
-     * @param array $importPropertyMapper
+     * @param array $additionalPropertyMapper
      * @param array $additionalData
      */
-    private function setQueueRecipientSub (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user, $importPropertyMapper, &$additionalData = array()) {
+    private function setQueueRecipientSub (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null, $additionalData = array(), $additionalPropertyMapper = array())
+    {
+
+        // define property mapping - order is important!
+        $defaultPropertyMapper = [
+            'username' => 'email',
+            'email' => 'email',
+            'title' => 'title',
+            'salutation' => 'salutation',
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'subject' => 'subject',
+            'languageCode' => 'languageCode'
+        ];
+
+        // add additional mappings
+        $propertyMapper = array_merge($defaultPropertyMapper, $additionalPropertyMapper);
 
         // set all relevant values according to given data
-        foreach ($importPropertyMapper as $propertySource => $propertyTarget) {
+        foreach ($propertyMapper as $propertySource => $propertyTarget) {
             $getter = 'get' . ucFirst($propertySource);
             $setter = 'set' . ucFirst($propertyTarget);
 
@@ -439,7 +438,8 @@ class MailService
 
                 // check for getter value
                 if (
-                    (method_exists($user, $getter))
+                    ($user instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity)
+                    && (method_exists($user, $getter))
                     && ($value = $user->$getter())
                     && ($value !== 99)
                 ) {
@@ -453,9 +453,6 @@ class MailService
                 ){
                     $queueRecipient->$setter($value);
                 }
-
-                // unset additional data that has been imported
-                unset($additionalData[$propertySource]);
             }
         }
     }
@@ -471,6 +468,7 @@ class MailService
      */
     public function getTo()
     {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('GetTo() method will be removed soon. Use $this->getQueueMail()->getQueueRecipients() instead.');
         return $this->getQueueMail()->getQueueRecipients();
         //===
     }
@@ -815,6 +813,11 @@ class MailService
 
         // add recipient with status "waiting" to queueMail and remove it from object storage
         $queueRecipient->setStatus(2);
+
+        // set storage pid
+        $queueRecipient->setPid(intval($this->getSettings('storagePid', 'persistence')));
+
+        // add recipient to queueMail
         $queueMail->addQueueRecipients($queueRecipient);
 
         if ($statisticMail = $queueMail->getStatisticMail()) {
