@@ -106,14 +106,41 @@ class MailServiceTest extends FunctionalTestCase
 
     /**
      * @test
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function getQueueMailReturnsPersistedQueueMailWithDefaultValues ()
     {
 
         $queueMail = $this->subject->getQueueMail();
         static::assertEquals($queueMail->getPid(), 9999);
+        static::assertEquals($queueMail->getStatus(), 1);
+        static::assertGreaterThan(0, $queueMail->getTstampFavSending());
+        static::assertGreaterThan(0, $queueMail->getCrDate());
+    }
 
 
+    /**
+     * @test
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function getQueueMailReturnsSameObjectOnSecondCall ()
+    {
+        $queueMail = $this->subject->getQueueMail();
+        static::assertSame($queueMail, $this->subject->getQueueMail());
+    }
+
+    /**
+     * @test
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function getQueueMailSavesQueueMailToDatabase ()
+    {
+        $queueMail = $this->subject->getQueueMail();
+        $result = $this->queueMailRepository->findAll()->toArray();
+        static::assertSame($queueMail, $result[count($result)-1]);
     }
 
     /**
