@@ -1,0 +1,21 @@
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Configuration/Rootpage.typoscript">
+
+module.tx_rkwmailer{
+
+    view {
+
+         # cat=module.tx_rkwmailer/file; type=string; label=Path to template root (BE)
+        templateRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Templates/
+            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Subpage/Templates/
+        }
+
+    }
+    settings {
+        # cat=module.tx_rkwmailer; type=integer; label=Pid of redirect plugin
+        redirectPid = 8888
+    }
+}
+
+plugin.tx_rkwmailer < module.tx_rkwmailer
+

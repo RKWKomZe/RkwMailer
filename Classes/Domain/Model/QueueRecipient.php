@@ -54,14 +54,14 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $email;
+    protected $email = '';
 
     /**
      * title
      *
      * @var string
      */
-    protected $title;
+    protected $title = '';
 
     /**
      * salutation
@@ -75,56 +75,56 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $firstName;
+    protected $firstName = '';
 
     /**
      * lastName
      *
      * @var string
      */
-    protected $lastName;
+    protected $lastName = '';
 
     /**
      * subject
      *
      * @var string
      */
-    protected $subject;
+    protected $subject = '';
 
     /**
      * marker
      *
      * @var string
      */
-    protected $marker;
+    protected $marker = '';
 
     /**
      * markerUnserialized
      *
      * @var array
      */
-    protected $markerUnserialized;
+    protected $markerUnserialized = '';
 
     /**
      * plaintextBody
      *
      * @var string
      */
-    protected $plaintextBody;
+    protected $plaintextBody = '';
 
     /**
      * htmlBody
      *
      * @var string
      */
-    protected $htmlBody;
+    protected $htmlBody = '';
 
     /**
      * calendarBody
      *
      * @var string
      */
-    protected $calendarBody;
+    protected $calendarBody = '';
 
     /**
      * status

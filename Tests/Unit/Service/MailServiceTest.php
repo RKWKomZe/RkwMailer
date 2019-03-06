@@ -45,7 +45,7 @@ class MailServiceTest extends UnitTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailService::class);
+        $this->subject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailService::class, ['unitTest' => true]);
 
     }
 
@@ -54,7 +54,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientSubGivenExtbaseFrontendUserWithUsernameOnlySetsEmail()
+    public function setQueueRecipientPropertiesSubGivenExtbaseFrontendUserWithUsernameOnlySetsEmail()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -64,7 +64,7 @@ class MailServiceTest extends UnitTestCase
         $frontendUser->setUsername('lauterbach@spd.de');
         $fixture->setEmail('lauterbach@spd.de');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -74,7 +74,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenExtbaseFrontendUserWithUsernameAndEmailDoesNotUseUsername()
+    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithUsernameAndEmailDoesNotUseUsername()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -85,7 +85,7 @@ class MailServiceTest extends UnitTestCase
         $frontendUser->setEmail('lauterbach@spd.de');
         $fixture->setEmail('lauterbach@spd.de');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -94,7 +94,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenExtbaseFrontendUserWithAllValuesSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithAllValuesSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -112,14 +112,14 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenRegistrationFrontendUserWithAllValuesSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserWithAllValuesSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -145,7 +145,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setSalutation(1);
         $fixture->setLanguageCode('fr');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -154,7 +154,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenExtbaseFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -179,7 +179,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
 
     }
@@ -187,7 +187,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenRegistrationFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -221,7 +221,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setSalutation(1);
         $fixture->setLanguageCode('fr');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -230,7 +230,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenExtbaseFrontendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -253,7 +253,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
 
     }
@@ -262,7 +262,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByFrontendUserGivenRegistrationFrontendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -289,7 +289,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setSalutation(1);
         $fixture->setLanguageCode('fr');
 
-        $this->subject->setQueueRecipientByFrontendUser($queueRecipient, $frontendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
 
     }
@@ -300,7 +300,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserWithEmailOnlySetsEmail()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailOnlySetsEmail()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -310,7 +310,7 @@ class MailServiceTest extends UnitTestCase
         $backendUser->setEmail('lauterbach@spd.de');
         $fixture->setEmail('lauterbach@spd.de');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -321,7 +321,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserWithEmailAndOneWordRealNameOnlySetsEmailAndLastName()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndOneWordRealNameOnlySetsEmailAndLastName()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -334,7 +334,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setEmail('lauterbach@spd.de');
         $fixture->setLastName('Karl');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -342,7 +342,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserWithEmailAndTwoWordRealNameOnlySetsEmailAndFirstNameAndLastName()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndTwoWordRealNameOnlySetsEmailAndFirstNameAndLastName()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -356,14 +356,14 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserWithEmailAndThreeWordRealNameOnlySetsEmailAndFirstNameAndLastNameAndTitle()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndThreeWordRealNameOnlySetsEmailAndFirstNameAndLastNameAndTitle()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -378,7 +378,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setLastName('Lauterbach');
         $fixture->setTitle('Prof.');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -387,7 +387,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -406,7 +406,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -414,7 +414,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenRegistrationBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUserGivenRegistrationBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -436,7 +436,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setLastName('Lauterbach');
         $fixture->setLanguageCode('fr');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
@@ -446,7 +446,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenExtbaseBackendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -463,14 +463,14 @@ class MailServiceTest extends UnitTestCase
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 
     /**
      * @test
      */
-    public function setQueueRecipientByBackendUserGivenRegistrationBackendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUserGivenRegistrationBackendUserAndAdditionalDataSetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -491,7 +491,7 @@ class MailServiceTest extends UnitTestCase
         $fixture->setLastName('Merkel');
         $fixture->setLanguageCode('en');
 
-        $this->subject->setQueueRecipientByBackendUser($queueRecipient, $backendUser, $additionalData);
+        $this->subject->setQueueRecipientPropertiesByBackendUser($queueRecipient, $backendUser, $additionalData);
         static::assertEquals($fixture, $queueRecipient);
     }
 

@@ -2,6 +2,7 @@
 
 namespace RKW\RkwMailer\Controller;
 
+use \RKW\RkwMailer\Validation\QueueMailValidator;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -165,8 +166,8 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         try {
 
-            /** @var \RKW\RkwMailer\Service\ValidateMailService $sendMailHelper */
-            $sendMailHelper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\ValidateMailService');
+            /** @var \RKW\RkwMailer\Validation\QueueMailValidator $sendMailHelper */
+            $queueMailValidator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueueMailValidator::class);
 
             /** @var \RKW\RkwMailer\Service\MailService $mailService */
             $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
@@ -195,7 +196,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     }
 
                     // validate queueMail
-                    if (!$sendMailHelper->validateQueueMail($queueMail)) {
+                    if (!$queueMailValidator->validate($queueMail)) {
 
                         $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Mail sending aborted because of invalid data in queueMail (queueMail uid "%s").', $queueMail->getUid()));
                         $queueMail->setStatus(99);
