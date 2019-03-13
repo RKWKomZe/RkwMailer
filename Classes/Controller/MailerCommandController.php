@@ -212,8 +212,13 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         // send mails
                         $mailService->setQueueMail($queueMail);
                         foreach ($queueRecipients as $recipient) {
-                            $mailService->sendToRecipient($recipient);
-                            usleep(intval($sleep * 1000000));
+
+                            try {
+                                $mailService->sendToRecipient($recipient);
+                                usleep(intval($sleep * 1000000));
+                            }catch (\Exception $e) {
+                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to queueRecipient with uid = %s. Error: %s.', $recipient->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
+                            }
                         }
 
                         // ====================================================

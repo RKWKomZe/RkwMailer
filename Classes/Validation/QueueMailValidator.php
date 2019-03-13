@@ -56,10 +56,12 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('No Subject is set (Mail UID "%s").', $queueMail->getUid()));
         }
 
+        /**
         if (!$queueMail->getPlaintextTemplate() && !$queueMail->getHtmlTemplate()) {
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No Template is set (Mail UID "%s").', $queueMail->getUid()));
             $valid = false;
         }
+        */
 
         return $valid;
         //===

@@ -213,7 +213,6 @@ class MailServiceTest extends UnitTestCase
         $frontendUser->setTxRkwregistrationGender(1);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
 
-
         $fixture->setEmail('lauterbach@spd.de');
         $fixture->setTitle('Prof.');
         $fixture->setFirstName('Karl');
