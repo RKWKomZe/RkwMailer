@@ -229,7 +229,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         if (!$queueMail->getPipeline()) {
                             $queueMail->setStatus(4);
                             $queueMail->setTstampSendFinish(time());
-                            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
+                            $this->getLogger()->log(\TYPO3\CMS\Core \Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
                         } else {
                             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Currently no recipients for queueMail with uid = %s, but marked for pipeline-usage.', $queueMail->getUid()));
                         }
