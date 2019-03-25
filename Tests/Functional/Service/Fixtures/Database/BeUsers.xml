@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    <be_users>
+        <uid>1</uid>
+        <pid>0</pid>
+        <username>admin-sein-sohn</username>
+        <email>admins@sohn.com</email>
+        <realname>Admins Sohn</realname>
+        <lang>de</lang>
+    </be_users>
+</dataset>

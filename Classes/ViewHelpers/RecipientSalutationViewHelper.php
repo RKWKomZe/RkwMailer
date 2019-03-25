@@ -69,6 +69,7 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
      */
     static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $arguments['queueRecipient'];
         $useFirstName = $arguments['useFirstName'];
         $appendText = $arguments['appendText'];
@@ -80,6 +81,8 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
 
             if ($queueRecipient->getSalutationText()) {
                 $fullName[] = $queueRecipient->getSalutationText();
+            } else {
+                $useFirstName = true;
             }
 
             if ($queueRecipient->getTitle()) {

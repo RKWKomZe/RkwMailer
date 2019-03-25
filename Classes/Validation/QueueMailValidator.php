@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Service;
+namespace RKW\RkwMailer\Validation;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Service;
  */
 
 /**
- * ValidateMailService
+ * QueueMailValidator
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
@@ -23,7 +23,7 @@ namespace RKW\RkwMailer\Service;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class ValidateMailService implements \TYPO3\CMS\Core\SingletonInterface
+class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
 
     /**
@@ -38,7 +38,7 @@ class ValidateMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return boolean
      */
-    public function validateQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function validate(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
 
         $valid = true;
@@ -56,40 +56,12 @@ class ValidateMailService implements \TYPO3\CMS\Core\SingletonInterface
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('No Subject is set (Mail UID "%s").', $queueMail->getUid()));
         }
 
+        /**
         if (!$queueMail->getPlaintextTemplate() && !$queueMail->getHtmlTemplate()) {
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No Template is set (Mail UID "%s").', $queueMail->getUid()));
             $valid = false;
         }
-
-        return $valid;
-        //===
-
-    }
-
-
-    /**
-     * validateQueueRecipient
-     *
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return boolean
-     */
-    public function validateQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
-    {
-
-        $valid = true;
-
-        if (!$queueRecipient->getEmail()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No Mail-Address is set (Recipient UID "%s").', $queueRecipient->getUid()));
-            $valid = false;
-        }
-
-        if (!$queueRecipient->getFirstName()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('No FirstName is set (Recipient UID "%s").', $queueRecipient->getUid()));
-        }
-
-        if (!$queueRecipient->getLastName()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('No LastName is set (Recipient UID "%s").', $queueRecipient->getUid()));
-        }
+        */
 
         return $valid;
         //===

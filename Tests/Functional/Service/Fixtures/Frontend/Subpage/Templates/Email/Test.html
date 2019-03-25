@@ -1,0 +1,34 @@
+<f:layout name="Email/{mailType}" />
+
+<f:section name="Plaintext">
+    SUBPAGE
+    queueMail.uid: {queueMail.uid}
+    queueMail.settingsPid: {queueMail.settingsPid}
+    mailType: {mailType}
+    settings.redirectPid: {settings.redirectPid}
+    baseUrl: ###baseUrl###
+    baseUrlImages: ###baseUrlImages###
+    baseUrlLogo: ###baseUrlLogo###
+ </f:section>
+
+<!-- HTML -->
+<f:section name="Html">
+    SUBPAGE
+    queueMail.uid: {queueMail.uid}
+    queueMail.settingsPid: {queueMail.settingsPid}
+    mailType: {mailType}
+    settings.redirectPid: {settings.redirectPid}
+    baseUrl: ###baseUrl###
+    baseUrlImages: ###baseUrlImages###
+    baseUrlLogo: ###baseUrlLogo###
+
+    <a href="/test.html">Test</a>
+    <img src="/test.png" width="30" height="30" alt="Test"/>
+</f:section>
+
+<!-- HTML -->
+<f:section name="Calendar">BEGIN:VEVENT
+SUMMARY:Test Kalender
+CLASS:PUBLIC
+END:VEVENT
+</f:section>

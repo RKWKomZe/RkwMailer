@@ -167,8 +167,8 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-        /** @var \RKW\RkwMailer\Helper\FrontendUriBuilder $uriBuilder */
-        $uriBuilder = $objectManager->get('RKW\\RkwMailer\\Helper\\FrontendUriBuilder');
+        /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+        $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
         $uriBuilder->reset();
 
         $uriBuilder->setUseRedirectLink(true)

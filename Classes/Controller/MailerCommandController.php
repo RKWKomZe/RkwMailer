@@ -2,6 +2,7 @@
 
 namespace RKW\RkwMailer\Controller;
 
+use \RKW\RkwMailer\Validation\QueueMailValidator;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -165,8 +166,8 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         try {
 
-            /** @var \RKW\RkwMailer\Service\ValidateMailService $sendMailHelper */
-            $sendMailHelper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\ValidateMailService');
+            /** @var \RKW\RkwMailer\Validation\QueueMailValidator $sendMailHelper */
+            $queueMailValidator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueueMailValidator::class);
 
             /** @var \RKW\RkwMailer\Service\MailService $mailService */
             $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
@@ -195,7 +196,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     }
 
                     // validate queueMail
-                    if (!$sendMailHelper->validateQueueMail($queueMail)) {
+                    if (!$queueMailValidator->validate($queueMail)) {
 
                         $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Mail sending aborted because of invalid data in queueMail (queueMail uid "%s").', $queueMail->getUid()));
                         $queueMail->setStatus(99);
@@ -211,8 +212,13 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         // send mails
                         $mailService->setQueueMail($queueMail);
                         foreach ($queueRecipients as $recipient) {
-                            $mailService->sendToRecipient($recipient);
-                            usleep(intval($sleep * 1000000));
+
+                            try {
+                                $mailService->sendToRecipient($recipient);
+                                usleep(intval($sleep * 1000000));
+                            }catch (\Exception $e) {
+                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to queueRecipient with uid = %s. Error: %s.', $recipient->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
+                            }
                         }
 
                         // ====================================================
@@ -223,7 +229,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         if (!$queueMail->getPipeline()) {
                             $queueMail->setStatus(4);
                             $queueMail->setTstampSendFinish(time());
-                            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
+                            $this->getLogger()->log(\TYPO3\CMS\Core \Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
                         } else {
                             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Currently no recipients for queueMail with uid = %s, but marked for pipeline-usage.', $queueMail->getUid()));
                         }

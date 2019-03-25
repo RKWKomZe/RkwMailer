@@ -105,35 +105,35 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $fromName;
+    protected $fromName = '';
 
     /**
      * fromAddress
      *
      * @var string
      */
-    protected $fromAddress;
+    protected $fromAddress = '';
 
     /**
      * replyAddress
      *
      * @var string
      */
-    protected $replyAddress;
+    protected $replyAddress = '';
 
     /**
      * returnPath
      *
      * @var string
      */
-    protected $returnPath;
+    protected $returnPath = '';
 
     /**
      * subject
      *
      * @var string
      */
-    protected $subject;
+    protected $subject = '';
 
 
     /**
@@ -141,14 +141,14 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $bodyText;
+    protected $bodyText = '';
 
     /**
      * attachment
      *
      * @var string
      */
-    protected $attachment;
+    protected $attachment = '';
 
 
     /**
@@ -156,35 +156,35 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $attachmentType;
+    protected $attachmentType = '';
 
     /**
      * attachmentName
      *
      * @var string
      */
-    protected $attachmentName;
+    protected $attachmentName = '';
 
     /**
      * plaintextTemplate
      *
      * @var string
      */
-    protected $plaintextTemplate;
+    protected $plaintextTemplate = '';
 
     /**
      * htmlTemplate
      *
      * @var string
      */
-    protected $htmlTemplate;
+    protected $htmlTemplate = '';
 
     /**
      * calendarTemplate
      *
      * @var string
      */
-    protected $calendarTemplate;
+    protected $calendarTemplate = '';
 
 
     /**
@@ -192,7 +192,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $templatePaths;
+    protected $templatePaths = '';
 
 
     /**
@@ -200,14 +200,14 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $layoutPaths;
+    protected $layoutPaths = '';
 
     /**
      * partialPaths
      *
      * @var string
      */
-    protected $partialPaths;
+    protected $partialPaths = '';
 
 
     /**
@@ -215,7 +215,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $category;
+    protected $category = '';
 
 
     /**
@@ -223,7 +223,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $campaignParameter;
+    protected $campaignParameter = '';
 
 
     /**
