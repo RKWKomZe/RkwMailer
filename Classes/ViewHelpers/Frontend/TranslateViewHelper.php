@@ -92,7 +92,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
             //===
         }
 
-        $value = \RKW\RkwMailer\Helper\FrontendLocalization::translate($id, $extensionName, $arguments, $languageKey);
+        $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
         if ($value === null) {
             $value = $default !== null ? $default : $renderChildrenClosure();
             if (!empty($arguments)) {

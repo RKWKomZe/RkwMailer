@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+
+    <!-- incomplete default address configuration - throws error -->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>1</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address />
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template />
+        <html_template />
+        <calendar_template />
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>1</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- all templates set, uses root-page for configuration-->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>2</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- all templates set, uses sub-page for configuration -->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>3</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>2</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- no html template set, uses root-page for configuration-->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>4</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template />
+        <calendar_template />
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+        <!-- all templates set, uses root-page for configuration, but has wrong status-->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>6</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>0</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- all templates set, uses root-page for configuration, right status but has no recipients -->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>7</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text />
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- all templates set, uses root-page for configuration, right status and two recipients -->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>8</uid>
+        <pid>2</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text>Fallback Body Text</body_text>
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment />
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>2</queue_recipients>
+        <links>0</links>
+        <statistic_mail>2</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <!-- no templates set, uses root-page for configuration and has right status -->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>9</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Testbetreff der QueueMail</subject>
+        <body_text>Fallback Body Text</body_text>
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template />
+        <html_template />
+        <calendar_template />
+        <priority>1</priority>
+        <sorting>0</sorting>
+        <status>1</status>
+        <type>0</type>
+        <attachment />
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <queue_recipients>0</queue_recipients>
+        <links>0</links>
+        <statistic_mail>0</statistic_mail>
+        <statistic_openings>0</statistic_openings>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
+</dataset>

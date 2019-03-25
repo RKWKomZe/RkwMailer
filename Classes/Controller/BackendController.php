@@ -81,8 +81,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     public function statisticsAction($timeFrame = 0, $mailType = -1)
     {
 
-        $timePeriodeHelper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Helper\\TimePeriod');
-        $spaceOfTime = $timePeriodeHelper->getTimePeriod($timeFrame);
+        $spaceOfTime = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
 
         //===========================================
         // Listings
@@ -155,9 +154,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     public function listAction($timeFrame = 0, $mailType = -1)
     {
 
-        /** @var \RKW\RkwMailer\Helper\TimePeriod $timePeriodeHelper */
-        $timePeriodeHelper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Helper\\TimePeriod');
-        $spaceOfTime = $timePeriodeHelper->getTimePeriod($timeFrame);
+        $spaceOfTime = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
 
         $mailTypeList = array();
         if (is_array($this->settings['types'])) {
