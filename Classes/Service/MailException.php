@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Service\Exception;
+namespace RKW\RkwMailer\Service;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -22,8 +22,9 @@ namespace RKW\RkwMailer\Service\Exception;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated
  */
-class MailServiceException extends \RKW\RkwMailer\Service\MailException
+class MailException extends \RKW\RkwMailer\Exception
 {
 
 }
