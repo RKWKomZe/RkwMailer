@@ -135,14 +135,14 @@ class MailServiceTest extends UnitTestCase
         $frontendUser->setFirstName('Karl');
         $frontendUser->setLastName('Lauterbach');
         $frontendUser->setTxRkwregistrationTitle($title);
-        $frontendUser->setTxRkwregistrationGender(1);
+        $frontendUser->setTxRkwregistrationGender(0);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
 
         $fixture->setEmail('lauterbach@spd.de');
         $fixture->setTitle('Dr.');
         $fixture->setFirstName('Karl');
         $fixture->setLastName('Lauterbach');
-        $fixture->setSalutation(1);
+        $fixture->setSalutation(0);
         $fixture->setLanguageCode('fr');
 
         $this->subject->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $frontendUser, $additionalData);
@@ -203,6 +203,7 @@ class MailServiceTest extends UnitTestCase
             'firstName' => 'Angela',
             'lastName' => 'Merkel',
             'test' => 'Merkel',
+            'txRkwregistrationGender' => 1
         ];
         $frontendUser->setUsername('testen@test.de');
         $frontendUser->setEmail('lauterbach@spd.de');
@@ -210,7 +211,6 @@ class MailServiceTest extends UnitTestCase
         $frontendUser->setFirstName('Karl');
         $frontendUser->setLastName('Lauterbach');
         $frontendUser->setTxRkwregistrationTitle($title);
-        $frontendUser->setTxRkwregistrationGender(1);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
 
         $fixture->setEmail('lauterbach@spd.de');
