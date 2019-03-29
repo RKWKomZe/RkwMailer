@@ -513,7 +513,8 @@ class MailService
                 if (
                     ($user instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity)
                     && (method_exists($user, $getter))
-                    && ($value = $user->$getter())
+                    && (null !== $value = $user->$getter())
+                    && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
                     && ($value !== 99)
                 ) {
                     $queueRecipient->$setter($value);
@@ -521,7 +522,8 @@ class MailService
                 // fallback: check for value in additional data
                 } else if (
                     (isset($additionalData[$propertySource]))
-                    && ($value = $additionalData[$propertySource])
+                    && (null !== $value = $additionalData[$propertySource])
+                    && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
                     && ($value !== 99)
                 ){
                     $queueRecipient->$setter($value);
