@@ -46,21 +46,12 @@ class GetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
 
             if ($cacheManager->has($cacheIdentifier)) {
 
+                // get cached content
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting cache for identifier "%s".', $cacheIdentifier));
                 $cachedContent = $cacheManager->get($cacheIdentifier);
 
                 // replace marker
-                foreach ($marker as $key => $value) {
-
-                    $cachedContentBefore = $cachedContent;
-                    $cachedContent = str_replace('---' . $key . '---', $value, $cachedContent);
-                    $cachedContent = str_replace('###' . $key . '###', $value, $cachedContent);
-                    $cachedContent = str_replace('{' . $key . '}', $value, $cachedContent);
-
-                    if ($cachedContentBefore != $cachedContent) {
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
-                    }
-                }
+                $cachedContent = $this->replaceMarker($cachedContent, $marker);
 
                 return $cachedContent;
                 //===

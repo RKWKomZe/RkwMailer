@@ -34,6 +34,34 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
 
 
     /**
+     * Replaces marker in content
+     *
+     * @param string $content
+     * @param array $marker
+     * @return string
+     */
+    public function replaceMarker ($content, $marker = [])
+    {
+        // replace marker
+        foreach ($marker as $key => $value) {
+
+            $contentBefore = $content;
+            $content = str_replace('---' . $key . '---', $value, $content);
+            $content = str_replace('###' . $key . '###', $value, $content);
+            $content = str_replace('{' . $key . '}', $value, $content);
+
+            if ($contentBefore != $content) {
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
+            }
+        }
+
+        return $content;
+        //===
+    }
+    
+    
+
+    /**
      * Returns logger instance
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
