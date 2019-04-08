@@ -33,9 +33,10 @@ class SetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param boolean $isPlaintext
      * @param string $additionalIdentifier
+     * @param array $marker
      * @return string
      */
-    public function render($value = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
+    public function render($value = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '', $marker = [])
     {
 
         if ($value === null) {
@@ -66,6 +67,9 @@ class SetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
                 86400
             );
         }
+
+        // replace marker - but do not cache the replaced version!
+        $value = $this->replaceMarker($value, $marker);
 
         return $value;
         //===
