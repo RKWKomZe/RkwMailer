@@ -32,9 +32,10 @@ class GetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param boolean $isPlaintext
      * @param string $additionalIdentifier
+     * @param array $marker
      * @return string
      */
-    public function render(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
+    public function render(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '', $marker = [])
     {
 
         if ($queueMail instanceof \RKW\RkwMailer\Domain\Model\QueueMail) {
@@ -46,7 +47,22 @@ class GetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
             if ($cacheManager->has($cacheIdentifier)) {
 
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting cache for identifier "%s".', $cacheIdentifier));
-                return $cacheManager->get($cacheIdentifier);
+                $cachedContent = $cacheManager->get($cacheIdentifier);
+
+                // replace marker
+                foreach ($marker as $key => $value) {
+
+                    $cachedContentBefore = $cachedContent;
+                    $cachedContent = str_replace('---' . $key . '---', $value, $cachedContent);
+                    $cachedContent = str_replace('###' . $key . '###', $value, $cachedContent);
+                    $cachedContent = str_replace('{' . $key . '}', $value, $cachedContent);
+
+                    if ($cachedContentBefore != $cachedContent) {
+                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
+                    }
+                }
+
+                return $cachedContent;
                 //===
             }
         }
