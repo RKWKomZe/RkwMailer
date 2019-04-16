@@ -1,3 +1,5 @@
+{namespace vh=RKW\RkwMailer\ViewHelpers}
+
 <f:be.container includeCssFiles="{1 :\"{f:uri.resource(path:'Css/Backend.css')}\"}">
 	<div class="typo3-fullDoc">
 		<div id="typo3-docheader">
@@ -6,7 +8,9 @@
 					<f:be.buttons.csh />
 					<f:be.menus.actionMenu>
 						<f:be.menus.actionMenuItem label="{f:translate(key:\"layouts_backendmodule.menuStats\")}" controller="Backend" action="statistics" />
-						<f:be.menus.actionMenuItem label="{f:translate(key:\"layouts_backendmodule.menuList\")}" controller="Backend" action="list" />
+						<vh:security.ifIsAdmin>
+							<f:be.menus.actionMenuItem label="{f:translate(key:\"layouts_backendmodule.menuList\")}" controller="Backend" action="list" />
+						</vh:security.ifIsAdmin>
 					</f:be.menus.actionMenu>
 				</div>
 
