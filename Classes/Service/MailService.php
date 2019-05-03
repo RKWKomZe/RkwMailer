@@ -792,8 +792,17 @@ class MailService
         $renderedTemplate = preg_replace('/###baseUrlImages###/', $this->getImageUrl(), $renderedTemplate);
         $renderedTemplate = preg_replace('/###baseUrlLogo###/', $this->getLogoUrl(), $renderedTemplate);
 
+
         // replace relative paths and absolute paths to server-root!
-        $renderedTemplate = preg_replace('/(src|href)="' . str_replace('/', '\/', GeneralUtility::getIndpEnv('TYPO3_SITE_PATH')) . '([^"]+)"/', '$1="' . $queueMail->getSettings('baseUrl') . '/$2"', $renderedTemplate);
+        /* @toDo: Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
+        $replacePaths = [
+            GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
+            $_SERVER['TYPO3_PATH_ROOT'] .'/'
+        ];
+
+        foreach ($replacePaths as $replacePath) {
+            $renderedTemplate = preg_replace('/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/', '$1="' . '/$2"', $renderedTemplate);
+        }
         $renderedTemplate = preg_replace('/(src|href)="\/([^"]+)"/', '$1="' . $queueMail->getSettings('baseUrl') . '/$2"', $renderedTemplate);
 
         return $renderedTemplate;
