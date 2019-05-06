@@ -16,14 +16,13 @@ Otherwise your changes will be overwritten the next time you save the extension 
 
 	<f:flashMessages />
 
-	<f:form action="list" name="timeFrame">
+	<f:form action="list" name="timeFrame" >
 		<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>
 		<f:render partial="Backend/MailTypePicker" arguments="{mailTypeList:mailTypeList, mailType:mailType}"/>
 	</f:form>
-
 	<f:be.widget.paginate objects="{mailList}" as="mailListItem" configuration="{itemsPerPage: 25}">
 
-		<table  class="tx_rkwmailer" border="1" >
+		<table class="tx_rkwmailer" border="1" >
 			<tr>
 				<th><f:translate key="templates_backend_list.uid" /></th>
 				<th><f:translate key="templates_backend_list.subject" /></th>
