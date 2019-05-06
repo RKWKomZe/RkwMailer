@@ -71,9 +71,9 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	status tinyint(2) unsigned DEFAULT '1',
 	language_code varchar(2) DEFAULT '' NOT NULL,
 
-	plaintext_body text NOT NULL,
-	html_body text NOT NULL,
-	calendar_body text NOT NULL,
+	plaintext_body longtext NOT NULL,
+	html_body longtext NOT NULL,
+	calendar_body longtext NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
