@@ -31,6 +31,8 @@ class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
     /**
      * Get the URI for a non-AJAX Request.
      *
+     * Thanks to https://www.npostnik.de/typo3/pagination-widget-im-backend-anpassen/
+     *
      * @param array  $argumentKeys
      * @param string $moduleKey
      *
