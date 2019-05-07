@@ -45,23 +45,36 @@ class StatisticMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public function findAllSentMails($spaceOfTime, $mailType = -1)
     {
+        $query = $this->createQuery();
 
-        $mailTypeAddition = '';
+        $filterConstraint[] = $query->logicalAnd(
+            $query->logicalOr(
+                $query->equals('queueMail.status', 3),
+                $query->equals('queueMail.status', 4)
+            ),
+            $query->logicalAnd(
+                $query->greaterThanOrEqual('queueMail.tstamp_real_sending', $spaceOfTime['from']),
+                $query->lessThanOrEqual('queueMail.tstamp_real_sending', $spaceOfTime['to'])
+            )
+        );
+
         if ($mailType >= 0) {
-            $mailTypeAddition = 'AND queuemail.type = ' . intval($mailType);
+            $filterConstraint[] = $query->logicalAnd(
+                $query->equals('queueMail.type', intval($mailType))
+            );
         }
 
-        $query = $this->createQuery();
-        $query->statement("
-			SELECT *
-			FROM tx_rkwmailer_domain_model_statisticmail AS statisticmail
-			JOIN tx_rkwmailer_domain_model_queuemail AS queuemail ON queuemail.uid = statisticmail.queue_mail
-			WHERE (queuemail.status = 4 OR queuemail.status = 3)
-			AND queuemail.tstamp_real_sending >= " . intval($spaceOfTime['from']) . "
-			AND queuemail.tstamp_real_sending <= " . intval($spaceOfTime['to']) . "
-			" . $mailTypeAddition . "
-			ORDER BY queuemail.status ASC, queuemail.tstamp_fav_sending DESC, queuemail.tstamp_real_sending DESC
-		");
+        $query->matching(
+            $query->logicalAnd($filterConstraint)
+        );
+
+        $query->setOrderings(
+            array(
+                'queueMail.status'              => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+                'queueMail.tstamp_fav_sending'  => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING,
+                'queueMail.tstamp_real_sending' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING,
+            )
+        );
 
         return $query->execute();
         //===
