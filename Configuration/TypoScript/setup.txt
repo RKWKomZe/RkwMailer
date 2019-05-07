@@ -21,6 +21,7 @@ module.tx_rkwmailer {
             TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\PaginateViewHelper {
                 templateRootPath = EXT:rkw_mailer/Resources/Private/Templates/
             }
+        }
 
     }
 
