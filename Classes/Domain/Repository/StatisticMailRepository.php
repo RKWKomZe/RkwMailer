@@ -53,8 +53,8 @@ class StatisticMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 $query->equals('queueMail.status', 4)
             ),
             $query->logicalAnd(
-                $query->greaterThanOrEqual('queueMail.tstamp_real_sending', $spaceOfTime['from']),
-                $query->lessThanOrEqual('queueMail.tstamp_real_sending', $spaceOfTime['to'])
+                $query->greaterThanOrEqual('queueMail.tstamp_real_sending', intval($spaceOfTime['from'])),
+                $query->lessThanOrEqual('queueMail.tstamp_real_sending', intval($spaceOfTime['to']))
             )
         );
 
