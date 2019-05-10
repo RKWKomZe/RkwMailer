@@ -36,7 +36,7 @@
             <!-- =================================================== -->
             <trans-unit id="partials_backend_datepicker.showAll">
                 <source>Show all time</source>
-                <target>Zeige alle Zeiträme</target>
+                <target>Zeige alle Zeiträume</target>
             </trans-unit>
             <trans-unit id="partials_backend_datepicker.showThisMonth">
                 <source>Show this month</source>
