@@ -390,6 +390,8 @@ class MailServiceTest extends FunctionalTestCase
 
         static::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
         static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
+        static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/5/e/csm_image-placeholder_1eb4fdc08f.jpg" width="536" height="200" alt="" title="Platzhalter" />', $result);
+
         static::assertContains('baseUrl: http://www.example.de', $result);
         static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
         static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
@@ -452,6 +454,8 @@ class MailServiceTest extends FunctionalTestCase
 
         static::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
         static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
+        static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/5/e/csm_image-placeholder_1eb4fdc08f.jpg" width="536" height="200" alt="" title="Platzhalter" />', $result);
+
         static::assertContains('baseUrl: http://www.example.de', $result);
         static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
         static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
