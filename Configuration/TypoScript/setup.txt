@@ -17,6 +17,12 @@ module.tx_rkwmailer {
             1 = {$module.tx_rkwmailer.view.partialRootPath}
         }
 
+        widget {
+            TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\PaginateViewHelper {
+                templateRootPath = EXT:rkw_mailer/Resources/Private/Templates/
+            }
+        }
+
     }
 
 
@@ -28,7 +34,11 @@ module.tx_rkwmailer {
         baseUrl = {$module.tx_rkwmailer.settings.baseUrl}
         basePathImages = {$module.tx_rkwmailer.settings.basePathImages}
         basePathLogo = {$module.tx_rkwmailer.settings.basePathLogo}
-
+        types {
+            Message = 0
+            Newsletter = 1
+            Alert = 2
+        }
     }
 }
 
