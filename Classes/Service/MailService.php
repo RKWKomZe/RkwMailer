@@ -28,7 +28,6 @@ use RKW\RkwMailer\Validation\QueueRecipientValidator;
 /**
  * MailService
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
