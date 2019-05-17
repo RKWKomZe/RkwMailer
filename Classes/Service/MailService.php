@@ -83,7 +83,7 @@ class MailService
      *
      * @const string
      */
-    const DEBUG_TIME = true;
+    const DEBUG_TIME = false;
 
 
     /**
@@ -170,6 +170,7 @@ class MailService
      */
     protected $signalSlotDispatcher;
 
+
     /**
      * Logger
      *
@@ -188,7 +189,7 @@ class MailService
 
     /**
      * Constructor
-     * @param bool $test
+     * @param bool $unitTest
      */
     public function __construct($unitTest = false)
     {
@@ -196,6 +197,7 @@ class MailService
         if (! $unitTest) {
             $this->initializeService();
         }
+        
         self::debugTime(__LINE__, __METHOD__);
     }
 
@@ -656,7 +658,6 @@ class MailService
 
         // build HTML- or Plaintext- Template if set!
         $markerArray = array();
-        $update = false;
         foreach (
             array(
                 'html'      => 'html',
@@ -669,7 +670,7 @@ class MailService
             $propertySetter = 'set' . ucFirst($property) . 'Body';
             $propertyGetter = 'get' . ucFirst($property) . 'Body';
             if ($queueMail->$templateGetter()) {
-                if (!$queueRecipient->$propertyGetter()) {
+                if (! $queueRecipient->$propertyGetter()) {
 
                     // build marker array - but only once!
                     if (count($markerArray) < 1) {
@@ -679,7 +680,7 @@ class MailService
                         $markerArray = array_merge(
                             (is_array($queueRecipientMarker) ? $queueRecipientMarker : []),
                             [
-                                'queueRecipient'       => $queueRecipient,
+                                'queueRecipient' => $queueRecipient,
                             ]
                         );
                         $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_MARKERS . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$markerArray));
@@ -691,7 +692,6 @@ class MailService
                     // add to recipient
                     $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_RENDER . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$renderedTemplate));
                     $queueRecipient->$propertySetter($renderedTemplate);
-                    $update = true;
 
                     $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Added %s-template-property for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
                 } else {
@@ -700,13 +700,6 @@ class MailService
             } else {
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('%s-template is not set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
             }
-        }
-
-
-        // update and persist
-        if ($update) {
-            $this->queueRecipientRepository->update($queueRecipient);
-            $this->persistenceManager->persistAll();
         }
 
         self::debugTime(__LINE__, __METHOD__);
@@ -1304,6 +1297,7 @@ class MailService
         //===
     }
 
+
     /**
      * Returns logger instance
      *
@@ -1319,9 +1313,7 @@ class MailService
         return $this->logger;
         //===
     }
-
-
-
+    
     /**
      * Returns the relative image path
      *

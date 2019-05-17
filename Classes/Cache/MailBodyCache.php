@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Domain\Model;
+namespace RKW\RkwMailer\Cache;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -30,8 +30,7 @@ class MailBodyCache
     /**
      * Cache
      *
-     * @var \TYPO3\CMS\Core\Cache\CacheManager
-     * @inject
+     * @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
      */
     protected $cache;
 
@@ -39,33 +38,9 @@ class MailBodyCache
     /**
      * Logger
      *
-     * @var \TYPO3\CMS\Core\Log\LogManager
-     * @inject
+     * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
-
-
-    /**
-     * plaintextBody
-     *
-     * @var string
-     */
-    protected $plaintextBody = '';
-
-    /**
-     * htmlBody
-     *
-     * @var string
-     */
-    protected $htmlBody = '';
-
-    /**
-     * calendarBody
-     *
-     * @var string
-     */
-    protected $calendarBody = '';
-
 
 
     /**
@@ -75,102 +50,117 @@ class MailBodyCache
      */
     public function __construct()
     {
-        $this->cache = $this->cache->getCache('rkw_mailer');
-        $this->logger = $this->logger->getLogger(__CLASS__);
+        $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
+        $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+
     }
 
 
     /**
      * Returns the plaintextBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $plaintextBody
      */
-    public function getPlaintextBody($queueMail, $queueRecipient)
+    public function getPlaintextBody($queueRecipient)
     {
-        return $this->plaintextBody;
+
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
+
 
     /**
      * Sets the plaintextBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $plaintextBody
      * @return void
      */
-    public function setPlaintextBody($queueMail, $queueRecipient, $plaintextBody)
+    public function setPlaintextBody($queueRecipient, $plaintextBody)
     {
-        $this->plaintextBody = $plaintextBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
+        $this->setCache($cacheIdentifier, $plaintextBody);
     }
 
 
     /**
      * Returns the htmlBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $htmlBody
      */
-    public function getHtmlBody($queueMail, $queueRecipient)
+    public function getHtmlBody($queueRecipient)
     {
-        return $this->htmlBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'html');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
 
 
     /**
      * Sets the htmlBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $htmlBody
      * @return void
      */
-    public function setHtmlBody($queueMail, $queueRecipient, $htmlBody)
+    public function setHtmlBody($queueRecipient, $htmlBody)
     {
-        $this->htmlBody = $htmlBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'html');
+        $this->setCache($cacheIdentifier, $htmlBody);
     }
 
 
     /**
      * Returns the calendarBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $calendarBody
      */
-    public function getCalendarBody($queueMail, $queueRecipient)
+    public function getCalendarBody($queueRecipient)
     {
-        return $this->calendarBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'calendar');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
 
     /**
      * Sets the calendarBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $calendarBody
      * @return void
      */
-    public function setCalendarBody($queueMail, $queueRecipient, $calendarBody)
+    public function setCalendarBody($queueRecipient, $calendarBody)
     {
-        $this->calendarBody = $calendarBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'calendar');
+        $this->setCache($cacheIdentifier, $calendarBody);
     }
 
+
+    /**
+     * Clear cached content
+     */
+    public function clearCache()
+    {
+        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, 'Flushing MailBodyCache');
+        $this->cache->flush();
+
+    }
 
 
     /**
      * Returns CacheIdentifier
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $property
      * @return string
      */
-    protected function getCacheIdentifier($queueMail, $queueRecipient, $property)
+    protected function getCacheIdentifier($queueRecipient, $property)
     {
-        return sha1(intval($queueMail->getUid()) . '_' . intval($queueRecipient->getUid()) . '_' . $property);
+        return sha1(intval($queueRecipient->getUid()) . '_' . $property);
         //===
     }
 
@@ -179,7 +169,7 @@ class MailBodyCache
      * Returns cached content
      *
      * @param string $cacheIdentifier
-     * @return string | null
+     * @return string
      */
     protected function getCache($cacheIdentifier)
     {
@@ -187,12 +177,12 @@ class MailBodyCache
         if ($this->cache->has($cacheIdentifier)) {
 
             // get cached content
-            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting MailBody-Cache for identifier "%s".', $cacheIdentifier));
+            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting MailBodyCache for identifier "%s".', $cacheIdentifier));
             return $this->cache->get($cacheIdentifier);
             //===
         }
 
-        return null;
+        return '';
         //===
 
     }
@@ -207,7 +197,7 @@ class MailBodyCache
     protected function setCache($cacheIdentifier, $value)
     {
 
-        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting MailBody-Cache for identifier "%s".', $cacheIdentifier));
+        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting MailBodyCache for identifier "%s".', $cacheIdentifier));
         $this->cache->set(
             $cacheIdentifier,
             $value,
