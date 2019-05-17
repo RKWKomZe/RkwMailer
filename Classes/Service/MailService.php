@@ -180,14 +180,6 @@ class MailService
 
 
     /**
-     * Cache
-     *
-     * @var \TYPO3\CMS\Core\Cache\CacheManager
-     */
-    protected $cache;
-
-
-    /**
      * The normal settings
      *
      * @var array
@@ -1329,27 +1321,12 @@ class MailService
         //===
     }
 
-    /**
-     * Returns logger instance
-     *
-     * @return \TYPO3\CMS\Core\Cache\CacheManager
-     */
-    protected function getCache()
-    {
-
-        if (!$this->cache instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
-        }
-
-        return $this->cache;
-        //===
-    }
 
 
     /**
      * Returns the relative image path
      *
-     * @param $string $path
+     * @param string $path
      * @return string
      */
     protected function getRelativePath($path)
