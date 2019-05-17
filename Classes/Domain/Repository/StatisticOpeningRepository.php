@@ -67,15 +67,23 @@ class StatisticOpeningRepository extends \TYPO3\CMS\Extbase\Persistence\Reposito
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return \RKW\RkwMailer\Domain\Model\StatisticOpening
      */
-    public function findOneByLinkAndQueueRecipient(\RKW\RkwMailer\Domain\Model\Link $link, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
+    public function findOneByLinkAndQueueRecipient(\RKW\RkwMailer\Domain\Model\Link $link, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null)
     {
 
         $query = $this->createQuery();
+        $constraints = [
+            $query->equals('link', intval($link->getUid()))
+        ];
+
+        if ($queueRecipient) {
+            $constraints[] = $query->equals('queueRecipient', intval($queueRecipient->getUid()));
+        } else {
+            $constraints[] = $query->equals('queueRecipient', 0);
+        }
 
         $query->matching(
             $query->logicalAnd(
-                $query->equals('link', intval($link->getUid())),
-                $query->equals('queueRecipient', intval($queueRecipient->getUid()))
+                $constraints
             )
         );
 

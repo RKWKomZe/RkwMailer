@@ -77,7 +77,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * links
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\Link>
-     * @cascade remove
+     * NO DELETING CASCADE HERE - this way links keep on working even if queueMail is deleted!
      */
     protected $links;
 

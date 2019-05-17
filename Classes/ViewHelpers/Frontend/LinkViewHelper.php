@@ -80,10 +80,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
             ->setAddQueryString($addQueryString)
             ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
 
-        if (
-            ($queueMail)
-            && ($queueRecipient)
-        ) {
+        if ($queueMail) {
             $uriBuilder->setUseRedirectLink(true)
                 ->setQueueMail($queueMail)
                 ->setQueueRecipient($queueRecipient);

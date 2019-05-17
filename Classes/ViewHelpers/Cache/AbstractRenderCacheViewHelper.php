@@ -71,7 +71,7 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected function getIdentifier(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
     {
-       return intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . $additionalIdentifier;
+       return sha1(intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . $additionalIdentifier);
        //===
     }
 
