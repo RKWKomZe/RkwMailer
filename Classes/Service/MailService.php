@@ -84,7 +84,7 @@ class MailService
      *
      * @const string
      */
-    const DEBUG_TIME = false;
+    const DEBUG_TIME = true;
 
 
     /**
@@ -177,6 +177,14 @@ class MailService
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
+
+
+    /**
+     * Cache
+     *
+     * @var \TYPO3\CMS\Core\Cache\CacheManager
+     */
+    protected $cache;
 
 
     /**
@@ -1318,6 +1326,22 @@ class MailService
         }
 
         return $this->logger;
+        //===
+    }
+
+    /**
+     * Returns logger instance
+     *
+     * @return \TYPO3\CMS\Core\Cache\CacheManager
+     */
+    protected function getCache()
+    {
+
+        if (!$this->cache instanceof \TYPO3\CMS\Core\Log\Logger) {
+            $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
+        }
+
+        return $this->cache;
         //===
     }
 
