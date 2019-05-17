@@ -142,11 +142,24 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
     /**
+     *
+     * MailBodyCache
+     *
+     * @var \RKW\RkwMailer\Cache\MailBodyCache
+     */
+    protected $mailBodyCache;
+
+
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->initializeObject();
+
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $this->mailBodyCache= $objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');
     }
 
 
@@ -434,7 +447,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getPlaintextBody()
     {
-        return $this->plaintextBody;
+        if ($this->plaintextBody) {
+            return $this->plaintextBody;
+            //===
+        }
+
+        return $this->mailBodyCache->getPlaintextBody($this);
+        //===
     }
 
     /**
@@ -456,7 +475,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getHtmlBody()
     {
-        return $this->htmlBody;
+        if ($this->htmlBody) {
+            return $this->htmlBody;
+            //===
+        }
+
+        return $this->mailBodyCache->getHtmlBody($this);
+        //===
     }
 
 
@@ -468,7 +493,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setHtmlBody($htmlBody)
     {
-        $this->htmlBody = $htmlBody;
+        $this->mailBodyCache->setHtmlBody($this, $htmlBody);
     }
 
 
@@ -479,7 +504,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getCalendarBody()
     {
-        return $this->calendarBody;
+        if ($this->calendarBody) {
+            return $this->calendarBody;
+            //===
+        }
+
+        return $this->mailBodyCache->getCalendarBody($this);
+        //===
     }
 
     /**
@@ -490,7 +521,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setCalendarBody($calendarBody)
     {
-        $this->calendarBody = $calendarBody;
+        $this->mailBodyCache->setCalendarBody($this, $calendarBody);
     }
 
     /**

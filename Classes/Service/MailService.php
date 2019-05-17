@@ -173,7 +173,16 @@ class MailService
     /**
      * Logger
      *
+     * @var \TYPO3\CMS\Core\Log\LogManager
+     * @inject
+     */
+    protected $logManager;
+
+    /**
+     * Logger
+     *
      * @var \TYPO3\CMS\Core\Log\Logger
+     * @inject
      */
     protected $logger;
 
@@ -196,6 +205,8 @@ class MailService
         if (! $unitTest) {
             $this->initializeService();
         }
+        $this->logger = $this->logManager->getLogger(__CLASS__);
+
         self::debugTime(__LINE__, __METHOD__);
     }
 
@@ -573,7 +584,7 @@ class MailService
             $this->persistenceManager->persistAll();
 
             self::debugTime(__LINE__, __METHOD__);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Added recipient with email "%s" (uid=%s) to queueMail with uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
+            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Added recipient with email "%s" (uid=%s) to queueMail with uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
 
             return true;
             //===
@@ -656,7 +667,6 @@ class MailService
 
         // build HTML- or Plaintext- Template if set!
         $markerArray = array();
-        $update = false;
         foreach (
             array(
                 'html'      => 'html',
@@ -669,7 +679,7 @@ class MailService
             $propertySetter = 'set' . ucFirst($property) . 'Body';
             $propertyGetter = 'get' . ucFirst($property) . 'Body';
             if ($queueMail->$templateGetter()) {
-                if (!$queueRecipient->$propertyGetter()) {
+                if (! $queueRecipient->$propertyGetter()) {
 
                     // build marker array - but only once!
                     if (count($markerArray) < 1) {
@@ -690,23 +700,15 @@ class MailService
 
                     // add to recipient
                     $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_RENDER . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$renderedTemplate));
-                    $queueRecipient->$propertySetter($renderedTemplate);
-                    $update = true;
+                    $queueRecipient->$propertySetter($queueRecipient, $renderedTemplate);
 
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Added %s-template-property for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
+                    $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Added %s-template-property for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
                 } else {
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('%s-template-property is already set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
+                    $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('%s-template-property is already set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
                 }
             } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('%s-template is not set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('%s-template is not set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
             }
-        }
-
-
-        // update and persist
-        if ($update) {
-            $this->queueRecipientRepository->update($queueRecipient);
-            $this->persistenceManager->persistAll();
         }
 
         self::debugTime(__LINE__, __METHOD__);
@@ -848,7 +850,7 @@ class MailService
                 $queueMail->setStatisticMail($statisticMail);
                 $queueMail->setStatus(2);
 
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
 
                 // update and persist changes
                 $this->queueMailRepository->update($queueMail);
@@ -863,11 +865,11 @@ class MailService
                 //====
 
             } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s has no recipients.', $queueMail->getUid()));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s has no recipients.', $queueMail->getUid()));
             }
 
         } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s is not a draft (status = %s).', $queueMail->getUid(), $queueMail->getStatus()));
+            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s is not a draft (status = %s).', $queueMail->getUid(), $queueMail->getStatus()));
         }
 
         self::debugTime(__LINE__, __METHOD__);
@@ -945,7 +947,7 @@ class MailService
             // set counter for statistics
             $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
             $statisticMail->setContactedCount($statisticMail->getContactedCount() + 1);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
+            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
 
 
         } catch (\Exception $e) {
@@ -959,7 +961,7 @@ class MailService
             // set counter for statistics
             $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
             $statisticMail->setErrorCount($statisticMail->getErrorCount() + 1);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
+            $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
         }
 
 
@@ -1033,7 +1035,7 @@ class MailService
                     if ($queueRecipient->$getter()) {
 
                         $message->addPart($queueRecipient->$getter(), 'text/' . $shortName);
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting %s-body for recipient with uid=%s in queueMail with uid=%s.', $longName, $queueRecipient->getUid(), $queueMail->getUid()));
+                        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting %s-body for recipient with uid=%s in queueMail with uid=%s.', $longName, $queueRecipient->getUid(), $queueMail->getUid()));
                     }
                 }
 
@@ -1042,7 +1044,7 @@ class MailService
 
                 $emailBody = $queueMail->getBodyText();
                 $message->setBody($emailBody, 'text/plain');
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting default body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting default body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
             }
 
             // set calendar attachment
@@ -1052,7 +1054,7 @@ class MailService
                 $emailString = preg_replace('/\n/', "\r\n", $queueRecipient->getCalendarBody());
                 $attachment = \Swift_Attachment::newInstance($emailString, 'meeting.ics', 'text/calendar');
                 $message->attach($attachment);
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting calendar-body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting calendar-body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
             }
 
             // add attachment if set
@@ -1124,10 +1126,10 @@ class MailService
 
                     $namespace = filter_var($dataMapper->getDataMap(get_class($value))->getClassName(), FILTER_SANITIZE_STRING);
                     if ($value->_isNew()) {
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted and will be stored as serialized object in the database. This may cause performance issues!', $namespace));
+                        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted and will be stored as serialized object in the database. This may cause performance issues!', $namespace));
                     } else {
                         $marker[$key] = self::NAMESPACE_KEYWORD . ' ' . $namespace . ":" . $value->getUid();
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $value->getUid()));
+                        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $value->getUid()));
                     }
 
                 // ObjectStorage or QueryResult
@@ -1153,13 +1155,13 @@ class MailService
                         foreach ($value as $object) {
                             if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
                                 if ($object->_isNew()) {
-                                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted. The object storage it belongs to will be stored as serialized object in the database. This may cause performance issues!', $namespace));
+                                    $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted. The object storage it belongs to will be stored as serialized object in the database. This may cause performance issues!', $namespace));
                                     $replaceObjectStorage = false;
                                     break;
                                     //===
                                 } else {
                                     $newValues[] = $namespace . ":" . $object->getUid();
-                                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $object->getUid()));
+                                    $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $object->getUid()));
                                 }
                             }
                         }
@@ -1168,7 +1170,7 @@ class MailService
                         }
 
                     } else {
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!', get_class($value)));
+                        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!', get_class($value)));
                     }
                 }
             }
@@ -1207,7 +1209,7 @@ class MailService
 
                 // check if we have an array here
                 $isArray = (bool)(strpos(trim($value), self::NAMESPACE_ARRAY_KEYWORD) === 0);
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Detection of objectStorage: %s.', intval($isArray)));
+                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Detection of objectStorage: %s.', intval($isArray)));
 
                 /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
                 $objectStorage = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
@@ -1253,7 +1255,7 @@ class MailService
 
                             if ($result = $query->execute()->getFirst()) {
                                 $objectStorage->attach($result);
-                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $result->getUid()));
+                                $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $result->getUid()));
                             }
                         }
                     }

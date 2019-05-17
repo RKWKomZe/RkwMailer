@@ -1,6 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer\Domain\Model;
+namespace RKW\RkwMailer\Cache;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -42,30 +42,15 @@ class MailBodyCache
      * @var \TYPO3\CMS\Core\Log\LogManager
      * @inject
      */
+    protected $logManager;
+
+    /**
+     * Logger
+     *
+     * @var \TYPO3\CMS\Core\Log\Logger
+     * @inject
+     */
     protected $logger;
-
-
-    /**
-     * plaintextBody
-     *
-     * @var string
-     */
-    protected $plaintextBody = '';
-
-    /**
-     * htmlBody
-     *
-     * @var string
-     */
-    protected $htmlBody = '';
-
-    /**
-     * calendarBody
-     *
-     * @var string
-     */
-    protected $calendarBody = '';
-
 
 
     /**
@@ -76,86 +61,89 @@ class MailBodyCache
     public function __construct()
     {
         $this->cache = $this->cache->getCache('rkw_mailer');
-        $this->logger = $this->logger->getLogger(__CLASS__);
+        $this->logger = $this->logManager->getLogger(__CLASS__);
     }
 
 
     /**
      * Returns the plaintextBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $plaintextBody
      */
-    public function getPlaintextBody($queueMail, $queueRecipient)
+    public function getPlaintextBody($queueRecipient)
     {
-        return $this->plaintextBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
 
     /**
      * Sets the plaintextBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $plaintextBody
      * @return void
      */
-    public function setPlaintextBody($queueMail, $queueRecipient, $plaintextBody)
+    public function setPlaintextBody($queueRecipient, $plaintextBody)
     {
-        $this->plaintextBody = $plaintextBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
+        $this->setCache($cacheIdentifier, $plaintextBody);
     }
 
 
     /**
      * Returns the htmlBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $htmlBody
      */
-    public function getHtmlBody($queueMail, $queueRecipient)
+    public function getHtmlBody($queueRecipient)
     {
-        return $this->htmlBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'html');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
 
 
     /**
      * Sets the htmlBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $htmlBody
      * @return void
      */
-    public function setHtmlBody($queueMail, $queueRecipient, $htmlBody)
+    public function setHtmlBody($queueRecipient, $htmlBody)
     {
-        $this->htmlBody = $htmlBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'html');
+        $this->setCache($cacheIdentifier, $htmlBody);
     }
 
 
     /**
      * Returns the calendarBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $calendarBody
      */
-    public function getCalendarBody($queueMail, $queueRecipient)
+    public function getCalendarBody($queueRecipient)
     {
-        return $this->calendarBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'calendar');
+        return $this->getCache($cacheIdentifier);
+        //===
     }
 
     /**
      * Sets the calendarBody
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $calendarBody
      * @return void
      */
-    public function setCalendarBody($queueMail, $queueRecipient, $calendarBody)
+    public function setCalendarBody($queueRecipient, $calendarBody)
     {
-        $this->calendarBody = $calendarBody;
+        $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'calendar');
+        $this->setCache($cacheIdentifier, $calendarBody);
     }
 
 
@@ -163,14 +151,13 @@ class MailBodyCache
     /**
      * Returns CacheIdentifier
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param string $property
      * @return string
      */
-    protected function getCacheIdentifier($queueMail, $queueRecipient, $property)
+    protected function getCacheIdentifier($queueRecipient, $property)
     {
-        return sha1(intval($queueMail->getUid()) . '_' . intval($queueRecipient->getUid()) . '_' . $property);
+        return sha1(intval($queueRecipient->getUid()) . '_' . $property);
         //===
     }
 
