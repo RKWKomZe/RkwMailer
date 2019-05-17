@@ -67,4 +67,27 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     }
 
 
+    /**
+     *  findOneByUidAndQueueMai
+     *
+     * @param int $uid
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return \\RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     */
+    public function findOneByUidAndQueueMail($uid, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('uid', intval($uid)),
+                $query->equals('queueMail', intval($queueMail->getUid()))
+            )
+        );
+
+
+        return $query->execute()->getFirst();
+        //====
+    }
+
 }

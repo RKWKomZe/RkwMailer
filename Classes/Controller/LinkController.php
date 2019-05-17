@@ -59,6 +59,15 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     protected $statisticOpeningRepository;
 
+
+    /**
+     * StatisticsUtility
+     *
+     * @var \RKW\RkwMailer\Utility\StatisticsUtility
+     * @inject
+     */
+    protected $statisticsUtility;
+
     /**
      * Persistence Manager
      *
@@ -88,60 +97,11 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         $request = $this->request->getArguments();
         $hash = preg_replace('/[^a-zA-Z0-9]/', '', $request['hash']);
-        $mailId = intval($request['mid']);
-        $userId = intval($request['uid']);
+        $queueMailId = intval($request['mid']);
+        $queueMailRecipientId = intval($request['uid']);
 
-        /** @var \RKW\RkwMailer\Domain\Model\Link $link */
-        if (
-            ($hash)
-            && ($mailId)
-            && ($userId)
 
-            /** @var \RKW\RkwMailer\Domain\Model\Link $link */
-            && ($link = $this->linkRepository->findOneByHash($hash))
-        ) {
-
-            // only create statistic if mail still exists
-            /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-            /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-            if (
-                ($queueMail = $this->queueMailRepository->findByUid($mailId))
-                && ($queueRecipient = $this->queueRecipientRepository->findByUid($userId))
-            ) {
-
-                // get statistics if already created
-                /** @var \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-                $statisticOpening = $this->statisticOpeningRepository->findOneByLinkAndQueueRecipient($link, $queueRecipient);
-                if (!$statisticOpening) {
-
-                    // create new statisticOpening for mailId/recipientId-combination
-                    $statisticOpening = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\StatisticOpening');
-                    $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
-
-                    $queueMail->addStatisticOpenings($statisticOpening);
-                    $queueRecipient->addStatisticOpenings($statisticOpening);
-                    $link->addStatisticOpenings($statisticOpening);
-
-                    $this->statisticOpeningRepository->add($statisticOpening);
-                    $this->queueMailRepository->update($queueMail);
-                    $this->queueRecipientRepository->update($queueRecipient);
-                    $this->linkRepository->update($link);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Adding new statisticOpening for redirect (queueMail uid=%s, queueRecipient uid=%s).', $queueMail->getUid(), $queueRecipient->getUid()));
-
-                } else {
-                    $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
-                    $this->statisticOpeningRepository->update($statisticOpening);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Updating statisticOpening uid=%s for redirect (queueMail uid=%s, queueRecipient uid=%s).', $statisticOpening->getUid(), $queueMail->getUid(), $queueRecipient->getUid()));
-                }
-                $this->persistenceManager->persistAll();
-            }
-
-            // build link - anchor has to be added at the end of the link
-            $section = '#'. parse_url($link->getUrl() , PHP_URL_FRAGMENT);
-            $finalLink = str_replace($section, '', $link->getUrl());
-
-            // add queueRecipient and queueMail respectively and THEN add anchor
-            $url = $finalLink . (parse_url($finalLink, PHP_URL_QUERY) ? '&' : '?') . 'tx_rkwmailer[mid]=' . $mailId . '&tx_rkwmailer[uid]=' . $userId . $section;
+        if ($url = $this->statisticsUtility->getRedirectLink($hash, $queueMailId, $queueMailRecipientId)) {
 
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {
@@ -218,7 +178,6 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
                 $this->statisticOpeningRepository->add($statisticOpening);
                 $this->queueMailRepository->update($queueMail);
-                $this->queueRecipientRepository->update($queueRecipient);
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Adding new statisticOpening for opening (queueMail uid=%s, queueRecipient uid=%s).', $queueMail->getUid(), $queueRecipient->getUid()));
 
 

@@ -841,7 +841,7 @@ class MailService
                 /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
                 $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
                 $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
-                $statisticMail->setQueueMail($queueMail);
+
                 $this->statisticMailRepository->add($statisticMail);
                 $this->persistenceManager->persistAll();
 
