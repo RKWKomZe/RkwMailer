@@ -110,7 +110,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         if (
             (count($matches) == 4)
             && ($this->queueMail)
-            && ($this->queueRecipient)
             && (strpos($matches[2], '#') !== 0)
             && (strpos($matches[2], 'mailto:') !== 0)
         ) {
@@ -138,7 +137,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         if (
             (count($matches) == 2)
             && ($this->queueMail)
-            && ($this->queueRecipient)
             && (strpos($matches[1], '#') !== 0)
             && (strpos($matches[1], 'mailto:') !== 0)
         ) {

@@ -248,7 +248,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         if (
             ($this->getUseRedirectLink())
             && ($this->getQueueMail())
-            && ($this->getQueueRecipient())
         ) {
 
             if ($this->getRedirectPid()) {
@@ -290,10 +289,18 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
                 // reset and unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
-                // @toDo: do we really need this here? arguments should already be passed into the database
-                // $arguments = $this->getArguments();
+
                 $this->reset();
                 $this->setUseRedirectLink(false);
+
+                // set params
+                $arguments = [
+                    'tx_rkwmailer_rkwmailer[hash]' => $link->getHash(),
+                    'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
+                ];
+                if ($this->getQueueRecipient()) {
+                    $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
+                }
 
                 // set all params for redirect link!
                 $this->setTargetPageUid($this->getRedirectPid())
@@ -301,14 +308,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     ->setUseCacheHash(false)
                     ->setCreateAbsoluteUri(true)
                     ->setArguments(
-                    // array_merge(
-                        array(
-                            'tx_rkwmailer_rkwmailer[hash]' => $link->getHash(),
-                            'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
-                            'tx_rkwmailer_rkwmailer[uid]'  => intval($this->getQueueRecipient()->getUid()),
-                        )
-                    // $arguments
-                    //)
+                        $arguments
                     );
 
                 // generate redirect link
