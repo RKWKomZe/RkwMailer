@@ -466,6 +466,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setPlaintextBody($plaintextBody)
     {
+        $this->plaintextBody = $plaintextBody;
         $this->getMailBodyCache()->setPlaintextBody($this, $plaintextBody);
     }
 
@@ -495,6 +496,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setHtmlBody($htmlBody)
     {
+        $this->htmlBody = $htmlBody;
         $this->getMailBodyCache()->setHtmlBody($this, $htmlBody);
     }
 
@@ -523,6 +525,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setCalendarBody($calendarBody)
     {
+        $this->calendarBody = $calendarBody;
         $this->getMailBodyCache()->setCalendarBody($this, $calendarBody);
     }
 
