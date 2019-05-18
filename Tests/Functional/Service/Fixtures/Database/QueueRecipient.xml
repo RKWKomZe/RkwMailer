@@ -10,7 +10,6 @@
         <last_name>Schmidt</last_name>
         <subject>Betreff</subject>
         <status>1</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -30,7 +29,6 @@
         <last_name>Napp</last_name>
         <subject>Betreff</subject>
         <status>1</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -51,7 +49,6 @@
         <last_name>Napp</last_name>
         <subject>Betreff</subject>
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -72,7 +69,6 @@
         <last_name>Napp</last_name>
         <subject>Betreff für dich</subject>
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -92,7 +88,6 @@
         <last_name>Hannebambel</last_name>
         <subject>Betreff für mich</subject>
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -113,7 +108,6 @@
         <last_name>Hannebambel</last_name>
         <subject>Betreff für mich</subject>
         <status>4</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -134,7 +128,6 @@
         <last_name>Hannebambel</last_name>
         <subject>Betreff für QueueRecipient</subject>
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -154,7 +147,6 @@
         <last_name>Hannebambel</last_name>
         <subject />
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -174,7 +166,6 @@
         <last_name />
         <subject />
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -194,7 +185,6 @@
         <last_name>Hannebambel</last_name>
         <subject />
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -215,7 +205,6 @@
         <last_name>Hannebambel</last_name>
         <subject />
         <status>2</status>
-        <statistic_openings>0</statistic_openings>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>

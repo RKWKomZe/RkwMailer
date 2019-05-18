@@ -124,13 +124,10 @@ class StatisticsUtility
                     // create new statisticOpening for mailId/recipientId-combination
                     $statisticOpening = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\StatisticOpening');
                     $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
-
-                    $queueMail->addStatisticOpenings($statisticOpening);
-                    $link->addStatisticOpenings($statisticOpening);
+                    $statisticOpening->setQueueMail($queueMail);
+                    $statisticOpening->setLink($link);
 
                     $this->statisticOpeningRepository->add($statisticOpening);
-                    $this->queueMailRepository->update($queueMail);
-                    $this->linkRepository->update($link);
                     $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Adding new statisticOpening for redirect (queueMail uid=%s).', $queueMail->getUid()));
 
                 // update existing

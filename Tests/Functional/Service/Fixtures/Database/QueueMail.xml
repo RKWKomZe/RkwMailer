@@ -26,10 +26,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>1</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -59,10 +55,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -92,10 +84,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>2</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -125,10 +113,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -158,10 +142,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -191,10 +171,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -225,10 +201,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>2</queue_recipients>
-        <links>0</links>
-        <statistic_mail>2</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
@@ -259,10 +231,6 @@
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <queue_recipients>0</queue_recipients>
-        <links>0</links>
-        <statistic_mail>0</statistic_mail>
-        <statistic_openings>0</statistic_openings>
         <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>

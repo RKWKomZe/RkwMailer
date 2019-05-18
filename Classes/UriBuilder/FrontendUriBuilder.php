@@ -261,6 +261,9 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     $link->setUrl($this->buildFrontendUri());
                 }
 
+                // set QueueMail
+                $link->setQueueMail($this->getQueueMail());
+
                 // unique is build via mail-id and link only - NOT with user-id included!!!
                 // this way a link used twice in a mail is only saved once
                 $link->setHash(sha1($this->getQueueMail()->getUid() . $link->getUrl()));
@@ -271,16 +274,8 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                 /** @var \RKW\RkwMailer\Domain\Repository\LinkRepository $linkRepository */
                 $linkRepository = $objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\LinkRepository');
 
-                /** @var \RKW\RkwMailer\Domain\Repository\queueMailRepository $queueMailRepository */
-                $queueMailRepository = $objectManager->get('RKW\\RkwMailer\\Domain\\Repository\\QueueMailRepository');
                 if (!$linkRepository->findOneByHash($link->getHash())) {
-
                     $linkRepository->add($link);
-
-                    // add link to queueMail
-                    $queueMail = $this->getQueueMail();
-                    $queueMail->addLinks($link);
-                    $queueMailRepository->update($queueMail);
 
                     /** @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager */
                     $persistenceManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
