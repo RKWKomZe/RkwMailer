@@ -246,7 +246,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // reset statistics for mail
         /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        if ($statisticMail = $queueMail->getStatisticMail()) {
+        if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
             $statisticMail->setContactedCount(0);
             $statisticMail->setBouncesCount(0);
             $statisticMail->setErrorCount(0);

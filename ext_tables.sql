@@ -12,10 +12,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
     status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '0',
     pipeline tinyint(1) unsigned DEFAULT '0',
-	queue_recipients int(11) DEFAULT '0' NOT NULL,
-	links int(11) DEFAULT '0' NOT NULL,
-	statistic_mail int(11) DEFAULT '0' NOT NULL,
-	statistic_openings int(11) DEFAULT '0' NOT NULL,
 
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
@@ -58,7 +54,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	queue_mail int(11) unsigned DEFAULT '0',
-	statistic_openings int(11) DEFAULT '0' NOT NULL,
 	frontend_user int(11) unsigned DEFAULT '0',
 
 	email varchar(255) DEFAULT '' NOT NULL,
@@ -80,7 +75,7 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-
+    KEY queue_mail_status (queue_mail,status)
 );
 
 #
@@ -135,7 +130,6 @@ CREATE TABLE tx_rkwmailer_domain_model_link (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	queue_mail int(11) DEFAULT '0' NOT NULL,
-	statistic_openings int(11) DEFAULT '0' NOT NULL,
 
 	hash varchar(255) DEFAULT '' NOT NULL,
 	url text NOT NULL,

@@ -192,7 +192,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkAndCreatesStatisticWithCountOne()
+    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de?tx_rkwmailer[mid]=2',
@@ -200,11 +200,18 @@ class StatisticsUtilityTest extends FunctionalTestCase
         );
         static::assertEquals(
             self::NUMBER_OF_STATISTIC_OPENINGS + 1,
-            $this->statisticOpeningRepository->findAll()->count()
+            $this->statisticOpeningRepository->countAll()
         );
+
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
         static::assertEquals(
             1,
-            $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1)->getClickCount()
+            $statisticOpening->getClickCount()
+        );
+        static::assertEquals(
+            2,
+            $statisticOpening->getQueueMail()->getUid()
         );
 
     }
@@ -212,7 +219,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOne()
+    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2#Anker-Link',
@@ -220,11 +227,18 @@ class StatisticsUtilityTest extends FunctionalTestCase
         );
         static::assertEquals(
             self::NUMBER_OF_STATISTIC_OPENINGS + 1,
-            $this->statisticOpeningRepository->findAll()->count()
+            $this->statisticOpeningRepository->countAll()
         );
+
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
         static::assertEquals(
             1,
-            $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1)->getClickCount()
+            $statisticOpening->getClickCount()
+        );
+        static::assertEquals(
+            2,
+            $statisticOpening->getQueueMail()->getUid()
         );
 
     }
@@ -233,7 +247,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForTrackedLinkReturnsLinkAndUpdatesStatisticWithCountTwo()
+    public function getRedirectLinkWithValidMailAndValidMatchingHashForTrackedLinkReturnsLinkAndUpdatesStatisticWithCountTwoForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2',
@@ -241,13 +255,18 @@ class StatisticsUtilityTest extends FunctionalTestCase
         );
         static::assertEquals(
             self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
+            $this->statisticOpeningRepository->countAll()
+        );
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(2);
+        static::assertEquals(
+            2,
+            $statisticOpening->getClickCount()
         );
         static::assertEquals(
             2,
-            $this->statisticOpeningRepository->findByUid(2)->getClickCount()
+            $statisticOpening->getQueueMail()->getUid()
         );
-
     }
 
 
@@ -307,7 +326,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOne()
+    public function getRedirectLinkWithValidMailAndValidRecipientAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1#Anker-Link',
@@ -315,11 +334,18 @@ class StatisticsUtilityTest extends FunctionalTestCase
         );
         static::assertEquals(
             self::NUMBER_OF_STATISTIC_OPENINGS +1,
-            $this->statisticOpeningRepository->findAll()->count()
+            $this->statisticOpeningRepository->countAll()
         );
+
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
         static::assertEquals(
             1,
-            $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS +1)->getClickCount()
+            $statisticOpening->getClickCount()
+        );
+        static::assertEquals(
+            2,
+            $statisticOpening->getQueueMail()->getUid()
         );
 
     }

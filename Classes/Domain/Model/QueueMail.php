@@ -292,8 +292,8 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         // set objectStorages
         /* @toDo: Remove completely */
         //$this->queueRecipients = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $this->links = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $this->statisticOpenings = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        //$this->links = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        //$this->statisticOpenings = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
 
         // set defaults
         if (!$this->getFromAddress()) {
@@ -529,18 +529,18 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->links = $links;
     }*/
 
-
+    /* @toDo: Remove completely */
     /**
      * Return the statisticMail
      * although it can hold several statisticMail.
      *
      * @return \RKW\RkwMailer\Domain\Model\StatisticMail
      * @api
-     */
+
     public function getStatisticMail()
     {
         return $this->statisticMail;
-    }
+    }*/
 
     /**
      * Sets tge statisticMail
@@ -548,11 +548,11 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail
      * @return void
-     */
+
     public function setStatisticMail(\RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail)
     {
         $this->statisticMail = $statisticMail;
-    }
+    }*/
 
 
     /* @toDo: Remove completely */

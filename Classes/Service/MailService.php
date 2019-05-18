@@ -564,14 +564,13 @@ class MailService
             // set queueMail
             $queueRecipient->setQueueMail($queueMail);
 
-            if ($statisticMail = $queueMail->getStatisticMail()) {
+            if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
                 $statisticMail->setTotalCount($statisticMail->getTotalCount() + 1);
                 $this->statisticMailRepository->update($statisticMail);
             }
 
             // update, add and persist
             $this->queueRecipientRepository->add($queueRecipient);
-            $this->queueMailRepository->update($queueMail);
             $this->persistenceManager->persistAll();
 
             self::debugTime(__LINE__, __METHOD__);
@@ -833,11 +832,10 @@ class MailService
                 /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
                 $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
                 $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
-                $statisticMail->setQueueMail($queueMail); /** @toDo: Does not work without but should! */
+                $statisticMail->setQueueMail($queueMail);
                 $this->statisticMailRepository->add($statisticMail);
 
                 // set status to waiting so the email will be processed
-                $queueMail->setStatisticMail($statisticMail);
                 $queueMail->setStatus(2);
 
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
@@ -893,7 +891,7 @@ class MailService
         $queueMail = $this->getQueueMail();
 
         /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        $statisticMail = $queueMail->getStatisticMail();
+        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail);
 
         // validate queueMail
         if (!$this->queueMailValidator->validate($queueMail)) {
