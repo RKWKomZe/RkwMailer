@@ -65,6 +65,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
     /**
+     * @toDo: Remove completely
      * queueRecipients
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\QueueRecipient>
@@ -289,6 +290,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
 
         // set objectStorages
+        /* @toDo: Remove completely */
         //$this->queueRecipients = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->links = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->statisticOpenings = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
@@ -427,7 +429,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->pipeline = $pipeline;
     }
 
+    /* @toDo: Remove completely */
     /**
+     *
      * Adds a queueRecipients
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
@@ -477,17 +481,18 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
      */
 
+    /* @toDo: Remove completely */
     /**
      * Adds a links
      *
      * @param \RKW\RkwMailer\Domain\Model\Link $link
      * @return void
      * @api
-     */
+
     public function addLinks(\RKW\RkwMailer\Domain\Model\Link $link)
     {
         $this->links->attach($link);
-    }
+    }*/
 
     /**
      * Removes a links
@@ -495,22 +500,22 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\Link $link
      * @return void
      * @api
-     */
+
     public function removeLinks(\RKW\RkwMailer\Domain\Model\Link $link)
     {
         $this->links->detach($link);
-    }
+    }*/
 
     /**
      * Returns the links
      *
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage An object storage containing the links
      * @api
-     */
+
     public function getLinks()
     {
         return $this->links;
-    }
+    }*/
 
     /**
      * Sets the links
@@ -518,11 +523,11 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $links
      * @return void
      * @api
-     */
+
     public function setLinks(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $links)
     {
         $this->links = $links;
-    }
+    }*/
 
 
     /**
@@ -550,17 +555,19 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
 
+    /* @toDo: Remove completely */
     /**
      * Adds a statisticOpenings
      *
      * @param \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening
      * @return void
      * @api
-     */
+
     public function addStatisticOpenings(\RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening)
     {
         $this->statisticOpenings->attach($statisticOpening);
     }
+     *  */
 
     /**
      * Removes a statisticOpenings
@@ -568,22 +575,24 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening
      * @return void
      * @api
-     */
+
     public function removeStatisticOpenings(\RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening)
     {
         $this->statisticOpenings->detach($statisticOpening);
     }
+     * */
 
     /**
      * Returns the statisticOpenings
      *
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage An object storage containing the statisticOpenings
      * @api
-     */
+
     public function getStatisticOpenings()
     {
         return $this->statisticOpenings;
     }
+     * */
 
     /**
      * Sets the statisticOpenings
@@ -591,11 +600,12 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $statisticOpenings
      * @return void
      * @api
-     */
+
     public function setStatisticOpenings(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $statisticOpenings)
     {
         $this->statisticOpenings = $statisticOpenings;
     }
+     * */
 
     /**
      * Returns the fromName

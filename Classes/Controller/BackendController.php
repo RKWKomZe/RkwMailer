@@ -252,14 +252,8 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $statisticMail->setErrorCount(0);
             $this->statisticMailRepository->update($statisticMail);
 
-            /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-            $objectStorage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-
             // reset statistics for openings
-            // @todo: loop through objectStorage does not work
             $this->statisticOpeningRepository->removeAllByQueueMail($queueMail);
-            $queueMail->setStatisticOpenings($objectStorage);
-            $this->queueMailRepository->update($queueMail);
         }
 
         $this->redirect('list');

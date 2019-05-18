@@ -345,6 +345,8 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'foreign_field' => 'queue_mail'
             )
         ),
+
+        /*
         'statistic_openings' => array(
             'exclude' => 0,
             'config' => array(
@@ -352,7 +354,9 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'foreign_table' => 'tx_rkwmailer_domain_model_statisticopening',
                 'foreign_field' => 'queue_mail'
             )
-        ),
+        ),*/
+
+        /*
         'links' => array(
             'exclude' => 0,
             'config' => array(
@@ -360,7 +364,7 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'foreign_table' => 'tx_rkwmailer_domain_model_link',
                 'foreign_field' => 'queue_mail'
             )
-        ),
+        ),*/
 
 
 		
