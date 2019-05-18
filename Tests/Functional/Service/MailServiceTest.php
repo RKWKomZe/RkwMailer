@@ -297,7 +297,7 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals(9999, $fixture->getPid());
         static::assertEquals(2, $fixture->getStatus());
         static::assertEquals('debug@rkw.de', $fixture->getEmail());
-        static::assertEquals(1, count($queueMail->getQueueRecipients()));
+        static::assertEquals(1, count($this->queueRecipientRepository->findByQueueMail($queueMail)));
 
     }
 
@@ -996,8 +996,9 @@ class MailServiceTest extends FunctionalTestCase
      */
     public function setToGivenFeUserAndAdditionalDataReturnsTrueAndAddsQueueRecipientRespectively()
     {
-
-        $object = $this->queueMailRepository->findByIdentifier(1);
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+        $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwRegistration\Domain\Model\FrontendUser $frontendUser */
         $frontendUser = $this->frontendUserRepository->findByIdentifier(1);
@@ -1005,26 +1006,26 @@ class MailServiceTest extends FunctionalTestCase
         $additionalData = [
             'marker' => [
                 'test' => 'testen',
-                'object' => $object,
+                'object' => $queueMail,
             ],
             'subject' => 'Wir testen den Betreff',
         ];
 
         $markerFixture = [
             'test' => 'testen',
-            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:1',
+            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:2',
         ];
 
 
         static::assertTrue($this->subject->setTo($frontendUser, $additionalData));
 
         /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients */
-        $queueRecipients = $this->subject->getQueueMail()->getQueueRecipients();
+        $queueRecipients = $this->queueRecipientRepository->findByQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $queueRecipients->current();
 
-        static::assertEquals(1, count($queueRecipients));
+        static::assertEquals(1, $queueRecipients->count());
         static::assertEquals($frontendUser , $queueRecipient->getFrontendUser());
 
         static::assertEquals('Karl', $queueRecipient->getFirstname());
@@ -1084,7 +1085,7 @@ class MailServiceTest extends FunctionalTestCase
         static::assertTrue($this->subject->setTo($frontendUser, $additionalData, true));
 
         /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients */
-        $queueRecipients = $this->subject->getQueueMail()->getQueueRecipients();
+        $queueRecipients = $this->queueRecipientRepository->findByQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $queueRecipients->current();
@@ -1121,7 +1122,9 @@ class MailServiceTest extends FunctionalTestCase
     public function setToGivenBeUserAndAdditionalDataReturnsTrueAndAddsQueueRecipientRespectively()
     {
 
-        $object = $this->queueMailRepository->findByIdentifier(1);
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+        $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwRegistration\Domain\Model\BackendUser $backendUser */
         $backendUser = $this->backendUserRepository->findByIdentifier(1);
@@ -1129,21 +1132,21 @@ class MailServiceTest extends FunctionalTestCase
         $additionalData = [
             'marker' => [
                 'test' => 'testen',
-                'object' => $object,
+                'object' => $queueMail,
             ],
             'subject' => 'Wir testen den Betreff',
         ];
 
         $markerFixture = [
             'test' => 'testen',
-            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:1',
+            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:2',
         ];
 
 
         static::assertTrue($this->subject->setTo($backendUser, $additionalData));
 
         /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients */
-        $queueRecipients = $this->subject->getQueueMail()->getQueueRecipients();
+        $queueRecipients = $this->queueRecipientRepository->findByQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $queueRecipients->current();
@@ -1205,7 +1208,7 @@ class MailServiceTest extends FunctionalTestCase
         static::assertTrue($this->subject->setTo($backendUser, $additionalData, true));
 
         /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients */
-        $queueRecipients = $this->subject->getQueueMail()->getQueueRecipients();
+        $queueRecipients = $this->queueRecipientRepository->findByQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $queueRecipients->current();
@@ -1254,7 +1257,7 @@ class MailServiceTest extends FunctionalTestCase
         static::assertTrue($this->subject->setTo($frontendUser));
 
         /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients */
-        $queueRecipients = $this->subject->getQueueMail()->getQueueRecipients();
+        $queueRecipients = $this->queueRecipientRepository->findByQueueMail($queueMail);
         static::assertEquals(2, count($queueRecipients));
 
     }
@@ -1331,9 +1334,13 @@ class MailServiceTest extends FunctionalTestCase
 
         static::assertTrue($this->subject->send());
 
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailUpdated */
         $queueMailUpdated = $this->queueMailRepository->findByIdentifier(8);
-        static::assertNotNull($queueMailUpdated->getStatisticMail());
-        static::assertEquals(2, $queueMailUpdated->getStatisticMail()->getTotalCount());
+
+        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
+        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMailUpdated);
+        static::assertNotNull($statisticMail);
+        static::assertEquals(2, $statisticMail->getTotalCount());
 
         static::assertEquals(2, $queueMailUpdated->getStatus());
     }

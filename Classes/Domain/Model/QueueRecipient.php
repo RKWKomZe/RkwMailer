@@ -34,13 +34,15 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $queueMail;
 
+    /* @toDo: Remove completely */
     /**
      * statisticOpenings
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\StatisticOpening>
      * @cascade remove
-     */
+
     protected $statisticOpenings;
+     *  */
 
     /**
      * frontendUser
@@ -156,18 +158,19 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function __construct()
     {
-        $this->initializeObject();
+       // $this->initializeObject();
 
     }
 
 
+    /* @toDo: Remove completely */
     /**
      * Initialize object storage
-     */
+
     public function initializeObject()
     {
         $this->statisticOpenings = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-    }
+    }*/
 
 
     /**
@@ -191,17 +194,18 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->queueMail = $queueMail;
     }
 
+    /* @toDo: Remove completely */
     /**
      * Adds a statisticOpenings
      *
      * @param \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening
      * @return void
      * @api
-     */
+
     public function addStatisticOpenings(\RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening)
     {
         $this->statisticOpenings->attach($statisticOpening);
-    }
+    }*/
 
     /**
      * Removes a statisticOpenings
@@ -209,22 +213,22 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening
      * @return void
      * @api
-     */
+
     public function removeStatisticOpenings(\RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening)
     {
         $this->statisticOpenings->detach($statisticOpening);
-    }
+    }*/
 
     /**
      * Returns the statisticOpenings
      *
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage An object storage containing the statisticOpenings
      * @api
-     */
+
     public function getStatisticOpenings()
     {
         return $this->statisticOpenings;
-    }
+    }*/
 
     /**
      * Sets the statisticOpenings
@@ -232,11 +236,11 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $statisticOpenings
      * @return void
      * @api
-     */
+
     public function setStatisticOpenings(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $statisticOpenings)
     {
         $this->statisticOpenings = $statisticOpenings;
-    }
+    }*/
 
     /**
      * Returns the frontendUser

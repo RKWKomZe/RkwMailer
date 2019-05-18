@@ -369,12 +369,12 @@ class MailService
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @depricated since 2018/10/28 use $this->getQueueMail()->getQueueRecipients() instead
+     * @depricated since 2018/10/28 use $this->queueRecipientRepository->findByQueueMail($queueMail) instead
      */
     public function getTo()
     {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': GetTo() method will be removed soon. Use $this->getQueueMail()->getQueueRecipients() instead.');
-        return $this->getQueueMail()->getQueueRecipients();
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': GetTo() method will be removed soon. Use $this->queueRecipientRepository->findByQueueMail($queueMail) instead.');
+        return $this->queueRecipientRepository->findByQueueMail($this->getQueueMail());
         //===
     }
 
@@ -561,17 +561,16 @@ class MailService
             // set storage pid
             $queueRecipient->setPid(intval($this->getSettings('storagePid', 'persistence')));
 
-            // add recipient to queueMail
-            $queueMail->addQueueRecipients($queueRecipient);
+            // set queueMail
+            $queueRecipient->setQueueMail($queueMail);
 
-            if ($statisticMail = $queueMail->getStatisticMail()) {
-                $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
+            if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
+                $statisticMail->setTotalCount($statisticMail->getTotalCount() + 1);
                 $this->statisticMailRepository->update($statisticMail);
             }
 
             // update, add and persist
             $this->queueRecipientRepository->add($queueRecipient);
-            $this->queueMailRepository->update($queueMail);
             $this->persistenceManager->persistAll();
 
             self::debugTime(__LINE__, __METHOD__);
@@ -829,18 +828,24 @@ class MailService
             $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, 0)->count();
             if ($recipientCount > 0) {
 
-                // create StatisticMail dataset */
-                /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-                $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
-                $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
-                $statisticMail->setQueueMail($queueMail); /** @toDo: Does not work without but should! */
-                $this->statisticMailRepository->add($statisticMail);
+                // create StatisticMail dataset if not already existing */
+                if (! $statisticMail  = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
+
+                    /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
+                    $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
+                }
+
+                $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
+                $statisticMail->setQueueMail($queueMail);
+
+                if ($statisticMail->_isNew()) {
+                    $this->statisticMailRepository->add($statisticMail);
+                } else {
+                    $this->statisticMailRepository->update($statisticMail);
+                }
 
                 // set status to waiting so the email will be processed
-                $queueMail->setStatisticMail($statisticMail);
                 $queueMail->setStatus(2);
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
 
                 // update and persist changes
                 $this->queueMailRepository->update($queueMail);
@@ -850,6 +855,8 @@ class MailService
 
                 // reset object
                 $this->unsetVariables();
+
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
 
                 return true;
                 //====
@@ -893,7 +900,7 @@ class MailService
         $queueMail = $this->getQueueMail();
 
         /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        $statisticMail = $queueMail->getStatisticMail();
+        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail);
 
         // validate queueMail
         if (!$this->queueMailValidator->validate($queueMail)) {
@@ -935,7 +942,7 @@ class MailService
             $queueRecipient->setStatus(4);
 
             // set counter for statistics
-            $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
+            $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
             $statisticMail->setContactedCount($statisticMail->getContactedCount() + 1);
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
 
@@ -949,7 +956,7 @@ class MailService
             $queueRecipient->setStatus(99);
 
             // set counter for statistics
-            $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
+            $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
             $statisticMail->setErrorCount($statisticMail->getErrorCount() + 1);
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
         }
