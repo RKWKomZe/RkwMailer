@@ -28,7 +28,6 @@ use RKW\RkwMailer\Validation\QueueRecipientValidator;
 /**
  * MailService
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
@@ -171,6 +170,7 @@ class MailService
      */
     protected $signalSlotDispatcher;
 
+
     /**
      * Logger
      *
@@ -189,7 +189,7 @@ class MailService
 
     /**
      * Constructor
-     * @param bool $test
+     * @param bool $unitTest
      */
     public function __construct($unitTest = false)
     {
@@ -197,6 +197,7 @@ class MailService
         if (! $unitTest) {
             $this->initializeService();
         }
+        
         self::debugTime(__LINE__, __METHOD__);
     }
 
@@ -657,7 +658,6 @@ class MailService
 
         // build HTML- or Plaintext- Template if set!
         $markerArray = array();
-        $update = false;
         foreach (
             array(
                 'html'      => 'html',
@@ -670,7 +670,7 @@ class MailService
             $propertySetter = 'set' . ucFirst($property) . 'Body';
             $propertyGetter = 'get' . ucFirst($property) . 'Body';
             if ($queueMail->$templateGetter()) {
-                if (!$queueRecipient->$propertyGetter()) {
+                if (! $queueRecipient->$propertyGetter()) {
 
                     // build marker array - but only once!
                     if (count($markerArray) < 1) {
@@ -680,7 +680,7 @@ class MailService
                         $markerArray = array_merge(
                             (is_array($queueRecipientMarker) ? $queueRecipientMarker : []),
                             [
-                                'queueRecipient'       => $queueRecipient,
+                                'queueRecipient' => $queueRecipient,
                             ]
                         );
                         $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_MARKERS . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$markerArray));
@@ -692,7 +692,6 @@ class MailService
                     // add to recipient
                     $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_RENDER . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$renderedTemplate));
                     $queueRecipient->$propertySetter($renderedTemplate);
-                    $update = true;
 
                     $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Added %s-template-property for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
                 } else {
@@ -701,13 +700,6 @@ class MailService
             } else {
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('%s-template is not set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
             }
-        }
-
-
-        // update and persist
-        if ($update) {
-            $this->queueRecipientRepository->update($queueRecipient);
-            $this->persistenceManager->persistAll();
         }
 
         self::debugTime(__LINE__, __METHOD__);
@@ -841,9 +833,8 @@ class MailService
                 /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
                 $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
                 $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
-
+                $statisticMail->setQueueMail($queueMail); /** @toDo: Does not work without but should! */
                 $this->statisticMailRepository->add($statisticMail);
-                $this->persistenceManager->persistAll();
 
                 // set status to waiting so the email will be processed
                 $queueMail->setStatisticMail($statisticMail);
@@ -922,7 +913,7 @@ class MailService
 
         // validate statisticMail
         if (! $statisticMail) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceException('No statisticMail object set.', 1552483654);
+            throw new \RKW\RkwMailer\Service\Exception\MailServiceException(sprintf('No statisticMail object set for queueMail with uid=%s', $queueMail->getUid()), 1552483654);
             //===
         }
 
@@ -1305,6 +1296,7 @@ class MailService
         //===
     }
 
+
     /**
      * Returns logger instance
      *
@@ -1320,12 +1312,11 @@ class MailService
         return $this->logger;
         //===
     }
-
-
+    
     /**
      * Returns the relative image path
      *
-     * @param $string $path
+     * @param string $path
      * @return string
      */
     protected function getRelativePath($path)

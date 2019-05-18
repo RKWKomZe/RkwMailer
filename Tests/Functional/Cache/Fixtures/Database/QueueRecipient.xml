@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>1</uid>
+        <pid>1</pid>
+        <queue_mail>1</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debuger@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>2</status>
+        <statistic_openings>0</statistic_openings>
+        <salutation>0</salutation>
+        <title>Dr.</title>
+        <language_code>de</language_code>
+        <plaintext_body />
+        <html_body />
+        <calendar_body />
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>2</uid>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debuger@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>2</status>
+        <statistic_openings>0</statistic_openings>
+        <salutation>0</salutation>
+        <title>Dr.</title>
+        <language_code>de</language_code>
+        <plaintext_body />
+        <html_body />
+        <calendar_body />
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+</dataset>

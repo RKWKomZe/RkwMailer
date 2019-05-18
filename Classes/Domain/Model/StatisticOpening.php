@@ -78,12 +78,12 @@ class StatisticOpening extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-
+     */
     public function setQueueMail($queueMail)
     {
         $this->queueMail = $queueMail;
     }
-     * */
+
 
     /**
      * Returns the queueRecipient
@@ -100,12 +100,12 @@ class StatisticOpening extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return void
-
+     */
     public function setQueueRecipient($queueRecipient)
     {
         $this->queueRecipient = $queueRecipient;
     }
-     */
+
 
 
     /**
@@ -123,12 +123,12 @@ class StatisticOpening extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param \RKW\RkwMailer\Domain\Model\Link $link
      * @return void
-
+     */
     public function setLink($link)
     {
         $this->link = $link;
     }
-     */
+
 
     /**
      * Returns the pixel
