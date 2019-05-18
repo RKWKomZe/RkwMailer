@@ -142,11 +142,22 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
     /**
+     *
+     * MailBodyCache
+     *
+     * @var \RKW\RkwMailer\Cache\MailBodyCache
+     */
+    protected $mailBodyCache;
+
+
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->initializeObject();
+
     }
 
 
@@ -434,7 +445,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getPlaintextBody()
     {
-        return $this->plaintextBody;
+        if (! empty($this->plaintextBody)) {
+            return $this->plaintextBody;
+            //===
+        }
+
+        return $this->getMailBodyCache()->getPlaintextBody($this);
+        //===
     }
 
     /**
@@ -445,7 +462,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setPlaintextBody($plaintextBody)
     {
-        $this->plaintextBody = $plaintextBody;
+        $this->getMailBodyCache()->setPlaintextBody($this, $plaintextBody);
     }
 
 
@@ -456,7 +473,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getHtmlBody()
     {
-        return $this->htmlBody;
+        if (! empty($this->htmlBody)) {
+            return $this->htmlBody;
+            //===
+        }
+
+        return $this->getMailBodyCache()->getHtmlBody($this);
+        //===
     }
 
 
@@ -468,7 +491,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setHtmlBody($htmlBody)
     {
-        $this->htmlBody = $htmlBody;
+        $this->getMailBodyCache()->setHtmlBody($this, $htmlBody);
     }
 
 
@@ -479,7 +502,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getCalendarBody()
     {
-        return $this->calendarBody;
+        if (! empty($this->calendarBody)) {
+            return $this->calendarBody;
+            //===
+        }
+
+        return $this->getMailBodyCache()->getCalendarBody($this);
+        //===
     }
 
     /**
@@ -490,7 +519,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setCalendarBody($calendarBody)
     {
-        $this->calendarBody = $calendarBody;
+        $this->getMailBodyCache()->setCalendarBody($this, $calendarBody);
     }
 
     /**
@@ -537,4 +566,22 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
 
+    /**
+     * Returns logger instance
+     *
+     * @return \RKW\RkwMailer\Cache\MailBodyCache
+     */
+    protected function getMailBodyCache()
+    {
+
+        if (!$this->mailBodyCache instanceof \TYPO3\CMS\Core\Log\Logger) {
+
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+            $this->mailBodyCache = $objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');        
+        }
+
+        return $this->mailBodyCache;
+        //===
+    }
+    
 }

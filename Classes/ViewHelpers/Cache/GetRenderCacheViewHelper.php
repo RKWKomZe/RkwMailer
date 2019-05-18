@@ -47,7 +47,7 @@ class GetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
             if ($cacheManager->has($cacheIdentifier)) {
 
                 // get cached content
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting cache for identifier "%s".', $cacheIdentifier));
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting ViewHelperCache for identifier "%s".', $cacheIdentifier));
                 $cachedContent = $cacheManager->get($cacheIdentifier);
 
                 // replace marker

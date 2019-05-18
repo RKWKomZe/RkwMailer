@@ -1878,6 +1878,14 @@ class MailServiceTest extends FunctionalTestCase
      */
     protected function tearDown()
     {
+
+        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+
+        /** @var \RKW\RkwMailer\Cache\MailBodyCache $mailBodyCache */
+        $mailBodyCache = $objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');
+        $mailBodyCache->clearCache();
+
         parent::tearDown();
     }
 

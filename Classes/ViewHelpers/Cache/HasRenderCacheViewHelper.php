@@ -45,7 +45,7 @@ class HasRenderCacheViewHelper extends AbstractRenderCacheViewHelper
 
             if ($cacheManager->has($cacheIdentifier)) {
 
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Cache found for cache-identifier "%s".', $cacheIdentifier));
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('ViewHelperCache found for cache-identifier "%s".', $cacheIdentifier));
                 return true;
                 //===
             }
