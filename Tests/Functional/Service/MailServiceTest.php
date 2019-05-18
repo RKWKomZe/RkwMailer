@@ -996,8 +996,9 @@ class MailServiceTest extends FunctionalTestCase
      */
     public function setToGivenFeUserAndAdditionalDataReturnsTrueAndAddsQueueRecipientRespectively()
     {
-
-        $queueMail = $this->queueMailRepository->findByIdentifier(1);
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+        $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwRegistration\Domain\Model\FrontendUser $frontendUser */
         $frontendUser = $this->frontendUserRepository->findByIdentifier(1);
@@ -1012,7 +1013,7 @@ class MailServiceTest extends FunctionalTestCase
 
         $markerFixture = [
             'test' => 'testen',
-            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:1',
+            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:2',
         ];
 
 
@@ -1024,7 +1025,7 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $queueRecipients->current();
 
-        static::assertEquals(1, count($queueRecipients));
+        static::assertEquals(1, $queueRecipients->count());
         static::assertEquals($frontendUser , $queueRecipient->getFrontendUser());
 
         static::assertEquals('Karl', $queueRecipient->getFirstname());
@@ -1121,7 +1122,9 @@ class MailServiceTest extends FunctionalTestCase
     public function setToGivenBeUserAndAdditionalDataReturnsTrueAndAddsQueueRecipientRespectively()
     {
 
-        $object = $this->queueMailRepository->findByIdentifier(1);
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+        $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwRegistration\Domain\Model\BackendUser $backendUser */
         $backendUser = $this->backendUserRepository->findByIdentifier(1);
@@ -1129,14 +1132,14 @@ class MailServiceTest extends FunctionalTestCase
         $additionalData = [
             'marker' => [
                 'test' => 'testen',
-                'object' => $object,
+                'object' => $queueMail,
             ],
             'subject' => 'Wir testen den Betreff',
         ];
 
         $markerFixture = [
             'test' => 'testen',
-            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:1',
+            'object' => 'RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:2',
         ];
 
 
@@ -1332,8 +1335,9 @@ class MailServiceTest extends FunctionalTestCase
         static::assertTrue($this->subject->send());
 
         $queueMailUpdated = $this->queueMailRepository->findByIdentifier(8);
-        static::assertNotNull($queueMailUpdated->getStatisticMail());
-        static::assertEquals(2, $queueMailUpdated->getStatisticMail()->getTotalCount());
+        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail);
+        static::assertNotNull($statisticMail);
+        static::assertEquals(2, $statisticMail->getTotalCount());
 
         static::assertEquals(2, $queueMailUpdated->getStatus());
     }
