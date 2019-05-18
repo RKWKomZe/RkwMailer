@@ -833,9 +833,8 @@ class MailService
                 /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
                 $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
                 $statisticMail->setTotalCount($queueMail->getQueueRecipients()->count());
-
+                $statisticMail->setQueueMail($queueMail); /** @toDo: Does not work without but should! */
                 $this->statisticMailRepository->add($statisticMail);
-                $this->persistenceManager->persistAll();
 
                 // set status to waiting so the email will be processed
                 $queueMail->setStatisticMail($statisticMail);
@@ -914,7 +913,7 @@ class MailService
 
         // validate statisticMail
         if (! $statisticMail) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceException('No statisticMail object set.', 1552483654);
+            throw new \RKW\RkwMailer\Service\Exception\MailServiceException(sprintf('No statisticMail object set for queueMail with uid=%s', $queueMail->getUid()), 1552483654);
             //===
         }
 

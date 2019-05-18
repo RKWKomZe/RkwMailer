@@ -160,7 +160,7 @@ class MailBodyCache
      */
     protected function getCacheIdentifier($queueRecipient, $property)
     {
-        return sha1(intval($queueRecipient->getUid()) . '_' . $property);
+        return 'MailBodyCache_' . intval($queueRecipient->getUid()) . '_' . $property;
         //===
     }
 
