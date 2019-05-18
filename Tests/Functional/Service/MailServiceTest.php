@@ -1334,8 +1334,11 @@ class MailServiceTest extends FunctionalTestCase
 
         static::assertTrue($this->subject->send());
 
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailUpdated */
         $queueMailUpdated = $this->queueMailRepository->findByIdentifier(8);
-        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail);
+
+        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
+        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMailUpdated);
         static::assertNotNull($statisticMail);
         static::assertEquals(2, $statisticMail->getTotalCount());
 

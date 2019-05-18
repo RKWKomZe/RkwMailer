@@ -78,27 +78,27 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\Link>
      * NO DELETING CASCADE HERE - this way links keep on working even if queueMail is deleted!
-     */
-    protected $links;
 
+    protected $links;
+     */
 
     /**
      * statisticMail
      *
      * @var \RKW\RkwMailer\Domain\Model\StatisticMail
      * @cascade remove
-     */
-    protected $statisticMail;
 
+    protected $statisticMail;
+     */
 
     /**
      * statisticOpenings
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\StatisticOpening>
      * @cascade remove
-     */
-    protected $statisticOpenings;
 
+    protected $statisticOpenings;
+     */
 
     /**
      * fromName

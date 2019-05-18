@@ -828,17 +828,24 @@ class MailService
             $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, 0)->count();
             if ($recipientCount > 0) {
 
-                // create StatisticMail dataset */
-                /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-                $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
+                // create StatisticMail dataset if not already existing */
+                if (! $statisticMail  = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
+
+                    /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
+                    $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
+                }
+
                 $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
                 $statisticMail->setQueueMail($queueMail);
-                $this->statisticMailRepository->add($statisticMail);
+
+                if ($statisticMail->_isNew()) {
+                    $this->statisticMailRepository->add($statisticMail);
+                } else {
+                    $this->statisticMailRepository->update($statisticMail);
+                }
 
                 // set status to waiting so the email will be processed
                 $queueMail->setStatus(2);
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
 
                 // update and persist changes
                 $this->queueMailRepository->update($queueMail);
@@ -848,6 +855,8 @@ class MailService
 
                 // reset object
                 $this->unsetVariables();
+
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
 
                 return true;
                 //====
