@@ -69,9 +69,8 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwMailer\Domain\Model\QueueRecipient>
      * @cascade remove
-     */
     protected $queueRecipients;
-
+     */
 
     /**
      * links
@@ -290,7 +289,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
 
         // set objectStorages
-        $this->queueRecipients = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        //$this->queueRecipients = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->links = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->statisticOpenings = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
 
@@ -434,11 +433,12 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return void
      * @api
-     */
+
     public function addQueueRecipients(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
     {
         $this->queueRecipients->attach($queueRecipient);
     }
+     * */
 
     /**
      * Removes a queueRecipients
@@ -446,22 +446,23 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return void
      * @api
-     */
+
     public function removeQueueRecipients(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
     {
         $this->queueRecipients->detach($queueRecipient);
     }
+     */
 
     /**
      * Returns the queueRecipients
      *
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage An object storage containing the queueRecipients
      * @api
-     */
+
     public function getQueueRecipients()
     {
         return $this->queueRecipients;
-    }
+    }*/
 
     /**
      * Sets the queueRecipients.
@@ -469,12 +470,12 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients
      * @return void
      * @api
-     */
+
     public function setQueueRecipients(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $queueRecipients)
     {
         $this->queueRecipients = $queueRecipients;
     }
-
+     */
 
     /**
      * Adds a links

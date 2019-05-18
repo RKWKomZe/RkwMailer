@@ -36,6 +36,7 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuerecipient'] = array(
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuemail',
             ),
         ),
+
         'statistic_openings' => array(
             'exclude' => 0,
             'config' => array(

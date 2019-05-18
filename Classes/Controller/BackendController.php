@@ -239,7 +239,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // reset all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */
-        foreach ($queueMail->getQueueRecipients() as $recipient) {
+        foreach ($this->queueRecipientRepository->findByQueueMail($queueMail) as $recipient) {
             $recipient->setStatus(2);
             $this->queueRecipientRepository->update($recipient);
         }

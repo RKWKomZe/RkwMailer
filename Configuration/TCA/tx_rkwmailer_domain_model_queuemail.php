@@ -78,23 +78,7 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'type' => 'check',
             ),
         ),
-        'queue_recipients' => array(
-            'exclude' => false,
-            'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.queue_recipients',
-            'config' => array(
-                'type' => 'inline',
-                'internal_type' => 'db',
-                'foreign_table' => 'tx_rkwmailer_domain_model_queuerecipient',
-                'foreign_field' => 'queue_mail',
-                'show_thumbs' =>  true,
-                'minitems' => 1,
-                'maxitems' => 9999,
-                'size'  => 5,
-                'appearance' => array(
-                    'elementBrowserType' => 'db'
-                ),
-            )
-        ),
+
 		'from_name' => array(
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.from_name',
@@ -335,6 +319,24 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 			),
 		),
 
+        /*'queue_recipients' => array(
+            'exclude' => false,
+            'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.queue_recipients',
+            'config' => array(
+                'type' => 'inline',
+                'internal_type' => 'db',
+                'foreign_table' => 'tx_rkwmailer_domain_model_queuerecipient',
+                'foreign_field' => 'queue_mail',
+                'show_thumbs' =>  true,
+                'minitems' => 1,
+                'maxitems' => 9999,
+                'size'  => 5,
+                'appearance' => array(
+                    'elementBrowserType' => 'db'
+                ),
+            )
+        ), */
+
         'statistic_mail' => array(
             'exclude' => 0,
             'config' => array(
@@ -359,6 +361,8 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'foreign_field' => 'queue_mail'
             )
         ),
+
+
 		
 	),
 );
