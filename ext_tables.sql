@@ -166,5 +166,6 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
+    KEY email (email),
 
 );

@@ -100,7 +100,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findLastSentInMailingByEMail()
+    public function findAllLastBounced()
     {
 
         $query = $this->createQuery();
@@ -112,7 +112,11 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             AND tx_rkwmailer_domain_model_queuerecipient.status = 4
             AND tx_rkwmailer_domain_model_queuemail.status IN (3,4)
             AND tx_rkwmailer_domain_model_queuemail.type > 0
-            ORDER BY tx_rkwmailer_domain_model_queuerecipient.tstamp ' . \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING . '
+            AND tx_rkwmailer_domain_model_queuerecipient.tstamp = (
+              SELECT MAX(recipient_sub.tstamp) FROM tx_rkwmailer_domain_model_queuerecipient as recipient_sub WHERE
+              recipient_sub.status = 4 AND 
+              recipient_sub.email = tx_rkwmailer_domain_model_queuerecipient.email
+            )
         ');
 
 
