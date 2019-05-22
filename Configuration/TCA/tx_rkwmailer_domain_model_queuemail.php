@@ -319,54 +319,5 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 			),
 		),
 
-        /*'queue_recipients' => array(
-            'exclude' => false,
-            'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.queue_recipients',
-            'config' => array(
-                'type' => 'inline',
-                'internal_type' => 'db',
-                'foreign_table' => 'tx_rkwmailer_domain_model_queuerecipient',
-                'foreign_field' => 'queue_mail',
-                'show_thumbs' =>  true,
-                'minitems' => 1,
-                'maxitems' => 9999,
-                'size'  => 5,
-                'appearance' => array(
-                    'elementBrowserType' => 'db'
-                ),
-            )
-        ), */
-        /*
-        'statistic_mail' => array(
-            'exclude' => 0,
-            'config' => array(
-                'type' => 'passthrough',
-                'foreign_table' => 'tx_rkwmailer_domain_model_statisticmail',
-                'foreign_field' => 'queue_mail'
-            )
-        ),*/
-
-        /*
-        'statistic_openings' => array(
-            'exclude' => 0,
-            'config' => array(
-                'type' => 'passthrough',
-                'foreign_table' => 'tx_rkwmailer_domain_model_statisticopening',
-                'foreign_field' => 'queue_mail'
-            )
-        ),*/
-
-        /*
-        'links' => array(
-            'exclude' => 0,
-            'config' => array(
-                'type' => 'passthrough',
-                'foreign_table' => 'tx_rkwmailer_domain_model_link',
-                'foreign_field' => 'queue_mail'
-            )
-        ),*/
-
-
-		
 	),
 );

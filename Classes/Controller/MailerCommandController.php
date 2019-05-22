@@ -3,6 +3,7 @@
 namespace RKW\RkwMailer\Controller;
 
 use \RKW\RkwMailer\Validation\QueueMailValidator;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -290,6 +291,55 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Nothing to cleanup in database.');
             }
         }
+    }
+
+
+    /**
+     * Clean up for mailings
+     *
+     * @param string $username The username for the bounce-mail account
+     * @param string $password The password for the bounce-mail account
+     * @param string $host The host of the bounce-mail account
+     * @param bool $usePop3 Use POP3-Protocol instead of IMAP (default: false)
+     * @param int $port The port for the bounce-mail account (default: 143 - IMAP)
+     * @param string $tlsMode The connection mode for the bounce-mail account (none, tls, notls, ssl, etc.; default: notls)
+     * @param string $inboxName The name of the inbox (default: INBOX)
+     * @param string $deleteBefore If set, all mails before the given date will be deleted (format: yyyy-mm-dd)
+     * @param int $maxEmails
+     * @return void
+     */
+    public function analyseBounceMailCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
+    {
+
+        $params = [
+            'username' => $username,
+            'password' => $password,
+            'host' => $host,
+            'usePop3' => boolval($usePop3),
+            'port' => intval($port),
+            'tlsMode' => $tlsMode,
+            'inboxName' => $inboxName,
+            'deleteBefore' => $deleteBefore
+        ];
+
+        /** @var \RKW\RkwMailer\Utility\BounceMailUtility $mailService */
+        $bounceMailUtility = $this->objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
+        $bounceMailUtility->analyseMails($maxEmails);
+
+    }
+
+
+    /**
+     * Process bounced mails
+     *
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     */
+    public function processBouncedMailsCommand()
+    {
+
+        $this->queueRecipientRepository->findLastSentByEMail('k.grossheim@rkw.de');
+
     }
 
 

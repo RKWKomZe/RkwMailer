@@ -46,6 +46,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param integer $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     * @todo: Write Testing
      */
     public function findAllByQueueMailWithStatusWaiting(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail, $limit = 25)
     {
@@ -73,6 +74,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param int $uid
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return \\RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @todo: Write Testing
      */
     public function findOneByUidAndQueueMail($uid, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
@@ -84,6 +86,34 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 $query->equals('queueMail', intval($queueMail->getUid()))
             )
         );
+
+
+        return $query->execute()->getFirst();
+        //====
+    }
+
+
+
+    /**
+     *  findOneByUidAndQueueMail
+     *
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     */
+    public function findLastSentInMailingByEMail()
+    {
+
+        $query = $this->createQuery();
+        $query->statement('
+            SELECT * FROM tx_rkwmailer_domain_model_queuerecipient
+            LEFT JOIN tx_rkwmailer_domain_model_queuemail ON tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
+            LEFT JOIN tx_rkwmailer_domain_model_bouncemail ON tx_rkwmailer_domain_model_queuerecipient.email = tx_rkwmailer_domain_model_bouncemail.email
+            WHERE tx_rkwmailer_domain_model_bouncemail.type = "hard"
+            AND tx_rkwmailer_domain_model_queuerecipient.status = 4
+            AND tx_rkwmailer_domain_model_queuemail.status IN (3,4)
+            AND tx_rkwmailer_domain_model_queuemail.type > 0
+            ORDER BY tx_rkwmailer_domain_model_queuerecipient.tstamp ' . \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING . '
+        ');
 
 
         return $query->execute()->getFirst();

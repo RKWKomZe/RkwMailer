@@ -66,10 +66,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	status tinyint(2) unsigned DEFAULT '1',
 	language_code varchar(2) DEFAULT '' NOT NULL,
 
-	plaintext_body longtext NOT NULL,
-	html_body longtext NOT NULL,
-	calendar_body longtext NOT NULL,
-
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
@@ -139,6 +135,36 @@ CREATE TABLE tx_rkwmailer_domain_model_link (
 
 	PRIMARY KEY (uid),
     UNIQUE KEY `hash` (`hash`),
+	KEY parent (pid),
+
+);
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_bouncemail'
+#
+CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+
+	type varchar(255) DEFAULT '' NOT NULL,
+	email varchar(255) DEFAULT '' NOT NULL,
+	subject varchar(255) DEFAULT '' NOT NULL,
+
+	rule_number int(11) unsigned DEFAULT '0' NOT NULL,
+	rule_category varchar(255) DEFAULT '' NOT NULL,
+
+	header text NOT NULL,
+    body text NOT NULL,
+
+    header_full longtext NOT NULL,
+    body_full longtext NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
 	KEY parent (pid),
 
 );

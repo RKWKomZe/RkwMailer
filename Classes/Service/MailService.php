@@ -146,6 +146,15 @@ class MailService
 
 
     /**
+     * BounceMailRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
+     * @inject
+     */
+    protected $bounceMailRepository;
+
+
+    /**
      * QueueMailValidator
      *
      * @var \RKW\RkwMailer\Validation\QueueMailValidator
