@@ -51,7 +51,7 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
             $content = str_replace('{' . $key . '}', $value, $content);
 
             if ($contentBefore != $content) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('ViewHelperCache replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
             }
         }
 
@@ -71,7 +71,7 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected function getIdentifier(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
     {
-       return sha1(intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . $additionalIdentifier);
+       return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
        //===
     }
 

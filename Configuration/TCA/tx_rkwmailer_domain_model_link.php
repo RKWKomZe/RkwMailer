@@ -56,6 +56,7 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_link'] = array(
             ),
         ),
 
+        /*
         'statistic_openings' => array(
             'exclude' => 0,
             'config' => array(
@@ -64,5 +65,6 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_link'] = array(
                 'foreign_field' => 'link'
             )
         ),
+        */
 	),
 );

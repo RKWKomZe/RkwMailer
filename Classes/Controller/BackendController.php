@@ -239,27 +239,21 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // reset all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */
-        foreach ($queueMail->getQueueRecipients() as $recipient) {
+        foreach ($this->queueRecipientRepository->findByQueueMail($queueMail) as $recipient) {
             $recipient->setStatus(2);
             $this->queueRecipientRepository->update($recipient);
         }
 
         // reset statistics for mail
         /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        if ($statisticMail = $queueMail->getStatisticMail()) {
+        if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
             $statisticMail->setContactedCount(0);
             $statisticMail->setBouncesCount(0);
             $statisticMail->setErrorCount(0);
             $this->statisticMailRepository->update($statisticMail);
 
-            /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-            $objectStorage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-
             // reset statistics for openings
-            // @todo: loop through objectStorage does not work
             $this->statisticOpeningRepository->removeAllByQueueMail($queueMail);
-            $queueMail->setStatisticOpenings($objectStorage);
-            $this->queueMailRepository->update($queueMail);
         }
 
         $this->redirect('list');

@@ -54,7 +54,7 @@ class SetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
             $cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
             $cacheIdentifier = $this->getIdentifier($queueMail, $isPlaintext , $additionalIdentifier);
 
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting cache for identifier "%s".', $cacheIdentifier));
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting ViewHelperCache for identifier "%s".', $cacheIdentifier));
             $cacheManager->set(
                 $cacheIdentifier,
                 $value,

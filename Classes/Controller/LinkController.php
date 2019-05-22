@@ -172,12 +172,10 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
                 $statisticOpening = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\StatisticOpening');
                 $statisticOpening->setPixel(1);
                 $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
-
-                $queueMail->addStatisticOpenings($statisticOpening);
-                $queueRecipient->addStatisticOpenings($statisticOpening);
+                $statisticOpening->setQueueMail($queueMail);
+                $statisticOpening->setQueueRecipient($queueRecipient);
 
                 $this->statisticOpeningRepository->add($statisticOpening);
-                $this->queueMailRepository->update($queueMail);
                 $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Adding new statisticOpening for opening (queueMail uid=%s, queueRecipient uid=%s).', $queueMail->getUid(), $queueRecipient->getUid()));
 
 

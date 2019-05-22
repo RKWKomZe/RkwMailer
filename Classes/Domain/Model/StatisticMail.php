@@ -77,12 +77,12 @@ class StatisticMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-
+     */
     public function setQueueMail($queueMail)
     {
         $this->queueMail = $queueMail;
     }
-     */
+
 
     /**
      * Returns the totalCount

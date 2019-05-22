@@ -4,7 +4,7 @@
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>1</uid>
         <pid>1</pid>
-        <queue_mail>2</queue_mail>
+        <queue_mail>1</queue_mail>
         <frontend_user>0</frontend_user>
         <email>debuger@rkw.de</email>
         <first_name>Karl</first_name>
@@ -23,7 +23,7 @@
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>2</uid>
         <pid>1</pid>
-        <queue_mail>1</queue_mail>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
         <email>debuger@rkw.de</email>
         <first_name>Karl</first_name>
