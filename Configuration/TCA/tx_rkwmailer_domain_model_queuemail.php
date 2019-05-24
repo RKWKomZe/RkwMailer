@@ -318,6 +318,46 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 				),
 			),
 		),
+        'total' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'sent' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'successful' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'failed' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'deferred' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'bounced' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'opened' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
+        'clicked' => array(
+            'config' => array(
+                'type' => 'passthrough',
+            ),
+        ),
 
-	),
+    ),
 );

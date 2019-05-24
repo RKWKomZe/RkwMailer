@@ -27,6 +27,13 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 
     /**
+     * status
+     *
+     * @var string
+     */
+    protected $status;
+
+    /**
      * type
      *
      * @var string
@@ -95,6 +102,27 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $bodyFull;
 
 
+
+    /**
+     * Returns the status
+     *
+     * @return string $status
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Sets the status
+     *
+     * @param string $status
+     * @return void
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
 
 
     /**

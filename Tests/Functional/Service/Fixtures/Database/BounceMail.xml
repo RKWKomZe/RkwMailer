@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+
+    <tx_rkwmailer_domain_model_bouncemail>
+        <uid>1</uid>
+        <pid>1</pid>
+        <type>hard</type>
+        <email>bouncedMail@rkw.de</email>
+        <header />
+        <header_full />
+        <body />
+        <body_full />
+    </tx_rkwmailer_domain_model_bouncemail>
+
+
+</dataset>

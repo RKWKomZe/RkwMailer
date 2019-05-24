@@ -88,37 +88,29 @@
                 <source>Total mailings</source>
                 <target>Anzahl aller versendeten Mailings:</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.countMailingsByType">
-                <source>Total mailings by type</source>
-                <target>Anzahl aller versendeten Mailings nach Typ</target>
-            </trans-unit>
-            <trans-unit id="templates_backend_statistics.countMailsTotal">
+            <trans-unit id="templates_backend_statistics.mailsTotal">
                 <source>Sent e-mails</source>
                 <target>Gesendete E-Mails</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.readMailsTotal">
-                <source>Read e-mails (HTML only)</source>
-                <target>Gelesene E-Mails (HTML only)</target>
+            <trans-unit id="templates_backend_statistics.statusTotal">
+                <source><![CDATA[Status<br />(delivered / failed / deferred / bounced)]]></source>
+                <target><![CDATA[Status<br />(Zugestellt / Fehler / Zurückgestellt / Bounced)]]></target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.clicksOnLinksTotal">
+            <trans-unit id="templates_backend_statistics.readTotal">
+                <source><![CDATA[Read e-mails<br />(HTML only)]]></source>
+                <target><![CDATA[Gelesene E-Mails<br />(nur HTML)]]></target>
+            </trans-unit>
+            <trans-unit id="templates_backend_statistics.clicksTotal">
                 <source>Clicks</source>
                 <target>Anzahl Klicks</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.clickedLinksGroupedByRecipient">
-                <source>Clicking recipients</source>
-                <target>Klickende Empfänger</target>
-            </trans-unit>
-            <trans-unit id="templates_backend_statistics.uid">
+             <trans-unit id="templates_backend_statistics.uid">
                 <source>Id</source>
                 <target>Id</target>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.subject">
                 <source>Subject</source>
                 <target>Betreff</target>
-            </trans-unit>
-            <trans-unit id="templates_backend_statistics.linkList">
-                <source>Link list</source>
-                <target>Geklickte Links</target>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.status">
                 <source>Status</source>

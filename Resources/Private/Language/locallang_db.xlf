@@ -191,24 +191,6 @@
             </trans-unit>
 
 
-
-            <!-- =================================================== -->
-            <!-- tx_rkwmailer_domain_model_statisticmail             -->
-            <!-- =================================================== -->
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail">
-                <source>RKW Mailer: Statistic Mail</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.total_count">
-                <source>Recipient Count</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.contacted_count">
-                <source>Contacted Count</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.bounces_count">
-                <source>Bounces Count</source>
-            </trans-unit>
-
-
             <!-- =================================================== -->
             <!-- tx_rkwmailer_domain_model_statisticopening -->
             <!-- =================================================== -->
@@ -245,6 +227,15 @@
             <!-- =================================================== -->
             <trans-unit id="tx_rkwmailer_domain_model_bouncemail">
                 <source>RKW Mailer: Bounce-Mails</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status.I.new">
+                <source>New</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status.I.processed">
+                <source>Processed</source>
             </trans-unit>
             <trans-unit id="tx_rkwmailer_domain_model_bouncemail.type">
                 <source>Type</source>

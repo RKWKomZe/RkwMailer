@@ -61,6 +61,14 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $queueRecipientRepository;
 
+    /**
+     * bounceMailRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
+     * @inject
+     */
+    protected $bounceMailRepository;
+
 
     /**
      * configurationManager
@@ -319,10 +327,10 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             'port' => intval($port),
             'tlsMode' => $tlsMode,
             'inboxName' => $inboxName,
-            'deleteBefore' => $deleteBefore
+            'deleteBefore' => $deleteBefore,
         ];
 
-        /** @var \RKW\RkwMailer\Utility\BounceMailUtility $mailService */
+        /** @var \RKW\RkwMailer\Utility\BounceMailUtility $bounceMailUtility */
         $bounceMailUtility = $this->objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
         $bounceMailUtility->analyseMails($maxEmails);
 
@@ -333,12 +341,36 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * Process bounced mails
      *
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function processBouncedMailsCommand()
     {
 
-        $this->queueRecipientRepository->findLastSentByEMail('k.grossheim@rkw.de');
+        if ($bouncedRecipients = $this->queueRecipientRepository->findAllLastBounced()) {
+
+            /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+            foreach ($bouncedRecipients as $queueRecipient) {
+
+                // set status to bounced
+                $queueRecipient->setStatus(98);
+                $this->queueRecipientRepository->update($queueRecipient);
+
+                // set status of bounceMail to processed for all bounces of the same email-address
+                $bounceMails = $this->bounceMailRepository->findByEmail($queueRecipient->getEmail());
+
+                /** @var \RKW\RkwMailer\Domain\Model\BounceMail $bounceMail */
+                foreach ($bounceMails as $bounceMail) {
+                    $bounceMail->setStatus(1);
+                    $this->bounceMailRepository->update($bounceMail);
+                }
+
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Setting bounced status for queueRecipient id=%, email=%s.', $queueRecipient->getUid(), $queueRecipient->getEmail()));
+            }
+
+        } else {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, ('No bounced mails processed.'));
+        }
 
     }
 

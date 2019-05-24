@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+
+    <tx_rkwmailer_domain_model_statisticopening>
+        <uid>1</uid>
+        <pid>1</pid>
+        <queue_mail>1</queue_mail>
+        <queue_recipient>0</queue_recipient>
+        <link>1</link>
+        <pixel>0</pixel>
+        <click_count>2</click_count>
+    </tx_rkwmailer_domain_model_statisticopening>
+
+    <tx_rkwmailer_domain_model_statisticopening>
+        <uid>2</uid>
+        <pid>1</pid>
+        <queue_mail>1</queue_mail>
+        <queue_recipient>0</queue_recipient>
+        <link>1</link>
+        <pixel>0</pixel>
+        <click_count>1</click_count>
+    </tx_rkwmailer_domain_model_statisticopening>
+
+    <tx_rkwmailer_domain_model_statisticopening>
+        <uid>3</uid>
+        <pid>1</pid>
+        <queue_mail>1</queue_mail>
+        <queue_recipient>0</queue_recipient>
+        <link>1</link>
+        <pixel>1</pixel>
+        <click_count>4</click_count>
+    </tx_rkwmailer_domain_model_statisticopening>
+
+    <tx_rkwmailer_domain_model_statisticopening>
+        <uid>4</uid>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
+        <queue_recipient>0</queue_recipient>
+        <link>1</link>
+        <pixel>0</pixel>
+        <click_count>100</click_count>
+    </tx_rkwmailer_domain_model_statisticopening>
+
+
+
+</dataset>

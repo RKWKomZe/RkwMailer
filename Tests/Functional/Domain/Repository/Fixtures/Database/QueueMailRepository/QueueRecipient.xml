@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataset>
+
+    <!--  queueMail with wrong status -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>1</uid>
-        <pid>2</pid>
-        <queue_mail>0</queue_mail>
+        <pid>1</pid>
+        <queue_mail>1</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debug@rkw.de</email>
-        <first_name>Sebastian</first_name>
-        <last_name>Schmidt</last_name>
-        <subject>Betreff</subject>
-        <status>1</status>
+        <email>nothing@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>4</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
+    <!-- queueRecipients -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>2</uid>
-        <pid>2</pid>
-        <queue_mail>0</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger@rkw.de</email>
+        <email>recipient1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
-        <subject>Betreff</subject>
+        <subject>Betreff für Karl</subject>
         <status>1</status>
         <salutation>0</salutation>
         <title>Dr.</title>
@@ -32,16 +35,15 @@
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
-    <!-- testing for sending -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>3</uid>
-        <pid>2</pid>
-        <queue_mail>6</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger@rkw.de</email>
+        <email>recipient2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
-        <subject>Betreff</subject>
+        <subject>Betreff für Karl</subject>
         <status>2</status>
         <salutation>0</salutation>
         <title>Dr.</title>
@@ -49,17 +51,16 @@
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
-    <!-- two recipients for QueueMail 8  -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>4</uid>
-        <pid>2</pid>
-        <queue_mail>8</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger@rkw.de</email>
+        <email>recipient3@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
-        <subject>Betreff für dich</subject>
-        <status>2</status>
+        <subject>Betreff für Karl</subject>
+        <status>3</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -68,30 +69,13 @@
 
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>5</uid>
-        <pid>2</pid>
-        <queue_mail>8</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debüger1@rkw.de</email>
-        <first_name>Sabine</first_name>
-        <last_name>Hannebambel</last_name>
-        <subject>Betreff für mich</subject>
-        <status>2</status>
-        <salutation>0</salutation>
-        <title>Dr.</title>
-        <language_code>de</language_code>
-        <marker />
-    </tx_rkwmailer_domain_model_queuerecipient>
-
-    <!-- already sent status -->
-    <tx_rkwmailer_domain_model_queuerecipient>
-        <uid>6</uid>
-        <pid>2</pid>
-        <queue_mail>0</queue_mail>
-        <frontend_user>0</frontend_user>
-        <email>debuger1@rkw.de</email>
-        <first_name>Sabine</first_name>
-        <last_name>Hannebambel</last_name>
-        <subject>Betreff für mich</subject>
+        <email>recipient4@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
         <status>4</status>
         <salutation>0</salutation>
         <title>Dr.</title>
@@ -99,17 +83,32 @@
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
-    <!-- working queueRecipients with different settings -->
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>6</uid>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>recipient5@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>4</status>
+        <salutation>0</salutation>
+        <title>Dr.</title>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>7</uid>
-        <pid>2</pid>
-        <queue_mail>9</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger1@rkw.de</email>
-        <first_name>Sabine</first_name>
-        <last_name>Hannebambel</last_name>
-        <subject>Betreff für QueueRecipient</subject>
-        <status>2</status>
+        <email>recipient6@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>98</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -118,14 +117,14 @@
 
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>8</uid>
-        <pid>2</pid>
-        <queue_mail>9</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger1@rkw.de</email>
-        <first_name>Sabine</first_name>
-        <last_name>Hannebambel</last_name>
-        <subject />
-        <status>2</status>
+        <email>recipient7@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>98</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -134,14 +133,14 @@
 
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>9</uid>
-        <pid>2</pid>
-        <queue_mail>9</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger1@rkw.de</email>
-        <first_name />
-        <last_name />
-        <subject />
-        <status>2</status>
+        <email>recipient6@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für Karl</subject>
+        <status>97</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
@@ -150,53 +149,18 @@
 
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>10</uid>
-        <pid>2</pid>
-        <queue_mail>9</queue_mail>
+        <pid>1</pid>
+        <queue_mail>2</queue_mail>
         <frontend_user>0</frontend_user>
-        <email>debuger1@rkw.de</email>
-        <first_name />
-        <last_name>Hannebambel</last_name>
-        <subject />
-        <status>2</status>
-        <salutation>0</salutation>
-        <title>Dr.</title>
-        <language_code>de</language_code>
-        <marker />
-    </tx_rkwmailer_domain_model_queuerecipient>
-
-    <!-- queueRecipient with missing email - throws exception -->
-    <tx_rkwmailer_domain_model_queuerecipient>
-        <uid>11</uid>
-        <pid>2</pid>
-        <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
-        <email />
-        <first_name />
-        <last_name>Hannebambel</last_name>
-        <subject />
-        <status>2</status>
-        <salutation>0</salutation>
-        <title>Dr.</title>
-        <language_code>de</language_code>
-        <marker />
-    </tx_rkwmailer_domain_model_queuerecipient>
-
-    <!-- two recipients for QueueMail 10  -->
-    <tx_rkwmailer_domain_model_queuerecipient>
-        <uid>12</uid>
-        <pid>2</pid>
-        <queue_mail>10</queue_mail>
-        <frontend_user>0</frontend_user>
-        <email>bouncedMail@rkw.de</email>
+        <email>recipient8@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
-        <subject>Betreff für dich</subject>
-        <status>2</status>
+        <subject>Betreff für Karl</subject>
+        <status>99</status>
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
-
 
 </dataset>

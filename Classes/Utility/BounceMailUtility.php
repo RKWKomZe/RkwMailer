@@ -64,7 +64,14 @@ class BounceMailUtility
      */
     protected $bounceMailRepository;
 
-    
+
+    /**
+     * Logger
+     *
+     * @var \TYPO3\CMS\Core\Log\Logger
+     */
+    protected $logger;
+
 
     /**
      * BounceMailUtility constructor.
@@ -190,6 +197,7 @@ class BounceMailUtility
             $bounceMail->setBodyFull($bodyFull);
 
             $this->bounceMailRepository->add($bounceMail);
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Added bounceMail for email "%s".', $email));
 
         }
 
@@ -232,5 +240,23 @@ class BounceMailUtility
         $email = strtolower(str_ireplace('TO:<', '', $email));
 
     }
+
+
+    /**
+     * Returns logger instance
+     *
+     * @return \TYPO3\CMS\Core\Log\Logger
+     */
+    protected function getLogger()
+    {
+
+        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+        }
+
+        return $this->logger;
+        //===
+    }
+
 
 }

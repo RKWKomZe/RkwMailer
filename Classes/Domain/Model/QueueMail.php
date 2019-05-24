@@ -228,6 +228,68 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
     /**
+     * total
+     *
+     * @var integer
+     */
+    protected $total;
+
+
+    /**
+     * sent
+     *
+     * @var integer
+     */
+    protected $sent;
+
+
+    /**
+     * successful
+     *
+     * @var integer
+     */
+    protected $successful;
+
+
+    /**
+     * failed
+     *
+     * @var integer
+     */
+    protected $failed;
+
+    /**
+     * deferred
+     *
+     * @var integer
+     */
+    protected $deferred;
+
+    /**
+     * bounced
+     *
+     * @var integer
+     */
+    protected $bounced;
+
+
+    /**
+     * opened
+     *
+     * @var integer
+     */
+    protected $opened;
+
+
+    /**
+     * clicked
+     *
+     * @var integer
+     */
+    protected $clicked;
+
+
+    /**
      * settings
      *
      * @var array
@@ -1026,6 +1088,100 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->tstampSendFinish = $tstampSendFinish;
     }
+
+    /**
+     * Returns the total
+     *
+     * @return integer $total
+     */
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+
+    /**
+     * Returns the sent
+     *
+     * @return integer $sent
+     */
+    public function getSent()
+    {
+        return $this->sent;
+    }
+
+    
+    /**
+     * Returns the successful
+     *
+     * @return integer $successful
+     */
+    public function getSuccessful()
+    {
+        return $this->successful;
+    }
+
+
+    /**
+     * Returns the failed
+     *
+     * @return integer $failed
+     */
+    public function getFailed()
+    {
+        return $this->failed;
+    }
+
+
+    /**
+     * Returns the deferred
+     *
+     * @return integer $deferred
+     */
+    public function getDeferred()
+    {
+        return $this->deferred;
+    }
+
+
+    /**
+     * Returns the bounced
+     *
+     * @return integer $bounced
+     */
+    public function getBounced()
+    {
+        return $this->bounced;
+    }
+
+    
+    /**
+     * Returns the opened
+     *
+     * @return integer $opened
+     */
+    public function getOpened()
+    {
+        return $this->opened;
+    }
+
+    /**
+     * Returns the clicked
+     *
+     * @return integer $clicked
+     */
+    public function getClicked()
+    {
+        return $this->clicked;
+    }
+
+
+
+
+
+
+
+
 
 
     /**

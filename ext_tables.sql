@@ -74,27 +74,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
     KEY queue_mail_status (queue_mail,status)
 );
 
-#
-# Table structure for table 'tx_rkwmailer_domain_model_statisticmail'
-#
-CREATE TABLE tx_rkwmailer_domain_model_statisticmail (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
-	queue_mail int(11) DEFAULT '0' NOT NULL,
-	total_count int(11) DEFAULT '0' NOT NULL,
-	contacted_count int(11) DEFAULT '0' NOT NULL,
-	bounces_count int(11) DEFAULT '0' NOT NULL,
-	error_count int(11) DEFAULT '0' NOT NULL,
-
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-
-);
 
 #
 # Table structure for table 'tx_rkwmailer_domain_model_statisticopening'
@@ -148,6 +127,7 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 
+	status tinyint(3) unsigned DEFAULT '0' NOT NULL,
 	type varchar(255) DEFAULT '' NOT NULL,
 	email varchar(255) DEFAULT '' NOT NULL,
 	subject varchar(255) DEFAULT '' NOT NULL,

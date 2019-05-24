@@ -73,7 +73,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      *
      * @param int $uid
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return \\RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
      * @todo: Write Testing
      */
     public function findOneByUidAndQueueMail($uid, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
@@ -95,32 +95,35 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
 
     /**
-     *  findOneByUidAndQueueMail
+     * findAllLastBounced
      *
-     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
      */
     public function findAllLastBounced()
     {
 
         $query = $this->createQuery();
         $query->statement('
-            SELECT * FROM tx_rkwmailer_domain_model_queuerecipient
-            LEFT JOIN tx_rkwmailer_domain_model_queuemail ON tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-            LEFT JOIN tx_rkwmailer_domain_model_bouncemail ON tx_rkwmailer_domain_model_queuerecipient.email = tx_rkwmailer_domain_model_bouncemail.email
+            SELECT tx_rkwmailer_domain_model_queuerecipient.* FROM tx_rkwmailer_domain_model_queuerecipient
+            LEFT JOIN tx_rkwmailer_domain_model_queuemail 
+                ON tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
+            LEFT JOIN tx_rkwmailer_domain_model_bouncemail 
+                ON tx_rkwmailer_domain_model_queuerecipient.email = tx_rkwmailer_domain_model_bouncemail.email
+                AND tx_rkwmailer_domain_model_queuerecipient.crdate < tx_rkwmailer_domain_model_bouncemail.crdate
+                AND tx_rkwmailer_domain_model_bouncemail.status = 0
             WHERE tx_rkwmailer_domain_model_bouncemail.type = "hard"
             AND tx_rkwmailer_domain_model_queuerecipient.status = 4
             AND tx_rkwmailer_domain_model_queuemail.status IN (3,4)
             AND tx_rkwmailer_domain_model_queuemail.type > 0
             AND tx_rkwmailer_domain_model_queuerecipient.tstamp = (
-              SELECT MAX(recipient_sub.tstamp) FROM tx_rkwmailer_domain_model_queuerecipient as recipient_sub WHERE
-              recipient_sub.status = 4 AND 
-              recipient_sub.email = tx_rkwmailer_domain_model_queuerecipient.email
+                SELECT MAX(recipient_sub.tstamp) FROM tx_rkwmailer_domain_model_queuerecipient as recipient_sub WHERE
+                recipient_sub.status = 4 AND 
+                recipient_sub.email = tx_rkwmailer_domain_model_queuerecipient.email
             )
         ');
 
 
-        return $query->execute()->getFirst();
+        return $query->execute();
         //====
     }
 
