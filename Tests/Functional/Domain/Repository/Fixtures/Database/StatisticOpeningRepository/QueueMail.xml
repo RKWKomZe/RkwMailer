@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataset>
 
-    <!-- incomplete default address configuration - throws error -->
+    <!-- queueMail  -->
     <tx_rkwmailer_domain_model_queuemail>
         <uid>1</uid>
-        <pid>0</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
-        <from_address />
+        <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        <body_text />
+        <body_text>Fallback Body Text</body_text>
         <attachment />
         <campaign_parameter />
-        <plaintext_template />
-        <html_template />
-        <calendar_template />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
         <priority>0</priority>
         <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
+        <status>4</status>
+        <type>1</type>
+        <attachment />
         <attachment_type />
         <attachment_name />
         <layout_paths />
@@ -30,16 +31,16 @@
         <category />
     </tx_rkwmailer_domain_model_queuemail>
 
-    <!-- all templates set, uses root-page for configuration-->
+
     <tx_rkwmailer_domain_model_queuemail>
         <uid>2</uid>
-        <pid>0</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        <body_text />
+        <body_text>Fallback Body Text</body_text>
         <attachment />
         <campaign_parameter />
         <plaintext_template>Email/Test</plaintext_template>
@@ -47,8 +48,9 @@
         <calendar_template>Email/Test</calendar_template>
         <priority>0</priority>
         <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
+        <status>4</status>
+        <type>1</type>
+        <attachment />
         <attachment_type />
         <attachment_name />
         <layout_paths />
@@ -59,16 +61,15 @@
         <category />
     </tx_rkwmailer_domain_model_queuemail>
 
-    <!-- all templates set, uses sub-page for configuration -->
     <tx_rkwmailer_domain_model_queuemail>
         <uid>3</uid>
-        <pid>0</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        <body_text />
+        <body_text>Fallback Body Text</body_text>
         <attachment />
         <campaign_parameter />
         <plaintext_template>Email/Test</plaintext_template>
@@ -76,37 +77,38 @@
         <calendar_template>Email/Test</calendar_template>
         <priority>0</priority>
         <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
+        <status>4</status>
+        <type>1</type>
+        <attachment />
         <attachment_type />
         <attachment_name />
         <layout_paths />
         <partial_paths />
         <template_paths />
         <pipeline>0</pipeline>
-        <settings_pid>2</settings_pid>
+        <settings_pid>0</settings_pid>
         <category />
     </tx_rkwmailer_domain_model_queuemail>
 
-    <!-- no html template set, uses root-page for configuration-->
     <tx_rkwmailer_domain_model_queuemail>
         <uid>4</uid>
-        <pid>0</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        <body_text />
+        <body_text>Fallback Body Text</body_text>
         <attachment />
         <campaign_parameter />
         <plaintext_template>Email/Test</plaintext_template>
-        <html_template />
-        <calendar_template />
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
         <priority>0</priority>
         <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
+        <status>4</status>
+        <type>1</type>
+        <attachment />
         <attachment_type />
         <attachment_name />
         <layout_paths />
@@ -117,68 +119,38 @@
         <category />
     </tx_rkwmailer_domain_model_queuemail>
 
-        <!-- all templates set, uses root-page for configuration, but has wrong status-->
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>5</uid>
+        <pid>1</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text>Fallback Body Text</body_text>
+        <attachment />
+        <campaign_parameter />
+        <plaintext_template>Email/Test</plaintext_template>
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
+        <priority>0</priority>
+        <sorting>0</sorting>
+        <status>4</status>
+        <type>1</type>
+        <attachment />
+        <attachment_type />
+        <attachment_name />
+        <layout_paths />
+        <partial_paths />
+        <template_paths />
+        <pipeline>0</pipeline>
+        <settings_pid>0</settings_pid>
+        <category />
+    </tx_rkwmailer_domain_model_queuemail>
+
     <tx_rkwmailer_domain_model_queuemail>
         <uid>6</uid>
-        <pid>0</pid>
-        <from_name>Test</from_name>
-        <from_address>test@testen.de</from_address>
-        <reply_address>reply@testen.de</reply_address>
-        <return_path>return@testen.de</return_path>
-        <subject>Test</subject>
-        <body_text />
-        <attachment />
-        <campaign_parameter />
-        <plaintext_template>Email/Test</plaintext_template>
-        <html_template>Email/Test</html_template>
-        <calendar_template>Email/Test</calendar_template>
-        <priority>0</priority>
-        <sorting>0</sorting>
-        <status>0</status>
-        <type>0</type>
-        <attachment_type />
-        <attachment_name />
-        <layout_paths />
-        <partial_paths />
-        <template_paths />
-        <pipeline>0</pipeline>
-        <settings_pid>0</settings_pid>
-        <category />
-    </tx_rkwmailer_domain_model_queuemail>
-
-    <!-- all templates set, uses root-page for configuration, right status but has no recipients -->
-    <tx_rkwmailer_domain_model_queuemail>
-        <uid>7</uid>
-        <pid>0</pid>
-        <from_name>Test</from_name>
-        <from_address>test@testen.de</from_address>
-        <reply_address>reply@testen.de</reply_address>
-        <return_path>return@testen.de</return_path>
-        <subject>Test</subject>
-        <body_text />
-        <attachment />
-        <campaign_parameter />
-        <plaintext_template>Email/Test</plaintext_template>
-        <html_template>Email/Test</html_template>
-        <calendar_template>Email/Test</calendar_template>
-        <priority>0</priority>
-        <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
-        <attachment_type />
-        <attachment_name />
-        <layout_paths />
-        <partial_paths />
-        <template_paths />
-        <pipeline>0</pipeline>
-        <settings_pid>0</settings_pid>
-        <category />
-    </tx_rkwmailer_domain_model_queuemail>
-
-    <!-- all templates set, uses root-page for configuration, right status and two recipients -->
-    <tx_rkwmailer_domain_model_queuemail>
-        <uid>8</uid>
-        <pid>2</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
@@ -192,68 +164,8 @@
         <calendar_template>Email/Test</calendar_template>
         <priority>0</priority>
         <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
-        <attachment />
-        <attachment_type />
-        <attachment_name />
-        <layout_paths />
-        <partial_paths />
-        <template_paths />
-        <pipeline>0</pipeline>
-        <settings_pid>0</settings_pid>
-        <category />
-    </tx_rkwmailer_domain_model_queuemail>
-
-    <!-- no templates set, uses root-page for configuration and has right status -->
-    <tx_rkwmailer_domain_model_queuemail>
-        <uid>9</uid>
-        <pid>0</pid>
-        <from_name>Test</from_name>
-        <from_address>test@testen.de</from_address>
-        <reply_address>reply@testen.de</reply_address>
-        <return_path>return@testen.de</return_path>
-        <subject>Testbetreff der QueueMail</subject>
-        <body_text>Fallback Body Text</body_text>
-        <attachment />
-        <campaign_parameter />
-        <plaintext_template />
-        <html_template />
-        <calendar_template />
-        <priority>1</priority>
-        <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
-        <attachment />
-        <attachment_type />
-        <attachment_name />
-        <layout_paths />
-        <partial_paths />
-        <template_paths />
-        <pipeline>0</pipeline>
-        <settings_pid>0</settings_pid>
-        <category />
-    </tx_rkwmailer_domain_model_queuemail>
-
-    <!-- all templates set, uses root-page for configuration, right status and two recipients, one bounced -->
-    <tx_rkwmailer_domain_model_queuemail>
-        <uid>10</uid>
-        <pid>2</pid>
-        <from_name>Test</from_name>
-        <from_address>test@testen.de</from_address>
-        <reply_address>reply@testen.de</reply_address>
-        <return_path>return@testen.de</return_path>
-        <subject>Test</subject>
-        <body_text>Fallback Body Text</body_text>
-        <attachment />
-        <campaign_parameter />
-        <plaintext_template>Email/Test</plaintext_template>
-        <html_template>Email/Test</html_template>
-        <calendar_template>Email/Test</calendar_template>
-        <priority>0</priority>
-        <sorting>0</sorting>
-        <status>1</status>
-        <type>0</type>
+        <status>4</status>
+        <type>1</type>
         <attachment />
         <attachment_type />
         <attachment_name />

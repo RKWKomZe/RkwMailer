@@ -33,4 +33,32 @@ class LinkRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
 
+
+
+
+    /**
+     * findAllLastBounced
+     *
+     * @param
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     */
+    public function findAllWithStatistics()
+    {
+
+        // SELECT SUM(`click_count`) FROM `tx_rkwmailer_domain_model_statisticopening` WHERE link = 4
+
+        $query = $this->createQuery();
+        $query->statement('
+            SELECT tx_rkwmailer_domain_model_link.url, SUM(click_count) FROM tx_rkwmailer_domain_model_statisticopening 
+            LEFT JOIN tx_rkwmailer_domain_model_link
+                ON tx_rkwmailer_domain_model_link.uid = tx_rkwmailer_domain_model_statisticopening.link
+            WHERE tx_rkwmailer_domain_model_statisticopening.pixel = 0
+            GROUP BY tx_rkwmailer_domain_model_statisticopening.link
+        ');
+
+
+        return $query->execute();
+        //====
+    }
+
 }

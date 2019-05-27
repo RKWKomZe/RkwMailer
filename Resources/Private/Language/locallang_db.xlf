@@ -168,6 +168,12 @@
             <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.sent">
                 <source>Sent</source>
             </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.deferred">
+                <source>Deferred</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.bounce">
+                <source>Bounced</source>
+            </trans-unit>
             <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.status.I.error">
                 <source>Error</source>
             </trans-unit>
@@ -182,24 +188,6 @@
             </trans-unit>
             <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.calendar_body">
                 <source>Calendar- Part</source>
-            </trans-unit>
-
-
-
-            <!-- =================================================== -->
-            <!-- tx_rkwmailer_domain_model_statisticmail             -->
-            <!-- =================================================== -->
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail">
-                <source>RKW Mailer: Statistic Mail</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.total_count">
-                <source>Recipient Count</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.contacted_count">
-                <source>Contacted Count</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticmail.bounces_count">
-                <source>Bounces Count</source>
             </trans-unit>
 
 
@@ -231,6 +219,50 @@
             </trans-unit>
             <trans-unit id="tx_rkwmailer_domain_model_link.url">
                 <source>Url</source>
+            </trans-unit>
+
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_bouncemail                -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail">
+                <source>RKW Mailer: Bounce-Mails</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status.I.new">
+                <source>New</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.status.I.processed">
+                <source>Processed</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.type">
+                <source>Type</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.email">
+                <source>E-Mail</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.subject">
+                <source>Subject</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.rule_number">
+                <source>Rule Number</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.rule_category">
+                <source>Rule Category</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.header">
+                <source>Header</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.body">
+                <source>Body</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.header_full">
+                <source>Full Header</source>
+            </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_bouncemail.body_full">
+                <source>Full Body</source>
             </trans-unit>
 
 

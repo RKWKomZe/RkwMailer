@@ -21,7 +21,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Domain\Repository\StatisticMailRepository;
+use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
 use RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwMailer\Validation\QueueRecipientValidator;
 
@@ -137,12 +137,12 @@ class MailService
 
 
     /**
-     * StatisticMailRepository
+     * BounceMailRepository
      *
-     * @var \RKW\RkwMailer\Domain\Repository\StatisticMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
      * @inject
      */
-    protected $statisticMailRepository;
+    protected $bounceMailRepository;
 
 
     /**
@@ -224,8 +224,8 @@ class MailService
         if (!$this->queueRecipientRepository) {
             $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
         }
-        if (!$this->statisticMailRepository) {
-            $this->statisticMailRepository = $this->objectManager->get(StatisticMailRepository::class);
+        if (!$this->bounceMailRepository) {
+            $this->bounceMailRepository = $this->objectManager->get(BounceMailRepository::class);
         }
         if (!$this->queueMailValidator) {
             $this->queueMailValidator = $this->objectManager->get(QueueMailValidator::class);
@@ -564,11 +564,6 @@ class MailService
             // set queueMail
             $queueRecipient->setQueueMail($queueMail);
 
-            if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
-                $statisticMail->setTotalCount($statisticMail->getTotalCount() + 1);
-                $this->statisticMailRepository->update($statisticMail);
-            }
-
             // update, add and persist
             $this->queueRecipientRepository->add($queueRecipient);
             $this->persistenceManager->persistAll();
@@ -828,22 +823,6 @@ class MailService
             $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, 0)->count();
             if ($recipientCount > 0) {
 
-                // create StatisticMail dataset if not already existing */
-                if (! $statisticMail  = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
-
-                    /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-                    $statisticMail = $this->objectManager->get('RKW\\RkwMailer\\Domain\\Model\\StatisticMail');
-                }
-
-                $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
-                $statisticMail->setQueueMail($queueMail);
-
-                if ($statisticMail->_isNew()) {
-                    $this->statisticMailRepository->add($statisticMail);
-                } else {
-                    $this->statisticMailRepository->update($statisticMail);
-                }
-
                 // set status to waiting so the email will be processed
                 $queueMail->setStatus(2);
 
@@ -899,9 +878,6 @@ class MailService
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->getQueueMail();
 
-        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail);
-
         // validate queueMail
         if (!$this->queueMailValidator->validate($queueMail)) {
             throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('Invalid or missing data in queueMail-object.', 1438249330);
@@ -918,53 +894,48 @@ class MailService
             //===
         }
 
-        // validate statisticMail
-        if (! $statisticMail) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceException(sprintf('No statisticMail object set for queueMail with uid=%s', $queueMail->getUid()), 1552483654);
-            //===
+
+        // check if email of recipient has bounced recently
+        if (! $this->bounceMailRepository->findOneByEmail($queueRecipient->getEmail())) {
+
+            // render templates
+            $this->renderTemplates($queueRecipient);
+
+            // try to send message
+            try {
+
+                /** @var  \TYPO3\CMS\Core\Mail\MailMessage $message */
+                $message = $this->prepareEmailForRecipient($queueRecipient);
+                $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array(&$queueMail, &$queueRecipient));
+
+                $message->send();
+                $status = true;
+
+                // set recipient status 4 for "sent" and remove marker
+                $queueRecipient->setStatus(4);
+
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
+
+
+            } catch (\Exception $e) {
+
+                $status = false;
+                $errorMessage = str_replace(array("\n", "\r"), '', $e->getMessage());
+
+                // set recipient status to error
+                $queueRecipient->setStatus(99);
+
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
+            }
+
+        } else {
+
+            // set status to deferred - we don't sent an email to this address again
+            $queueRecipient->setStatus(97);
         }
 
-
-        // render templates
-        $this->renderTemplates($queueRecipient);
-
-        // try to send message
-        try {
-
-            /** @var  \TYPO3\CMS\Core\Mail\MailMessage $message */
-            $message = $this->prepareEmailForRecipient($queueRecipient);
-            $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array(&$queueMail, &$queueRecipient));
-
-            $message->send();
-            $status = true;
-
-            // set recipient status 4 for "sent" and remove marker
-            $queueRecipient->setStatus(4);
-
-            // set counter for statistics
-            $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
-            $statisticMail->setContactedCount($statisticMail->getContactedCount() + 1);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
-
-
-        } catch (\Exception $e) {
-
-            $status = false;
-            $errorMessage = str_replace(array("\n", "\r"), '', $e->getMessage());
-
-            // set recipient status to error
-            $queueRecipient->setStatus(99);
-
-            // set counter for statistics
-            $statisticMail->setTotalCount($this->queueRecipientRepository->findByQueueMail($this->getQueueMail())->count());
-            $statisticMail->setErrorCount($statisticMail->getErrorCount() + 1);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
-        }
-
-
-        // User and statistics have to be updated no matter what!
+        // User has to be updated no matter what!
         $this->queueRecipientRepository->update($queueRecipient);
-        $this->statisticMailRepository->update($statisticMail);
 
         // persist
         $this->persistenceManager->persistAll();

@@ -27,13 +27,6 @@ namespace RKW\RkwMailer\Controller;
 class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 
-    /**
-     * statisticMailRepository
-     *
-     * @var \RKW\RkwMailer\Domain\Repository\StatisticMailRepository
-     * @inject
-     */
-    protected $statisticMailRepository;
 
     /**
      * statisticOpeningRepository
@@ -81,43 +74,8 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     public function statisticsAction($timeFrame = 0, $mailType = -1)
     {
 
-        $spaceOfTime = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
-
-        //===========================================
-        // Listings
-        //===========================================
-        // get mail statistics (order by mail_id)
-        $mailStatistics = $this->statisticMailRepository->findAllSentMails($spaceOfTime, $mailType);
-
-        //===========================================
-        // Counting
-        //===========================================
-        // 1. get mail-count group by mailType
-        $countMailsTotalByType = $this->queueMailRepository->countAllSentMailsGroupByType($spaceOfTime);
-
-        // 2. get link clicks per mail total
-        $mailClickCounts = array();
-        foreach ($mailStatistics as $statisticMail) {
-            $mailClickCounts[] = $this->statisticOpeningRepository->countAllClicksOnLinks($statisticMail, $spaceOfTime);
-        }
-
-        // 3. get all sendings which was opened by recipient per mail
-        $mailOpenedCounts = array();
-        foreach ($mailStatistics as $statisticMail) {
-            $mailOpenedCounts[] = $this->statisticOpeningRepository->countAllOpenedMails($statisticMail, $spaceOfTime);
-        }
-
-        // 4. get count of recipients which has click in mail
-        $recipientsWhichClickInMail = array();
-        foreach ($mailStatistics as $statisticMail) {
-            $recipientsWhichClickInMail[] = $this->statisticOpeningRepository->countAllRecipientsWhichClickInMail($statisticMail, $spaceOfTime);
-        }
-
-        // 5. get all links of mail ordered by clicks
-        $linkClicksInMail = array();
-        foreach ($mailStatistics as $statisticMail) {
-            $linkClicksInMail[] = $this->statisticOpeningRepository->findAllClicksByStatisticMail($statisticMail, $spaceOfTime);
-        }
+        $period = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
+        $sentMails = $this->queueMailRepository->findAllSentOrSendingWithStatistics($period['from'], $period['to'], $mailType);
 
         $mailTypeList = array();
         if (is_array($this->settings['types'])) {
@@ -127,20 +85,35 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->view->assignMultiple(
             array(
-                'countMailsTotal'            => intval(count($mailStatistics)),
-                'countMailsTotalByType'      => $countMailsTotalByType,
-                'sentMails'                  => $mailStatistics,
-                'mailStatistics'             => $mailStatistics->toArray(),
-                'mailClickCounts'            => $mailClickCounts,
-                'mailOpenedCounts'           => $mailOpenedCounts,
-                'recipientsWhichClickInMail' => $recipientsWhichClickInMail,
-                'linkClicksInMail'           => $linkClicksInMail,
-                'timeFrame'                  => $timeFrame,
-                'mailTypeList'               => $mailTypeList,
-                'mailType'                   => $mailType,
+                'sentMails' => $sentMails,
+                'sentMailListItem' => $sentMails,
+                'timeFrame' => $timeFrame,
+                'mailTypeList' => $mailTypeList,
+                'mailType' => $mailType,
             )
         );
     }
+
+
+    /**
+     * Shows clickStatistics
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     */
+    public function clickStatisticsAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    {
+
+        $clickedLinks = $this->statisticOpeningRepository->findByQueueMailWithStatistics($queueMail);
+        $this->view->assignMultiple(
+            array(
+                'clickedLinks' => $clickedLinks,
+                'queueMail' => $queueMail,
+            )
+        );
+    }
+
 
 
     /**
@@ -244,17 +217,9 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $this->queueRecipientRepository->update($recipient);
         }
 
-        // reset statistics for mail
-        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        if ($statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMail)) {
-            $statisticMail->setContactedCount(0);
-            $statisticMail->setBouncesCount(0);
-            $statisticMail->setErrorCount(0);
-            $this->statisticMailRepository->update($statisticMail);
 
-            // reset statistics for openings
-            $this->statisticOpeningRepository->removeAllByQueueMail($queueMail);
-        }
+        // reset statistics for openings
+        $this->statisticOpeningRepository->removeAllByQueueMail($queueMail);
 
         $this->redirect('list');
         //===
