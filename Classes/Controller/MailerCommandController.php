@@ -345,14 +345,15 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     /**
      * Process bounced mails
      *
+     * @param int $maxEmails
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
-    public function processBouncedMailsCommand()
+    public function processBouncedMailsCommand($maxMails = 100)
     {
         try {
-            if ($bouncedRecipients = $this->queueRecipientRepository->findAllLastBounced()) {
+            if ($bouncedRecipients = $this->queueRecipientRepository->findAllLastBounced($maxMails)) {
 
                 /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
                 foreach ($bouncedRecipients as $queueRecipient) {

@@ -97,9 +97,10 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     /**
      * findAllLastBounced
      *
+     * @param int $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
      */
-    public function findAllLastBounced()
+    public function findAllLastBounced($limit = 100)
     {
 
         $query = $this->createQuery();
@@ -120,6 +121,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 recipient_sub.status = 4 AND 
                 recipient_sub.email = tx_rkwmailer_domain_model_queuerecipient.email
             )
+            LIMIT ' . intval ($limit) . '
         ');
 
 
