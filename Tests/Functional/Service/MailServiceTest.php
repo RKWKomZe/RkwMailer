@@ -1845,7 +1845,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendToRecipientWithQueueRecipientInBounceMailsSetsQueueRecipientStatusToDeferredAndReturnsFalse()
+    public function sendToRecipientWithQueueRecipientOneTimeInBounceMailsSetsQueueRecipientStatusToSentAndReturnsTrue()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -1854,10 +1854,35 @@ class MailServiceTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(12);
-        static::assertFalse($this->subject->sendToRecipient($queueRecipient));
+        static::assertTrue($this->subject->sendToRecipient($queueRecipient));
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipientResult = $this->queueRecipientRepository->findByIdentifier(12);
+        static::assertEquals(4, $queueRecipientResult->getStatus());
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function sendToRecipientWithQueueRecipientThreeTimesInBounceMailsSetsQueueRecipientStatusToDeferredAndReturnsFalse()
+    {
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(11);
+        $this->subject->setQueueMail($queueMail);
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(13);
+        static::assertFalse($this->subject->sendToRecipient($queueRecipient));
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipientResult = $this->queueRecipientRepository->findByIdentifier(13);
         static::assertEquals(97, $queueRecipientResult->getStatus());
 
     }

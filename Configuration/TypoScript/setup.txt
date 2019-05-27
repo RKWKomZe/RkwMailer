@@ -35,9 +35,9 @@ module.tx_rkwmailer {
         basePathImages = {$module.tx_rkwmailer.settings.basePathImages}
         basePathLogo = {$module.tx_rkwmailer.settings.basePathLogo}
         types {
-            Message = 0
-            Newsletter = 1
-            Alert = 2
+            0 = Message
+            1 = Newsletter
+            2 = Alert
         }
     }
 }
