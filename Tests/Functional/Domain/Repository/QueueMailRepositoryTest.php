@@ -61,6 +61,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
     {
         parent::setUp();
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMailRepository/Pages.xml');
+        $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMailRepository/Link.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMailRepository/QueueMail.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMailRepository/QueueRecipient.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMailRepository/StatisticOpening.xml');
@@ -91,6 +92,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
         $result = $this->subject->findAllSentOrSendingWithStatistics();
 
         self::assertCount(2, $result->toArray());
+        self::assertEquals('2', $result->getFirst()->getUid());
         self::assertEquals('9', $result->getFirst()->getTotal());
         self::assertEquals('5', $result->getFirst()->getSent());
         self::assertEquals('2', $result->getFirst()->getSuccessful());

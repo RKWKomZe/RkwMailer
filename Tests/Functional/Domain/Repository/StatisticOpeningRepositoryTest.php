@@ -63,6 +63,8 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
      */
 
     private $objectManager = null;
+    
+    
     /**
      * Setup
      * @throws \Exception
@@ -96,26 +98,81 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllWithStatisticsIgnoresMailOpeningPixelAndClicksFromOtherQueueMails()
+    public function findByQueueMailWithStatisticsIgnoresMailOpeningPixel()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
 
-        $result = $this->subject->findAllWithStatistics($queueMail);
-        static::assertEquals(3, $result[0]['clicked']);
+        $result = $this->subject->findByQueueMailWithStatistics($queueMail);
+        static::assertCount(1, $result);
+        static::assertEquals(2, $result[0]['clicked']);
 
-        /*;
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $objectOne
-        $objectOne = $result[0];
 
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $objectTwo
-        $objectTwo = $result[1];
+    }
 
-        static::assertEquals(2, count($result));
-        static::assertEquals(8, $object);
-        static::assertEquals(9, $objectTwo->getUid());
-        */
+
+    /**
+     * @test
+     */
+    public function findByQueueMailWithStatisticsIgnoresOpeningsOfOtherQueueMails()
+    {
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(5);
+
+        $result = $this->subject->findByQueueMailWithStatistics($queueMail);
+        static::assertCount(1, $result);
+        static::assertEquals(4, $result[0]['clicked']);
+
+    }
+
+    /**
+     * @test
+     */
+    public function findByQueueMailWithStatisticsChecksIfLinkIsValidForQueueMail()
+    {
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailTwo */
+        $queueMailTwo = $this->queueMailRepository->findByIdentifier(3);
+
+
+        $result = $this->subject->findByQueueMailWithStatistics($queueMail);
+        static::assertEquals(4, $result[0]['clicked']);
+
+        $result = $this->subject->findByQueueMailWithStatistics($queueMailTwo);
+        static::assertCount(0, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findByQueueMailWithStatisticsGroupsResultByLinkId()
+    {
+
+        $fixture = [
+            0 => [
+                'url' => 'http://aprodi-projekt.de',
+                'clicked' => 10
+            ],
+            1 => [
+                'url' => 'http://aprodi-projekt.de/test',
+                'clicked' => 8
+            ],
+            2 => [
+                'url' => 'http://www.google.de',
+                'clicked' => 7
+            ],
+        ];
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(4);
+
+        $result = $this->subject->findByQueueMailWithStatistics($queueMail);
+        static::assertEquals($fixture, $result);
 
     }
 

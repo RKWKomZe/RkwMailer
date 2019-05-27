@@ -247,13 +247,17 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     WHERE tx_rkwmailer_domain_model_statisticopening.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
                     AND tx_rkwmailer_domain_model_statisticopening.pixel = 1
                 ) as opened,
-               (
-                    SELECT COUNT(tx_rkwmailer_domain_model_statisticopening.uid) FROM tx_rkwmailer_domain_model_statisticopening
-                    RIGHT JOIN tx_rkwmailer_domain_model_queuerecipient 
-                        ON tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_statisticopening.queue_mail
-                        AND tx_rkwmailer_domain_model_queuerecipient.uid = tx_rkwmailer_domain_model_statisticopening.queue_recipient
-                    WHERE tx_rkwmailer_domain_model_statisticopening.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_statisticopening.pixel = 0
+                (
+                    SELECT COUNT(clicks.link) FROM 
+                    (
+                        SELECT tx_rkwmailer_domain_model_statisticopening.queue_mail, tx_rkwmailer_domain_model_statisticopening.link FROM tx_rkwmailer_domain_model_statisticopening 
+                        RIGHT JOIN tx_rkwmailer_domain_model_link 
+                            ON tx_rkwmailer_domain_model_link.uid = tx_rkwmailer_domain_model_statisticopening.link  
+                        WHERE tx_rkwmailer_domain_model_statisticopening.pixel = 0   
+                        AND tx_rkwmailer_domain_model_statisticopening.queue_mail = tx_rkwmailer_domain_model_link.queue_mail
+                        GROUP BY tx_rkwmailer_domain_model_statisticopening.queue_mail, tx_rkwmailer_domain_model_statisticopening.link
+                    ) as clicks WHERE 
+                    clicks.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
                 ) as clicked                           
             FROM tx_rkwmailer_domain_model_queuemail
             WHERE tx_rkwmailer_domain_model_queuemail.status >= 3

@@ -36,7 +36,7 @@ class CalcPercentageViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
     {
 
         if ($total > 0) {
-            return round(($percentage / $total) * 100, 2) . ' %';
+            return round(($percentage / $total) * 100, 1) . ' %';
         }
 
         //===

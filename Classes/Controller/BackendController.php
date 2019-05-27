@@ -96,32 +96,20 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
 
     /**
-     * Shows statistics
+     * Shows clickStatistics
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function clickedLinksAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function clickStatisticsAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
 
-
-        $period = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
-        $sentMails = $this->queueMailRepository->findAllSentOrSendingWithStatistics($period['from'], $period['to'], $mailType);
-
-        $mailTypeList = array();
-        if (is_array($this->settings['types'])) {
-            foreach ($this->settings['types'] as $key => $value)
-                $mailTypeList[$value] = ucFirst($key);
-        }
-
+        $clickedLinks = $this->statisticOpeningRepository->findByQueueMailWithStatistics($queueMail);
         $this->view->assignMultiple(
             array(
-                'sentMails' => $sentMails,
-                'sentMailListItem' => $sentMails,
-                'timeFrame' => $timeFrame,
-                'mailTypeList' => $mailTypeList,
-                'mailType' => $mailType,
+                'clickedLinks' => $clickedLinks,
+                'queueMail' => $queueMail,
             )
         );
     }

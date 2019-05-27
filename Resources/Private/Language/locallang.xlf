@@ -83,7 +83,7 @@
                 <source><![CDATA[Read e-mails<br />(HTML only)]]></source>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.clicksTotal">
-                <source>Clicks</source>
+                <source>Clicked Links</source>
             </trans-unit>
              <trans-unit id="templates_backend_statistics.uid">
                 <source>Id</source>
@@ -100,34 +100,33 @@
             <trans-unit id="templates_backend_statistics.status.4">
                 <source>Send</source>
             </trans-unit>
-            <trans-unit id="templates_backend_list.status.99">
-                <source>Error</source>
-            </trans-unit>
             <trans-unit id="templates_backend_statistics.realSending">
                 <source>Started sending</source>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.endSending">
                 <source>Sending end</source>
             </trans-unit>
-            <trans-unit id="templates_backend_list.pause">
-                <source>Pause</source>
-            </trans-unit>
-            <trans-unit id="templates_backend_list.continue">
-                <source>Continue</source>
-            </trans-unit>
-            <trans-unit id="templates_backend_list.reset">
-                <source>Reset</source>
-            </trans-unit>
-            <trans-unit id="templates_backend_list.resetConfirm">
-                <source>Do you really want to reset the selected e-mail? This will also reset the statistics. ALl recipients will be contacted again.</source>
-            </trans-unit>
-            <trans-unit id="templates_backend_list.delete">
-                <source>Delete</source>
-            </trans-unit>
-            <trans-unit id="templates_backend_list.deleteConfirm">
-                <source>Do you really want to delete the selected e-mail? This will also delete the statistics. All redirect-links of this e-mail will stop working.</source>
+             <trans-unit id="templates_backend_statistics.clickStatistics">
+                <source>Click Statistics</source>
             </trans-unit>
 
+
+            <!-- =================================================== -->
+            <!-- Template : Templates/Backend/ClickStatistics        -->
+            <!-- =================================================== -->
+            <trans-unit id="templates_backend_clickstatistics.headline">
+                <source>Click Statistics</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_clickstatistics.url">
+                <source>Link</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_clickstatistics.clicks">
+                <source>Clicks</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_clickstatistics.back">
+                <source>Back to List</source>
+                <target>Zurück zur Liste</target>
+            </trans-unit>
 
 
             <!-- =================================================== -->
@@ -163,7 +162,27 @@
             <trans-unit id="templates_backend_list.endSending">
                 <source>Sending end</source>
             </trans-unit>
-
+            <trans-unit id="templates_backend_list.status.99">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.pause">
+                <source>Pause</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.continue">
+                <source>Continue</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.reset">
+                <source>Reset</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.resetConfirm">
+                <source>Do you really want to reset the selected e-mail? This will also reset the statistics. ALl recipients will be contacted again.</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.delete">
+                <source>Delete</source>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.deleteConfirm">
+                <source>Do you really want to delete the selected e-mail? This will also delete the statistics. All redirect-links of this e-mail will stop working.</source>
+            </trans-unit>
 
             <!-- =================================================== -->
             <!-- Messages from linkController                        -->

@@ -94,23 +94,24 @@ class StatisticOpeningRepository extends \TYPO3\CMS\Extbase\Persistence\Reposito
 
 
     /**
-     * findAllLastBounced
+     * findAllWithStatistics
      *
      * @param \RKW\RkwMailer\Domain\Model\Queuemail $queueMail
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
      */
-    public function findAllWithStatistics($queueMail)
+    public function findByQueueMailWithStatistics($queueMail)
     {
-
 
         $query = $this->createQuery();
         $query->statement('
-            SELECT tx_rkwmailer_domain_model_link.url, SUM(click_count) as clicked FROM tx_rkwmailer_domain_model_statisticopening 
-            LEFT JOIN tx_rkwmailer_domain_model_link 
+            SELECT tx_rkwmailer_domain_model_link.url as url, SUM(click_count) as clicked FROM tx_rkwmailer_domain_model_statisticopening 
+            RIGHT JOIN tx_rkwmailer_domain_model_link 
                 ON tx_rkwmailer_domain_model_link.uid = tx_rkwmailer_domain_model_statisticopening.link  
             WHERE tx_rkwmailer_domain_model_statisticopening.pixel = 0   
             AND tx_rkwmailer_domain_model_statisticopening.queue_mail = ' . intval($queueMail->getUid()) . '
-            GROUP BY tx_rkwmailer_domain_model_statisticopening.queue_mail, tx_rkwmailer_domain_model_statisticopening.link
+            AND tx_rkwmailer_domain_model_statisticopening.queue_mail = tx_rkwmailer_domain_model_link.queue_mail
+            GROUP BY tx_rkwmailer_domain_model_statisticopening.link
+            ORDER BY tx_rkwmailer_domain_model_link.url
         ');
 
 

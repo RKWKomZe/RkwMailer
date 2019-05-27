@@ -70,7 +70,7 @@
         <pid>1</pid>
         <queue_mail>2</queue_mail>
         <queue_recipient>5</queue_recipient>
-        <link>0</link>
+        <link>1</link>
         <pixel>0</pixel>>
         <click_count>1000</click_count>
     </tx_rkwmailer_domain_model_statisticopening>
