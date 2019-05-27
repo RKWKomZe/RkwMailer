@@ -34,78 +34,78 @@ class TimePeriodUtility
      * The given param is a numeric identifier between 0-8 which stands for some time period
      *
      * @param integer $timeFrame
-     * @return array $spaceOfTime
+     * @return array $period
      */
     public static function getTimePeriod($timeFrame = 0)
     {
 
-        $spaceOfTime = array();
+        $period = array();
 
         switch ($timeFrame) {
             case 0:
                 // complete
-                $spaceOfTime['from'] = mktime(0, 0, 0, date("m"), date("d"), date(1970));
-                $spaceOfTime['to'] = time();
+                $period['from'] = mktime(0, 0, 0, date("m"), date("d"), date(1970));
+                $period['to'] = time();
                 break;
             case 1:
                 // this month
-                $spaceOfTime['from'] = mktime(0, 0, 0, date("m"), date(1), date("Y"));
-                $spaceOfTime['to'] = time();
+                $period['from'] = mktime(0, 0, 0, date("m"), date(1), date("Y"));
+                $period['to'] = time();
                 break;
             case 2:
                 // last month
-                $spaceOfTime['from'] = mktime(0, 0, 0, date("m") - 1, date(1), date("Y"));
-                $spaceOfTime['to'] = strtotime('+1 month', $spaceOfTime['from']);
+                $period['from'] = mktime(0, 0, 0, date("m") - 1, date(1), date("Y"));
+                $period['to'] = strtotime('+1 month', $period['from']);
                 break;
             case 3:
                 // this quarter
-                $quarters = self::findOutQuarter();
-                $spaceOfTime['from'] = $quarters['this']['start'];
-                $spaceOfTime['to'] = $quarters['this']['end'];
+                $quarters = self::findQuarter();
+                $period['from'] = $quarters['this']['start'];
+                $period['to'] = $quarters['this']['end'];
                 break;
             case 4:
                 // last quarter
-                $quarters = self::findOutQuarter();
-                $spaceOfTime['from'] = $quarters['last']['start'];
-                $spaceOfTime['to'] = $quarters['last']['end'];
+                $quarters = self::findQuarter();
+                $period['from'] = $quarters['last']['start'];
+                $period['to'] = $quarters['last']['end'];
                 break;
             case 5:
                 // this half-year
-                $halfyear = self::findOutHalfYear();
-                $spaceOfTime['from'] = $halfyear['this']['start'];
-                $spaceOfTime['to'] = $halfyear['this']['end'];
+                $halfyear = self::findHalfYear();
+                $period['from'] = $halfyear['this']['start'];
+                $period['to'] = $halfyear['this']['end'];
                 break;
             case 6:
                 // last half-year
-                $halfyear = self::findOutHalfYear();
-                $spaceOfTime['from'] = $halfyear['last']['start'];
-                $spaceOfTime['to'] = $halfyear['last']['end'];
+                $halfyear = self::findHalfYear();
+                $period['from'] = $halfyear['last']['start'];
+                $period['to'] = $halfyear['last']['end'];
                 break;
             case 7:
                 // this year
-                $spaceOfTime['from'] = mktime(0, 0, 0, date(1), date(1), date("Y"));
-                $spaceOfTime['to'] = time();
+                $period['from'] = mktime(0, 0, 0, date(1), date(1), date("Y"));
+                $period['to'] = time();
                 break;
             case 8:
                 // last year
-                $spaceOfTime['from'] = mktime(0, 0, 0, date(1), date(1), date("Y") - 1);
-                $spaceOfTime['to'] = mktime(0, 0, 0, date(12), date(31), date("Y") - 1);
+                $period['from'] = mktime(0, 0, 0, date(1), date(1), date("Y") - 1);
+                $period['to'] = mktime(0, 0, 0, date(12), date(31), date("Y") - 1);
                 break;
         }
 
-        return $spaceOfTime;
+        return $period;
         //===
 
     }
 
 
     /**
-     * findOutQuarter
+     * findQuarter
      * get this quarter, then conclude last quarter
      *
      * @return array $quarters
      */
-    public static function findOutQuarter()
+    public static function findQuarter()
     {
 
         $quarters = array();
@@ -150,12 +150,12 @@ class TimePeriodUtility
 
 
     /**
-     * findOutHalfyear
+     * findHalfYear
      * get this halfyear, then conclude last halfyear
      *
      * @return array $quarters
      */
-    public static function findOutHalfYear()
+    public static function findHalfYear()
     {
 
         $halfYear = array();

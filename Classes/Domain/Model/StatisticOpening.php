@@ -16,7 +16,7 @@ namespace RKW\RkwMailer\Domain\Model;
  */
 
 /**
- * StatisticMail
+ * StatisticOpening
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>

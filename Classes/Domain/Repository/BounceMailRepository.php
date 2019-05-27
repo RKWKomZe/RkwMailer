@@ -1,7 +1,6 @@
 <?php
 
-namespace RKW\RkwMailer;
-
+namespace RKW\RkwMailer\Domain\Repository;
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -16,14 +15,21 @@ namespace RKW\RkwMailer;
  */
 
 /**
- * Class Exception
+ * BounceMailRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Exception extends \Exception
+class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
+
+    public function initializeObject()
+    {
+
+        $this->defaultQuerySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $this->defaultQuerySettings->setRespectStoragePage(false);
+    }
 
 }

@@ -14,9 +14,6 @@
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
-        <plaintext_body />
-        <html_body />
-        <calendar_body />
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
@@ -33,9 +30,6 @@
         <salutation>0</salutation>
         <title>Dr.</title>
         <language_code>de</language_code>
-        <plaintext_body />
-        <html_body />
-        <calendar_body />
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 </dataset>

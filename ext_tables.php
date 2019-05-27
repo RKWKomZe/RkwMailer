@@ -14,7 +14,7 @@ if (TYPO3_MODE === 'BE') {
 		'mailadministration',	// Submodule key
 		'',						// Position
 		array(
-			'Backend' => 'statistics, list, pause, continue, delete, reset',
+			'Backend' => 'statistics, clickStatistics, list, pause, continue, delete, reset',
 		),
 		array(
 			'access' => 'user,group',

@@ -88,37 +88,29 @@
                 <source>Total mailings</source>
                 <target>Anzahl aller versendeten Mailings:</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.countMailingsByType">
-                <source>Total mailings by type</source>
-                <target>Anzahl aller versendeten Mailings nach Typ</target>
-            </trans-unit>
-            <trans-unit id="templates_backend_statistics.countMailsTotal">
+            <trans-unit id="templates_backend_statistics.mailsTotal">
                 <source>Sent e-mails</source>
                 <target>Gesendete E-Mails</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.readMailsTotal">
-                <source>Read e-mails (HTML only)</source>
-                <target>Gelesene E-Mails (HTML only)</target>
+            <trans-unit id="templates_backend_statistics.statusTotal">
+                <source><![CDATA[Status<br />(delivered / failed / deferred / bounced)]]></source>
+                <target><![CDATA[Status<br />(Zugestellt / Fehler / Zurückgestellt / Bounced)]]></target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.clicksOnLinksTotal">
-                <source>Clicks</source>
-                <target>Anzahl Klicks</target>
+            <trans-unit id="templates_backend_statistics.readTotal">
+                <source><![CDATA[Read e-mails<br />(HTML only)]]></source>
+                <target><![CDATA[Gelesene E-Mails<br />(nur HTML)]]></target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.clickedLinksGroupedByRecipient">
-                <source>Clicking recipients</source>
-                <target>Klickende Empfänger</target>
+            <trans-unit id="templates_backend_statistics.clicksTotal">
+                <source>Clicked Links</source>
+                <target>Geklickte Links</target>
             </trans-unit>
-            <trans-unit id="templates_backend_statistics.uid">
+             <trans-unit id="templates_backend_statistics.uid">
                 <source>Id</source>
                 <target>Id</target>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.subject">
                 <source>Subject</source>
                 <target>Betreff</target>
-            </trans-unit>
-            <trans-unit id="templates_backend_statistics.linkList">
-                <source>Link list</source>
-                <target>Geklickte Links</target>
             </trans-unit>
             <trans-unit id="templates_backend_statistics.status">
                 <source>Status</source>
@@ -132,10 +124,6 @@
                 <source>Send</source>
                 <target>Gesendet</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.status.99">
-                <source>Error</source>
-                <target>Fehler</target>
-            </trans-unit>
             <trans-unit id="templates_backend_statistics.realSending">
                 <source>Started sending</source>
                 <target>Senden gestartet</target>
@@ -144,30 +132,32 @@
                 <source>Sending end</source>
                 <target>Senden beendet</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.pause">
-                <source>Pause</source>
-                <target>Pausieren</target>
+            <trans-unit id="templates_backend_statistics.clickStatistics">
+                <source>Click Statistics</source>
+                <target>Klick-Statistik</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.continue">
-                <source>Continue</source>
-                <target>Fortsetzen</target>
+
+
+            <!-- =================================================== -->
+            <!-- Template : Templates/Backend/ClickStatistics        -->
+            <!-- =================================================== -->
+            <trans-unit id="templates_backend_clickstatistics.headline">
+                <source>Click Statistics</source>
+                <target>Klick-Statistik</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.reset">
-                <source>Reset</source>
-                <target>Zurücksetzen</target>
+            <trans-unit id="templates_backend_clickstatistics.url">
+                <source>Link</source>
+                <target>Link</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.resetConfirm">
-                <source>Do you really want to reset the selected e-mail? This will also reset the statistics. ALl recipients will be contacted again.</source>
-                <target>Möchten Sie die ausgewählte E-Mail wirklich zurücksetzen? Dies setzt auch die Statistik für diese E-Mail zurück. Alle Empfänger werden erneut angeschrieben.</target>
+            <trans-unit id="templates_backend_clickstatistics.clicks">
+                <source>Clicks</source>
+                <target>Klicks</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.delete">
-                <source>Delete</source>
-                <target>Löschen</target>
+            <trans-unit id="templates_backend_clickstatistics.back">
+                <source>Back to List</source>
+                <target>Zurück zur Liste</target>
             </trans-unit>
-            <trans-unit id="templates_backend_list.deleteConfirm">
-                <source>Do you really want to delete the selected e-mail? This will also delete the statistics. All redirect-links of this e-mail will stop working.</source>
-                <target>Möchten Sie die ausgewählte E-Mail wirklich löschen? Dies löscht auch die Statistik für diese E-Mail. Alle Redirect-Links in dieser E-Mail werden damit ungültig.</target>
-            </trans-unit>
+
 
 
             <!-- =================================================== -->
@@ -213,7 +203,34 @@
                 <source>Sending end</source>
                 <target>Senden beendet</target>
             </trans-unit>
-
+            <trans-unit id="templates_backend_list.status.99">
+                <source>Error</source>
+                <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.pause">
+                <source>Pause</source>
+                <target>Pausieren</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.continue">
+                <source>Continue</source>
+                <target>Fortsetzen</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.reset">
+                <source>Reset</source>
+                <target>Zurücksetzen</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.resetConfirm">
+                <source>Do you really want to reset the selected e-mail? This will also reset the statistics. ALl recipients will be contacted again.</source>
+                <target>Möchten Sie die ausgewählte E-Mail wirklich zurücksetzen? Dies setzt auch die Statistik für diese E-Mail zurück. Alle Empfänger werden erneut angeschrieben.</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.delete">
+                <source>Delete</source>
+                <target>Löschen</target>
+            </trans-unit>
+            <trans-unit id="templates_backend_list.deleteConfirm">
+                <source>Do you really want to delete the selected e-mail? This will also delete the statistics. All redirect-links of this e-mail will stop working.</source>
+                <target>Möchten Sie die ausgewählte E-Mail wirklich löschen? Dies löscht auch die Statistik für diese E-Mail. Alle Redirect-Links in dieser E-Mail werden damit ungültig.</target>
+            </trans-unit>
 
             <!-- =================================================== -->
             <!-- Messages from linkController                        -->

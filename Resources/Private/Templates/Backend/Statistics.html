@@ -18,28 +18,13 @@ Otherwise your changes will be overwritten the next time you save the extension 
 
 	<f:form action="statistics" name="timeFrame">
 		<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>
-		<f:render partial="Backend/MailTypePicker" arguments="{mailTypeList:mailTypeList, mailType:mailType}"/>
+		<f:render partial="Backend/MailTypePicker" arguments="{queueMailTypeList:mailTypeList, mailType:mailType}"/>
 	</f:form>
 
-	<ul>
-		<li>
-			<f:translate key="templates_backend_statistics.countMailingsTotal" /> {countMailsTotal}
-		</li>
-		<!-- ========================================= -->
-		<li>
-			<f:translate key="templates_backend_statistics.countMailingsByType" /><br>
-			<ul>
-				<f:for each="{countMailsTotalByType}" as="countByType" key="type">
-					<li>
-                        <f:translate key="LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.{type}" />
-						<vh:ucfirst string='{typeName}' />: {countByType}
-					</li>
-				</f:for>
-			</ul>
-		</li>
-	</ul>
 
-	<f:be.widget.paginate objects="{sentMails}" as="sentMailListItem" configuration="{itemsPerPage: 25}">
+	<f:comment>
+		f:be.widget.paginate objects="{sentMails}" as="sentMailListItem" configuration="{itemsPerPage: 2}"
+	</f:comment>
 
 		<table class="tx_rkwmailer" border="1" >
 			<tr>
@@ -48,73 +33,135 @@ Otherwise your changes will be overwritten the next time you save the extension 
 				<th><f:translate key="templates_backend_statistics.status" /></th>
 				<th><f:translate key="templates_backend_statistics.realSending" /></th>
 				<th><f:translate key="templates_backend_statistics.endSending" /></th>
-				<th><f:translate key="templates_backend_statistics.countMailsTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.readMailsTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.clicksOnLinksTotal" /> / <f:translate key="templates_backend_statistics.clickedLinksGroupedByRecipient" /></th>
-				<th><f:translate key="templates_backend_statistics.linkList" /></th>
+				<th><f:translate key="templates_backend_statistics.mailsTotal" /></th>
+				<th><f:translate key="templates_backend_statistics.statusTotal" /></th>
+				<th><f:translate key="templates_backend_statistics.readTotal" /></th>
+				<th><f:translate key="templates_backend_statistics.clicksTotal" /></th>
+				<th>&nbsp;</th>
 			</tr>
 
-			<f:for each="{sentMailListItem}" as="mail" iteration="mailNumber">
+			<f:for each="{sentMailListItem}" as="queueMail" >
 				<tr>
 					<td>
-						{mail.queueMail.uid}
+						{queueMail.uid}
 					</td>
 					<td>
 						<strong>
-							<f:format.crop maxCharacters="250" respectWordBoundaries="FALSE">{mail.queueMail.subject}</f:format.crop>
+							<f:format.crop maxCharacters="250" respectWordBoundaries="false">{queueMail.subject}</f:format.crop>
 						</strong>
 					</td>
 					<td class="center">
-						<span class="status{mail.queueMail.status}">
-							<nobr><f:translate key="templates_backend_statistics.status.{mail.queueMail.status}" /></nobr>
+						<span class="status{queueMail.status}">
+							<nobr><f:translate key="templates_backend_statistics.status.{queueMail.status}" /></nobr>
 						</span>
 					</td>
 					<td class="center">
-						<f:if condition="{mail.queueMail.tstampRealSending}">
-							<nobr><f:format.date format="d.m.Y H:i">{mail.queueMail.tstampRealSending}</f:format.date></nobr>
+						<f:if condition="{queueMail.tstampRealSending}">
+							<nobr><f:format.date format="d.m.Y H:i">{queueMail.tstampRealSending}</f:format.date></nobr>
 						</f:if>
 					</td>
 					<td class="center">
-						<f:if condition="{mail.queueMail.tstampSendFinish}">
-							<nobr><f:format.date format="d.m.Y H:i">{mail.queueMail.tstampSendFinish}</f:format.date></nobr>
+						<f:if condition="{queueMail.tstampSendFinish}">
+							<nobr><f:format.date format="d.m.Y H:i">{queueMail.tstampSendFinish}</f:format.date></nobr>
 						</f:if>
 					</td>
 					<td class="center">
 						<nobr>
-							<span class="okay">
-								<vh:selectProperty property='contactedCount' objectList='{mailStatistics}' iterationNumber='{mailNumber.index}' />
+							<span class="sent">
+								{queueMail.sent}
 							</span> /
-							<span class="error">
-								<vh:selectProperty property='errorCount' objectList='{mailStatistics}' iterationNumber='{mailNumber.index}' />
-							</span> /
-							<strong>
-								<vh:selectProperty property='totalCount' objectList='{mailStatistics}' iterationNumber='{mailNumber.index}' />
-							</strong>
+							<span class="total">
+								{queueMail.total}
+							</span>
 						</nobr>
 					</td>
 					<td class="center">
-						<nobr>
-							<vh:iterateArray index='{mailNumber.index}' list='{mailOpenedCounts}' />
-							(= <vh:calcPercentage percentage='<vh:iterateArray index="{mailNumber.index}" list="{mailOpenedCounts}" />' total='<vh:selectProperty property="contactedCount" objectList="{mailStatistics}" iterationNumber="{mailNumber.index}" />' />)
-						</nobr>
+						<table>
+							<tr>
+								<td class="okay">
+									{queueMail.successful}
+								</td>
+								<td>
+									/
+								</td>
+								<td class="failed">
+									{queueMail.failed}
+								</td>
+								<td>
+									/
+								</td>
+								<td class="deferred">
+									{queueMail.deferred}
+								</td>
+								<td>
+									/
+								</td>
+								<td class="bounced">
+									{queueMail.bounced}
+								</td>
+							</tr>
+							<tr>
+								<td class="okay">
+									<vh:calcPercentage percentage="{queueMail.successful}" total="{queueMail.sent}" />
+								</td>
+								<td>
+									/
+								</td>
+								<td class="failed">
+									<vh:calcPercentage percentage="{queueMail.failed}" total="{queueMail.sent}" />
+								</td>
+								<td>
+									/
+								</td>
+								<td class="deferred">
+									<vh:calcPercentage percentage="{queueMail.deferred}" total="{queueMail.sent}" />
+								</td>
+								<td>
+									/
+								</td>
+								<td class="bounced">
+									<vh:calcPercentage percentage="{queueMail.bounced}" total="{queueMail.sent}" />
+								</td>
+							</tr>
+						</table>
 					</td>
 					<td class="center">
-						<nobr>
-							<vh:iterateArray index='{mailNumber.index}' list='{mailClickCounts}' /> /
-							<vh:iterateArray index='{mailNumber.index}' list='{recipientsWhichClickInMail}' />
-							(= <vh:calcPercentage percentage='<vh:iterateArray index="{mailNumber.index}" list="{recipientsWhichClickInMail}" />' total='<vh:selectProperty property="contactedCount" objectList="{mailStatistics}" iterationNumber="{mailNumber.index}" />' />)
-						</nobr>
+						<table>
+							<tr>
+								<td>
+									{queueMail.opened}
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<vh:calcPercentage percentage="{queueMail.opened}" total="{queueMail.successful}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td class="center">
+						<table>
+							<tr>
+								<td>
+									{queueMail.clicked}
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<vh:calcPercentage percentage="{queueMail.clicked}" total="{queueMail.successful}" />
+								</td>
+							</tr>
+						</table>
 					</td>
 					<td>
-						<f:for each="<vh:iterateArray index='{mailNumber.index}' list='{linkClicksInMail}' />" as="link" iteration="iterator">
-							<nobr>{iterator.cycle}. <f:link.external uri="{link.url}" target="_blank" title="{link.url}"><f:format.crop maxCharacters="30" respectWordBoundaries="FALSE">{link.url}</f:format.crop></f:link.external> ({link.count})</nobr><br/>
-						</f:for>
+						<f:link.action action="clickStatistics" arguments="{queueMail:queueMail}" class="link">&gt;&gt; <f:translate key="templates_backend_statistics.clickStatistics" /></f:link.action>
 					</td>
 				</tr>
 			</f:for>
-
 		</table>
 
-	</f:be.widget.paginate>
+	<f:comment>
+		/f:be.widget.paginate
+	</f:comment>
 
 </f:section>
