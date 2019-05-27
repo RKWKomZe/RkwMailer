@@ -262,6 +262,7 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             FROM tx_rkwmailer_domain_model_queuemail
             WHERE tx_rkwmailer_domain_model_queuemail.status >= 3
             ' . $whereClause . '
+            ORDER BY tx_rkwmailer_domain_model_queuemail.tstamp_real_sending DESC
         ');
 
 

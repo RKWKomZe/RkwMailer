@@ -896,7 +896,7 @@ class MailService
 
 
         // check if email of recipient has bounced recently
-        if (! $this->bounceMailRepository->findOneByEmail($queueRecipient->getEmail())) {
+        if ($this->bounceMailRepository->countByEmail($queueRecipient->getEmail()) < 3) {
 
             // render templates
             $this->renderTemplates($queueRecipient);

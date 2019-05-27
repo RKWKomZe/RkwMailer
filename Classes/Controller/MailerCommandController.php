@@ -303,7 +303,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
 
     /**
-     * Clean up for mailings
+     * Analyse bounced mails
      *
      * @param string $username The username for the bounce-mail account
      * @param string $password The password for the bounce-mail account
@@ -316,24 +316,29 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param int $maxEmails
      * @return void
      */
-    public function analyseBounceMailCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
+    public function analyseBouncedMailsCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
     {
 
-        $params = [
-            'username' => $username,
-            'password' => $password,
-            'host' => $host,
-            'usePop3' => boolval($usePop3),
-            'port' => intval($port),
-            'tlsMode' => $tlsMode,
-            'inboxName' => $inboxName,
-            'deleteBefore' => $deleteBefore,
-        ];
+        try {
 
-        /** @var \RKW\RkwMailer\Utility\BounceMailUtility $bounceMailUtility */
-        $bounceMailUtility = $this->objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
-        $bounceMailUtility->analyseMails($maxEmails);
+            $params = [
+                'username' => $username,
+                'password' => $password,
+                'host' => $host,
+                'usePop3' => boolval($usePop3),
+                'port' => intval($port),
+                'tlsMode' => $tlsMode,
+                'inboxName' => $inboxName,
+                'deleteBefore' => $deleteBefore,
+            ];
 
+            /** @var \RKW\RkwMailer\Utility\BounceMailUtility $bounceMailUtility */
+            $bounceMailUtility = $this->objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
+            $bounceMailUtility->analyseMails($maxEmails);
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+        }
     }
 
 
@@ -346,32 +351,35 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     public function processBouncedMailsCommand()
     {
+        try {
+            if ($bouncedRecipients = $this->queueRecipientRepository->findAllLastBounced()) {
 
-        if ($bouncedRecipients = $this->queueRecipientRepository->findAllLastBounced()) {
+                /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+                foreach ($bouncedRecipients as $queueRecipient) {
 
-            /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-            foreach ($bouncedRecipients as $queueRecipient) {
+                    // set status to bounced
+                    $queueRecipient->setStatus(98);
+                    $this->queueRecipientRepository->update($queueRecipient);
 
-                // set status to bounced
-                $queueRecipient->setStatus(98);
-                $this->queueRecipientRepository->update($queueRecipient);
+                    // set status of bounceMail to processed for all bounces of the same email-address
+                    $bounceMails = $this->bounceMailRepository->findByEmail($queueRecipient->getEmail());
 
-                // set status of bounceMail to processed for all bounces of the same email-address
-                $bounceMails = $this->bounceMailRepository->findByEmail($queueRecipient->getEmail());
+                    /** @var \RKW\RkwMailer\Domain\Model\BounceMail $bounceMail */
+                    foreach ($bounceMails as $bounceMail) {
+                        $bounceMail->setStatus(1);
+                        $this->bounceMailRepository->update($bounceMail);
+                    }
 
-                /** @var \RKW\RkwMailer\Domain\Model\BounceMail $bounceMail */
-                foreach ($bounceMails as $bounceMail) {
-                    $bounceMail->setStatus(1);
-                    $this->bounceMailRepository->update($bounceMail);
+                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Setting bounced status for queueRecipient id=%, email=%s.', $queueRecipient->getUid(), $queueRecipient->getEmail()));
                 }
 
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Setting bounced status for queueRecipient id=%, email=%s.', $queueRecipient->getUid(), $queueRecipient->getEmail()));
+            } else {
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, ('No bounced mails processed.'));
             }
 
-        } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, ('No bounced mails processed.'));
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to process bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
         }
-
     }
 
 

@@ -80,7 +80,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $mailTypeList = array();
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
-                $mailTypeList[$value] = ucFirst($key);
+                $mailTypeList[$key] = ucFirst($value);
         }
 
         $this->view->assignMultiple(
@@ -132,7 +132,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $mailTypeList = array();
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
-                $mailTypeList[$value] = ucFirst($key);
+                $mailTypeList[$key] = ucFirst($value);
         }
 
         $this->view->assignMultiple(

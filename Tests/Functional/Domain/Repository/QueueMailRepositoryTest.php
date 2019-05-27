@@ -92,15 +92,17 @@ class QueueMailRepositoryTest extends FunctionalTestCase
         $result = $this->subject->findAllSentOrSendingWithStatistics();
 
         self::assertCount(2, $result->toArray());
-        self::assertEquals('2', $result->getFirst()->getUid());
-        self::assertEquals('9', $result->getFirst()->getTotal());
-        self::assertEquals('5', $result->getFirst()->getSent());
-        self::assertEquals('2', $result->getFirst()->getSuccessful());
-        self::assertEquals('1', $result->getFirst()->getFailed());
-        self::assertEquals('1', $result->getFirst()->getDeferred());
-        self::assertEquals('2', $result->getFirst()->getBounced());
-        self::assertEquals('2', $result->getFirst()->getOpened());
-        self::assertEquals('1', $result->getFirst()->getClicked());
+
+        $resultAsArray = $result->toArray();
+        self::assertEquals('2', $resultAsArray[1]->getUid());
+        self::assertEquals('9', $resultAsArray[1]->getTotal());
+        self::assertEquals('5', $resultAsArray[1]->getSent());
+        self::assertEquals('2', $resultAsArray[1]->getSuccessful());
+        self::assertEquals('1', $resultAsArray[1]->getFailed());
+        self::assertEquals('1', $resultAsArray[1]->getDeferred());
+        self::assertEquals('2', $resultAsArray[1]->getBounced());
+        self::assertEquals('2', $resultAsArray[1]->getOpened());
+        self::assertEquals('1', $resultAsArray[1]->getClicked());
 
     }
 
