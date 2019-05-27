@@ -6,7 +6,6 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use RKW\RkwMailer\Service\MailService;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Domain\Repository\StatisticMailRepository;
 use RKW\RkwRegistration\Domain\Repository\FrontendUserRepository;
 use RKW\RkwRegistration\Domain\Repository\BackendUserRepository;
 
@@ -70,11 +69,6 @@ class MailServiceTest extends FunctionalTestCase
     private $queueRecipientRepository;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\StatisticMailRepository
-     */
-    private $statisticMailRepository;
-
-    /**
      * @var \RKW\RkwRegistration\Domain\Repository\BackendUserRepository
      */
     private $backendUserRepository;
@@ -106,7 +100,7 @@ class MailServiceTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/Database/Pages.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueMail.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueRecipient.xml');
-        $this->importDataSet(__DIR__ . '/Fixtures/Database/StatisticMail.xml');
+        $this->importDataSet(__DIR__ . '/Fixtures/Database/BounceMail.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/BeUsers.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/FeUsers.xml');
 
@@ -136,7 +130,6 @@ class MailServiceTest extends FunctionalTestCase
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
-        $this->statisticMailRepository = $this->objectManager->get(StatisticMailRepository::class);
         $this->frontendUserRepository = $this->objectManager->get(FrontendUserRepository::class);
         $this->backendUserRepository = $this->objectManager->get(BackendUserRepository::class);
 
@@ -880,6 +873,60 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
+    public function renderTemplatesGivenPersistentQueueRecipientWithCacheFlushLKeepsRenderedTemplatesWithinSameProcess()
+    {
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(2);
+        $this->subject->setQueueMail($queueMail);
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
+
+        // prepare marker
+        $abstractEntityOne = $this->queueMailRepository->findByIdentifier(1);
+        $abstractEntityTwo = $this->queueMailRepository->findByIdentifier(2);
+        $abstractEntityThree = $this->queueMailRepository->findByIdentifier(3);
+
+        /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
+        $objectStorage = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
+        $objectStorage->attach($abstractEntityTwo);
+        $objectStorage->attach($abstractEntityThree);
+
+        $marker = [
+            'test1' => $abstractEntityOne,
+            'test2' => $objectStorage,
+        ];
+
+        $queueRecipient->setMarker($this->subject->implodeMarker($marker));
+
+        // render template
+        $this->subject->renderTemplates($queueRecipient);
+
+        /** @var \RKW\RkwMailer\Cache\MailBodyCache $mailBodyCache */
+        $mailBodyCache = $this->objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');
+        $mailBodyCache->clearCache();
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientFinished */
+        $queueRecipientFinished = $this->queueRecipientRepository->findByIdentifier(1);
+        $htmlBody = $queueRecipientFinished->getHtmlBody();
+        $plaintextBody = $queueRecipientFinished->getPlaintextBody();
+        $calendarBody = $queueRecipientFinished->getCalendarBody();
+
+        static::assertNotEmpty($htmlBody);
+        static::assertNotEmpty($plaintextBody);
+        static::assertNotEmpty($calendarBody);
+
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
     public function renderTemplatesGivenPersistentQueueRecipientWithAlreadySetPlaintextDoesNotRenderPlaintextTemplate()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -982,6 +1029,10 @@ class MailServiceTest extends FunctionalTestCase
         static::assertContains('test2.0.uid: 2', $plaintextBody);
 
     }
+
+
+
+
 
     //=============================================
 
@@ -1326,7 +1377,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendWithQueueMailHavingRecipientsWithStatusTwoReturnsTrueAndSetsStatusAndAddsStatisticsWithCorrectTotalCount()
+    public function sendWithQueueMailHavingRecipientsWithStatusTwoReturnsTrueAndSetsStatus()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(8);
@@ -1336,11 +1387,6 @@ class MailServiceTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailUpdated */
         $queueMailUpdated = $this->queueMailRepository->findByIdentifier(8);
-
-        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail */
-        $statisticMail = $this->statisticMailRepository->findOneByQueueMail($queueMailUpdated);
-        static::assertNotNull($statisticMail);
-        static::assertEquals(2, $statisticMail->getTotalCount());
 
         static::assertEquals(2, $queueMailUpdated->getStatus());
     }
@@ -1791,7 +1837,6 @@ class MailServiceTest extends FunctionalTestCase
 
     }
 
-
     /**
      * @test
      * @throws \Exception
@@ -1800,19 +1845,24 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendToRecipientWithQueueRecipientWithoutStatisticMailThrowsException()
+    public function sendToRecipientWithQueueRecipientInBounceMailsSetsQueueRecipientStatusToDeferredAndReturnsFalse()
     {
 
-        static::expectException(\RKW\RkwMailer\Service\Exception\MailServiceException::class);
-
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(9);
+        $queueMail = $this->queueMailRepository->findByIdentifier(10);
         $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(10);
-        $this->subject->sendToRecipient($queueRecipient);
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(12);
+        static::assertFalse($this->subject->sendToRecipient($queueRecipient));
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipientResult = $this->queueRecipientRepository->findByIdentifier(12);
+        static::assertEquals(97, $queueRecipientResult->getStatus());
+
     }
+
+
 
     /**
      * @test
@@ -1822,7 +1872,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendToRecipientWithValidQueueRecipientSetsQueueRecipientStatusToSentAndAddsOneToContactStatisticCounterAndReturnsTrue()
+    public function sendToRecipientWithValidQueueRecipientSetsQueueRecipientStatusToSentAndReturnsTrue()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -1837,12 +1887,6 @@ class MailServiceTest extends FunctionalTestCase
         $queueRecipientResult = $this->queueRecipientRepository->findByIdentifier(4);
         static::assertEquals(4, $queueRecipientResult->getStatus());
 
-        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMailResult */
-        $statisticMailResult = $this->statisticMailRepository->findByIdentifier(2);
-        static::assertEquals(2, $statisticMailResult->getTotalCount());
-        static::assertEquals(1, $statisticMailResult->getContactedCount());
-        static::assertEquals(0, $statisticMailResult->getErrorCount());
-
     }
 
     /**
@@ -1853,7 +1897,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendToRecipientWithNonCompliantQueueRecipientSetsQueueRecipientStatusToErrorAndAddsOneToErrorStatisticCounterAndReturnsFalse()
+    public function sendToRecipientWithNonCompliantQueueRecipientSetsQueueRecipientStatusToErrorAndReturnsFalse()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -1867,12 +1911,6 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientResult */
         $queueRecipientResult = $this->queueRecipientRepository->findByIdentifier(5);
         static::assertEquals(99, $queueRecipientResult->getStatus());
-
-        /** @var \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMailResult */
-        $statisticMailResult = $this->statisticMailRepository->findByIdentifier(2);
-        static::assertEquals(2, $statisticMailResult->getTotalCount());
-        static::assertEquals(0, $statisticMailResult->getContactedCount());
-        static::assertEquals(1, $statisticMailResult->getErrorCount());
 
     }
 

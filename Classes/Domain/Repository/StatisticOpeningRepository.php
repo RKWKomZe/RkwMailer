@@ -92,123 +92,31 @@ class StatisticOpeningRepository extends \TYPO3\CMS\Extbase\Persistence\Reposito
     }
 
 
-    /**
-     * findAllClicksByQueueMail
-     *
-     * @param array $spaceOfTime
-     * @param \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail
-     * @return integer $openedMails
-     */
-    public function findAllClicksByStatisticMail(\RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail, $spaceOfTime = null)
-    {
-        $query = $this->createQuery();
 
+    /**
+     * findAllWithStatistics
+     *
+     * @param \RKW\RkwMailer\Domain\Model\Queuemail $queueMail
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     */
+    public function findByQueueMailWithStatistics($queueMail)
+    {
+
+        $query = $this->createQuery();
         $query->statement('
-            SELECT SUM(opening.click_count) AS count, link.url
-            FROM tx_rkwmailer_domain_model_statisticopening AS opening
-            LEFT JOIN tx_rkwmailer_domain_model_link AS link
-            ON link.uid = opening.link
-            WHERE opening.link > 0 and opening.queue_mail = ' . intval($statisticMail->getQueueMail()->getUid()) . '
-            AND opening.crdate >= ' . intval($spaceOfTime['from']) . '
-			AND opening.crdate <= ' . intval($spaceOfTime['to']) . '
-            GROUP BY opening.link
-            ORDER BY count DESC
+            SELECT tx_rkwmailer_domain_model_link.url as url, SUM(click_count) as clicked FROM tx_rkwmailer_domain_model_statisticopening 
+            RIGHT JOIN tx_rkwmailer_domain_model_link 
+                ON tx_rkwmailer_domain_model_link.uid = tx_rkwmailer_domain_model_statisticopening.link  
+            WHERE tx_rkwmailer_domain_model_statisticopening.pixel = 0   
+            AND tx_rkwmailer_domain_model_statisticopening.queue_mail = ' . intval($queueMail->getUid()) . '
+            AND tx_rkwmailer_domain_model_statisticopening.queue_mail = tx_rkwmailer_domain_model_link.queue_mail
+            GROUP BY tx_rkwmailer_domain_model_statisticopening.link
+            ORDER BY tx_rkwmailer_domain_model_link.url
         ');
 
+
         return $query->execute(true);
-        //===
-    }
-
-
-    /**
-     * countAllClicksOnLinksByMail
-     *
-     * @param array $spaceOfTime
-     * @param \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail
-     * @return integer
-     */
-    public function countAllClicksOnLinks($statisticMail, $spaceOfTime)
-    {
-
-        $query = $this->createQuery();
-
-        $query->statement("
-			SELECT SUM(click_count) AS clickCountTotal
-			FROM tx_rkwmailer_domain_model_statisticopening statisticopening
-			JOIN tx_rkwmailer_domain_model_queuemail queuemail ON queuemail.uid = statisticopening.queue_mail
-			WHERE (queuemail.status = 4 OR queuemail.status = 3)
-			AND queuemail.uid = " . intval($statisticMail->getQueueMail()->getUid()) . "
-			AND queuemail.tstamp_fav_sending >= " . intval($spaceOfTime['from']) . "
-			AND queuemail.tstamp_fav_sending <= " . intval($spaceOfTime['to']) . "
-			AND statisticopening.pixel = 0
-		");
-
-        $clicks = $query->execute(true);
-
-        if (!$clicks[0]['clickCountTotal']) {
-            $clicks = 0;
-        } else {
-            $clicks = $clicks[0]['clickCountTotal'];
-        }
-
-        return intval($clicks);
-        //===
-    }
-
-
-    /**
-     * countAllOpenedMails
-     *
-     * @param \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail
-     * @param array $spaceOfTime
-     * @return integer
-     */
-    public function countAllOpenedMails(\RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail, $spaceOfTime)
-    {
-
-        $query = $this->createQuery();
-        $query->statement("
-			SELECT *
-			FROM tx_rkwmailer_domain_model_statisticopening statisticopening
-			JOIN tx_rkwmailer_domain_model_queuemail queuemail ON queuemail.uid = statisticopening.queue_mail
-			WHERE (queuemail.status = 4 OR queuemail.status = 3)
-			AND queuemail.uid = " . intval($statisticMail->getQueueMail()->getUid()) . "
-			AND queuemail.tstamp_fav_sending >= " . intval($spaceOfTime['from']) . "
-			AND queuemail.tstamp_fav_sending <= " . intval($spaceOfTime['to']) . "
-			AND statisticopening.pixel = 1
-		");
-
-        return count($query->execute(true));
-        //===
-
-    }
-
-
-    /**
-     * countAllRecipientsWhichClickInMail
-     *
-     * @param \RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail
-     * @param array $spaceOfTime
-     * @return integer $recipientClickCount
-     */
-    public function countAllRecipientsWhichClickInMail(\RKW\RkwMailer\Domain\Model\StatisticMail $statisticMail, $spaceOfTime)
-    {
-
-        $query = $this->createQuery();
-        $query->statement("
-			SELECT *
-			FROM tx_rkwmailer_domain_model_statisticopening statisticopening
-			JOIN tx_rkwmailer_domain_model_queuemail queuemail ON queuemail.uid = statisticopening.queue_mail
-			WHERE (queuemail.status = 4 OR queuemail.status = 3)
-			AND queuemail.uid = " . intval($statisticMail->getQueueMail()->getUid()) . "
-			AND queuemail.tstamp_fav_sending >= " . intval($spaceOfTime['from']) . "
-			AND queuemail.tstamp_fav_sending <= " . intval($spaceOfTime['to']) . "
-			AND statisticopening.pixel = 0
-			GROUP BY statisticopening.queue_recipient
-		");
-
-        return count($query->execute(true));
-        //===
+        //====
     }
 
 
