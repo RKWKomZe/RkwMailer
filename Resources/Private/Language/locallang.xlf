@@ -109,6 +109,14 @@
              <trans-unit id="templates_backend_statistics.clickStatistics">
                 <source>Click Statistics</source>
             </trans-unit>
+             <trans-unit id="templates_backend_statistics.openClickStatistics">
+                <source>Open</source>
+            </trans-unit>
+             <trans-unit id="templates_backend_statistics.noClicks">
+                <source>none</source>
+            </trans-unit>
+
+
 
 
             <!-- =================================================== -->
