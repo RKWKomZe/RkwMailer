@@ -109,8 +109,8 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             LEFT JOIN tx_rkwmailer_domain_model_queuemail 
                 ON tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
             LEFT JOIN tx_rkwmailer_domain_model_bouncemail 
-                ON tx_rkwmailer_domain_model_queuerecipient.email = tx_rkwmailer_domain_model_bouncemail.email
-                AND tx_rkwmailer_domain_model_queuerecipient.crdate < tx_rkwmailer_domain_model_bouncemail.crdate
+                ON tx_rkwmailer_domain_model_bouncemail.email = tx_rkwmailer_domain_model_queuerecipient.email
+                AND tx_rkwmailer_domain_model_bouncemail.crdate > tx_rkwmailer_domain_model_queuerecipient.crdate
                 AND tx_rkwmailer_domain_model_bouncemail.status = 0
             WHERE tx_rkwmailer_domain_model_bouncemail.type = "hard"
             AND tx_rkwmailer_domain_model_queuerecipient.status = 4
