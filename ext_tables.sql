@@ -43,6 +43,8 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
+    KEY status (status),
+    KEY type (type)
 
 );
 
@@ -71,7 +73,11 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-    KEY queue_mail_status (queue_mail,status)
+    KEY email (email),
+    KEY status (status),
+    KEY queue_mail (queue_mail),
+    KEY queue_mail_status (queue_mail,status),
+
 );
 
 
@@ -94,6 +100,9 @@ CREATE TABLE tx_rkwmailer_domain_model_statisticopening (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+	KEY link (link),
+	KEY pixel (pixel),
 
 );
 
@@ -115,7 +124,7 @@ CREATE TABLE tx_rkwmailer_domain_model_link (
 	PRIMARY KEY (uid),
     UNIQUE KEY `hash` (`hash`),
 	KEY parent (pid),
-
+	KEY queue_mail (queue_mail),
 );
 
 
@@ -147,5 +156,7 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 	PRIMARY KEY (uid),
 	KEY parent (pid),
     KEY email (email),
+    KEY status (status),
+    KEY email_status (email, status),
 
 );
