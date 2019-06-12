@@ -198,13 +198,30 @@
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
-    <!-- recipient for QueueMail 11, bounced three times  -->
+    <!-- recipient for QueueMail 11, bounced three times soft -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>13</uid>
         <pid>2</pid>
         <queue_mail>11</queue_mail>
         <frontend_user>0</frontend_user>
         <email>bouncedMail1@rkw.de</email>
+        <first_name>Karl</first_name>
+        <last_name>Napp</last_name>
+        <subject>Betreff für dich</subject>
+        <status>2</status>
+        <salutation>0</salutation>
+        <title>Dr.</title>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <!-- recipient for QueueMail 12, bounced three times hard -->
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>14</uid>
+        <pid>2</pid>
+        <queue_mail>11</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>bouncedMail2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
         <subject>Betreff für dich</subject>
