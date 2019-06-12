@@ -37,7 +37,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
 				<th><f:translate key="templates_backend_statistics.statusTotal" /></th>
 				<th><f:translate key="templates_backend_statistics.readTotal" /></th>
 				<th><f:translate key="templates_backend_statistics.clicksTotal" /></th>
-				<th>&nbsp;</th>
+				<th><f:translate key="templates_backend_statistics.clickStatistics" /></th>
 			</tr>
 
 			<f:for each="{sentMailListItem}" as="queueMail" >
@@ -47,7 +47,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
 					</td>
 					<td>
 						<strong>
-							<span title="{queueMail.subject}"><f:format.crop maxCharacters="80" respectWordBoundaries="false">{queueMail.subject}</f:format.crop></span>
+							<span title="{queueMail.subject}"><f:format.crop maxCharacters="60" respectWordBoundaries="false">{queueMail.subject}</f:format.crop></span>
 						</strong>
 					</td>
 					<td class="center">
@@ -140,21 +140,18 @@ Otherwise your changes will be overwritten the next time you save the extension 
 						</table>
 					</td>
 					<td class="center">
-						<table>
-							<tr>
-								<td>
-									{queueMail.clicked}
-								</td>
-							</tr>
-							<tr>
-								<td>
-									&nbsp;
-								</td>
-							</tr>
-						</table>
+						{queueMail.clicked}
 					</td>
 					<td>
-						<f:link.action action="clickStatistics" arguments="{queueMail:queueMail}" class="link">&gt;&gt; <f:translate key="templates_backend_statistics.clickStatistics" /></f:link.action>
+						<f:if condition="{queueMail.clicked}">
+							<f:then>
+								<f:link.action action="clickStatistics" arguments="{queueMail:queueMail}" class="link">&gt;&gt; <f:translate key="templates_backend_statistics.openClickStatistics" /></f:link.action>
+
+							</f:then>
+							<f:else>
+								<f:translate key="templates_backend_statistics.noClicks" />
+							</f:else>
+						</f:if>
 					</td>
 				</tr>
 			</f:for>

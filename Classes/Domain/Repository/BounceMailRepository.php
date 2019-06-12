@@ -32,4 +32,26 @@ class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
 
+    /**
+     * Count bounces by email and type
+     *
+     * @param string $email
+     * @param string $type
+     * @return int
+     */
+    public function countByEmailAndType ($email, $type = 'hard')
+    {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('email', $email),
+                $query->equals('type', $type)
+                )
+        );
+
+        return $query->execute()->count();
+        //====
+    }
+
 }

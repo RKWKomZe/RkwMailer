@@ -69,7 +69,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * @param integer $timeFrame
      * @param integer $mailType
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function statisticsAction($timeFrame = 0, $mailType = -1)
     {
@@ -77,11 +76,12 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $period = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
         $sentMails = $this->queueMailRepository->findAllSentOrSendingWithStatistics($period['from'], $period['to'], $mailType);
 
-        $mailTypeList = array();
+        $mailTypeList = [];
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
                 $mailTypeList[$key] = ucFirst($value);
         }
+        asort($mailTypeList);
 
         $this->view->assignMultiple(
             array(
@@ -129,11 +129,12 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $spaceOfTime = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
 
-        $mailTypeList = array();
+        $mailTypeList = [];
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
                 $mailTypeList[$key] = ucFirst($value);
         }
+        asort($mailTypeList);
 
         $this->view->assignMultiple(
             array(

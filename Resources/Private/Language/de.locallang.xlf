@@ -136,6 +136,15 @@
                 <source>Click Statistics</source>
                 <target>Klick-Statistik</target>
             </trans-unit>
+             <trans-unit id="templates_backend_statistics.openClickStatistics">
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
+             <trans-unit id="templates_backend_statistics.noClicks">
+                <source>none</source>
+                <target>keine</target>
+            </trans-unit>
+
 
 
             <!-- =================================================== -->
