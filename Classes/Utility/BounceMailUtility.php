@@ -180,7 +180,8 @@ class BounceMailUtility
         $this->cleanupData($ruleNumber, $email, $type);
 
         if (
-             ($email)
+            ($email)
+            && ($type != 'none')
         ){
 
             /** @var \RKW\RkwMailer\Domain\Model\BounceMail $bounceMail */
