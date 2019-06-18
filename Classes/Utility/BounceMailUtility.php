@@ -109,7 +109,7 @@ class BounceMailUtility
         $this->bounceMailHandler->testMode = false;
         $this->bounceMailHandler->debugBodyRule  = false;
         $this->bounceMailHandler->debugDsnRule = false;
-        $this->bounceMailHandler->purgeUnprocessed = false;
+        $this->bounceMailHandler->purgeUnprocessed = true;
         $this->bounceMailHandler->disableDelete = false;
 
         // Mailbox login
