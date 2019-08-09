@@ -4,26 +4,26 @@
 
 <!-- PLAINTEXT -->
 <!-- No intend here !!! -->  
-<f:section name="Plaintext">
-<rkwMailer:frontend.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" />
+<f:section name="Plaintext"><rkwMailer:plaintextLineBreaks>
+<rkwMailer:frontend.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" />\n
 <rkwMailer:frontend.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
-
+\n\n
 <rkwMailer:frontend.replaceLinksRedirect queueMail="{queueMail}" queueRecipient="{queueRecipient}" isPlaintext="true" additionalParams="{queueMail.campaignParameterExploded}">
-	<a href="http://www.google.de">Testen</a>
-	<a href="http://www.google.de">Testen</a>
-	<a href="mailto:mail@steffenkroggel.de">Blalalal</a>
+	<a href="http://www.google.de">Testen</a>\n
+	<a href="http://www.google.de">Testen</a>\n
+	<a href="mailto:mail@steffenkroggel.de">Blalalal</a>\n
 </rkwMailer:frontend.replaceLinksRedirect>
-    
+\n\n
 <rkwMailer:frontend.rteLinks plaintextFormat="true" pageUid="{queueMailSettingsPid}">
     <f:format.html parseFuncTSPath="">
         Test from RTE <link test@rkw.de>E-mail</link>
     </f:format.html>
 </rkwMailer:frontend.rteLinks>
-
+\n\n
 Test with typolink: <rkwMailer:frontend.typolink parameter='http://www.google.de' pageUid='{queueMailSettingsPid}' />
-
+\n\n
 <rkwMailer:frontend.link action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="TRUE" pageUid="{pageUid}" queueMail="{queueMail}" queueRecipient="{queueRecipient}" additionalParams="{queueMail.campaignParameterExploded}"/>
-</f:section>
+</rkwMailer:plaintextLineBreaks></f:section>
 
 <!-- HTML -->
 <f:section name="Html">
