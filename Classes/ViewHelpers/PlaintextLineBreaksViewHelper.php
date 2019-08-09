@@ -56,6 +56,7 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 
             // set manual line breaks
             $value = str_replace('\n', "\n", $value);
+
         }
 
         return $value;
