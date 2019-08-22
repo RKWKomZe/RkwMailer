@@ -84,7 +84,7 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllLastBouncedReturnsExpectedResultList()
+    public function findAllLastBounced_GivenNothing_ReturnsExpectedResultList()
     {
 
         $result = $this->subject->findAllLastBounced()->toArray();

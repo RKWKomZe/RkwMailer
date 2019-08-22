@@ -54,7 +54,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesSubGivenExtbaseFrontendUserWithUsernameOnlySetsEmail()
+    public function setQueueRecipientPropertiesSub_GivenExtbaseFrontendUserWithUsernameOnly_SetsEmail()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -74,7 +74,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithUsernameAndEmailDoesNotUseUsername()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenExtbaseFrontendUserWithUsernameAndEmail_DoesNotUseUsername()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -94,7 +94,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithAllValuesSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenExtbaseFrontendUserWithAllValues_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -119,7 +119,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserWithAllValuesSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenRegistrationFrontendUserWithAllValues_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -154,7 +154,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenExtbaseFrontendUserWithAllValuesAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -187,7 +187,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserWithAllValuesAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenRegistrationFrontendUserWithAllValuesAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -229,7 +229,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenExtbaseFrontendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenExtbaseFrontendUserAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -261,7 +261,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByFrontendUserGivenRegistrationFrontendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByFrontendUser_GivenRegistrationFrontendUserAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -299,7 +299,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailOnlySetsEmail()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserWithEmailOnly_SetsEmail()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -320,7 +320,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndOneWordRealNameOnlySetsEmailAndLastName()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserWithEmailAndOneWordRealNameOnly_SetsEmailAndLastName()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -341,7 +341,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndTwoWordRealNameOnlySetsEmailAndFirstNameAndLastName()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserWithEmailAndTwoWordRealNameOnly_SetsEmailAndFirstNameAndLastName()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -362,7 +362,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithEmailAndThreeWordRealNameOnlySetsEmailAndFirstNameAndLastNameAndTitle()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserWithEmailAndThreeWordRealNameOnly_SetsEmailAndFirstNameAndLastNameAndTitle()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -386,7 +386,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserWithAllDataAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -413,7 +413,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenRegistrationBackendUserWithAllDataAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUser_GivenRegistrationBackendUserWithAllDataAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -445,7 +445,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenExtbaseBackendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUser_GivenExtbaseBackendUserAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
@@ -469,7 +469,7 @@ class MailServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function setQueueRecipientPropertiesByBackendUserGivenRegistrationBackendUserAndAdditionalDataSetsExpectedValues()
+    public function setQueueRecipientPropertiesByBackendUser_GivenRegistrationBackendUserAndGivenAdditionalData_SetsExpectedValues()
     {
         $queueRecipient = new \RKW\RkwMailer\Domain\Model\QueueRecipient();
         $fixture = new \RKW\RkwMailer\Domain\Model\QueueRecipient();

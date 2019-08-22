@@ -86,7 +86,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllSentWithStatisticsReturnsExpectedStatisticValues()
+    public function findAllSentWithStatistics_GivenNothing_ReturnsExpectedStatisticValues()
     {
 
         $result = $this->subject->findAllSentOrSendingWithStatistics();
@@ -110,7 +110,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllSentWithStatisticsGivenFromValueReturnsFilteredQueueMails()
+    public function findAllSentWithStatistics_GivenFromValue_ReturnsFilteredQueueMails()
     {
 
         $result = $this->subject->findAllSentOrSendingWithStatistics(1001);
@@ -121,7 +121,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllSentWithStatisticsGivenToValueReturnsFilteredQueueMails()
+    public function findAllSentWithStatistics_GivenToValue_ReturnsFilteredQueueMails()
     {
 
         $result = $this->subject->findAllSentOrSendingWithStatistics(0, 1999);
@@ -133,7 +133,7 @@ class QueueMailRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllSentWithStatisticsGivenTypeReturnsFilteredQueueMails()
+    public function findAllSentWithStatistics_GivenType_ReturnsFilteredQueueMails()
     {
 
         $result = $this->subject->findAllSentOrSendingWithStatistics(0, 0, 1);

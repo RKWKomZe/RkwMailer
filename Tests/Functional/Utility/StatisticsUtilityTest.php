@@ -135,7 +135,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndInvalidHashReturnsFalse()
+    public function getRedirectLink_GivenValidMailAndGivenInvalidHash_ReturnsFalse()
     {
         static::assertFalse($this->subject->getRedirectLink('abc', 1));
     }
@@ -143,7 +143,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithInValidMailAndValidHashReturnsLinkAndCreatesNoStatistic()
+    public function getRedirectLink_GivenInValidMailAndGivenValidHash_ReturnsLinkAndCreatesNoStatistic()
     {
         static::assertEquals(
             'http://aprodi-projekt.de',
@@ -159,7 +159,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidNonMatchingHashReturnsLinkAndCreatesNoStatistic()
+    public function getRedirectLink_GivenValidMailAndGivenValidNonMatchingHash_ReturnsLinkAndCreatesNoStatistic()
     {
         static::assertEquals(
             'http://aprodi-projekt.de',
@@ -175,7 +175,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidNonMatchingHashReturnsLinkWithAnchorAndCreatesNoStatistic()
+    public function getRedirectLink_GivenValidMailAndGivenValidNonMatchingHash_ReturnsLinkWithAnchorAndCreatesNoStatistic()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/#Anker-Link',
@@ -192,7 +192,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkAndCreatesStatisticWithCountOneForQueueMailGiven()
+    public function getRedirectLink_GivenValidMailAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de?tx_rkwmailer[mid]=2',
@@ -219,7 +219,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
+    public function getRedirectLink_GivenValidMailAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2#Anker-Link',
@@ -247,7 +247,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidMatchingHashForTrackedLinkReturnsLinkAndUpdatesStatisticWithCountTwoForQueueMailGiven()
+    public function getRedirect_GivenLinkWithValidMailAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2',
@@ -273,7 +273,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidNonMatchingHashReturnsLinkAndCreatesNoStatistic()
+    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidNonMatchingHash_ReturnsLinkAndCreatesNoStatistic()
     {
         static::assertEquals(
             'http://aprodi-projekt.de',
@@ -289,7 +289,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidNonMatchingHashReturnsLinkWithAnchorAndCreatesNoStatistic()
+    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidNonMatchingHash_ReturnsLinkWithAnchorAndCreatesNoStatistic()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/#Anker-Link',
@@ -306,7 +306,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidMatchingHashForUntrackedLinkReturnsLinkAndCreatesStatisticWithCountOne()
+    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkAndCreatesStatisticWithCountOne()
     {
         static::assertEquals(
             'http://aprodi-projekt.de?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1',
@@ -326,7 +326,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidMatchingHashForUntrackedLinkReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
+    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1#Anker-Link',
@@ -354,7 +354,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndValidRecipientAndValidMatchingHashForTrackedLinkReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesMailStatisticUnchanged()
+    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesMailStatisticUnchanged()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1',
@@ -379,7 +379,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLinkWithValidMailAndInValidRecipientAndValidMatchingHashForTrackedLinkReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesRecipientStatisticUnchanged()
+    public function getRedirectLink_GivenValidMailAndGivenInValidRecipientAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesRecipientStatisticUnchanged()
     {
         static::assertEquals(
             'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2',

@@ -98,7 +98,7 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByQueueMailWithStatisticsIgnoresMailOpeningPixel()
+    public function findByQueueMailWithStatistics_GivenQueueMail_IgnoresMailOpeningPixel()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -115,7 +115,7 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByQueueMailWithStatisticsIgnoresOpeningsOfOtherQueueMails()
+    public function findByQueueMailWithStatistics_GivenQueueMail_IgnoresOpeningsOfOtherQueueMails()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -130,7 +130,7 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByQueueMailWithStatisticsChecksIfLinkIsValidForQueueMail()
+    public function findByQueueMailWithStatistics_GivenQueueMail_ChecksIfLinkIsValidForQueueMail()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -150,7 +150,7 @@ class StatisticOpeningRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByQueueMailWithStatisticsGroupsResultByLinkId()
+    public function findByQueueMailWithStatistics_GivenQueueMail_GroupsResultByLinkId()
     {
 
         $fixture = [
