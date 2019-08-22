@@ -114,7 +114,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setPlaintextBodyAndGetPlaintextBodyWithSameQueueRecipientReturnsGivenString()
+    public function setPlaintextBodyAndGetPlaintextBody_UsingSameQueueRecipient_ReturnsGivenString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
@@ -127,7 +127,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setPlaintextBodyAndGetPlaintextBodyWithAnotherQueueRecipientReturnsEmptyString()
+    public function setPlaintextBodyAndGetPlaintextBody_UsingAnotherQueueRecipient_ReturnsEmptyString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
@@ -144,7 +144,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setHtmlBodyAndGetHtmlBodyWithSameQueueRecipientReturnsGivenString()
+    public function setHtmlBodyAndGetHtmlBody_UsingSameQueueRecipient_ReturnsGivenString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
@@ -157,7 +157,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setHtmlBodyAndGetHtmlBodyWithAnotherQueueRecipientReturnsEmptyString()
+    public function setHtmlBodyAndGetHtmlBody_UsingAnotherQueueRecipient_ReturnsEmptyString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
@@ -174,7 +174,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setCalendarBodyAndGetCalendarBodyWithSameQueueRecipientReturnsGivenString()
+    public function setCalendarBodyAndGetCalendarBody_UsingSameQueueRecipient_ReturnsGivenString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
@@ -187,7 +187,7 @@ class MailBodyCacheTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setCalendarBodyAndGetCalendarBodyWithAnotherQueueRecipientReturnsEmptyString()
+    public function setCalendarBodyAndGetCalendarBody_UsingAnotherQueueRecipient_ReturnsEmptyString()
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(1);
