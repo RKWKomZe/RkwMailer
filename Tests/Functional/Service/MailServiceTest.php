@@ -1344,7 +1344,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function sendW_UsingQueueMailHavingStatusUnequalOne_ReturnsFalse()
+    public function send_UsingQueueMailHavingStatusUnequalOne_ReturnsFalse()
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
