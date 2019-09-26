@@ -161,7 +161,7 @@ class MailService
      * @inject
      */
     protected $queueRecipientValidator = null;
-    
+
     /**
      * Signal-Slot Dispatcher
      *
@@ -197,7 +197,7 @@ class MailService
         if (! $unitTest) {
             $this->initializeService();
         }
-        
+
         self::debugTime(__LINE__, __METHOD__);
     }
 
@@ -895,8 +895,11 @@ class MailService
         }
 
 
-        // check if email of recipient has bounced recently
-        if ($this->bounceMailRepository->countByEmailAndType($queueRecipient->getEmail()) < 3) {
+        // check if email of recipient has bounced recently - but only for pipeline mailings
+        if (
+            ($this->bounceMailRepository->countByEmailAndType($queueRecipient->getEmail()) < 3)
+            || (! $this->queueMail->getPipeline())
+        ){
 
             // render templates
             $this->renderTemplates($queueRecipient);
@@ -932,6 +935,8 @@ class MailService
 
             // set status to deferred - we don't sent an email to this address again
             $queueRecipient->setStatus(97);
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('E-mail "%s" (recipient-uid=%s) blocked for further mailings because of bounces detected during processing of queueMail width uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
+
         }
 
         // User has to be updated no matter what!

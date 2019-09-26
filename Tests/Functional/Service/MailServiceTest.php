@@ -14,6 +14,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
+use \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -146,7 +148,6 @@ class MailServiceTest extends FunctionalTestCase
      */
     public function getQueueMail_ReturnsPersistedQueueMailWithDefaultValues ()
     {
-
         $queueMail = $this->subject->getQueueMail();
         static::assertEquals($queueMail->getPid(), 9999);
         static::assertEquals($queueMail->getStatus(), 1);
