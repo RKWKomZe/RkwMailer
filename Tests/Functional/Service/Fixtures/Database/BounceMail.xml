@@ -80,4 +80,38 @@
         <body />
         <body_full />
     </tx_rkwmailer_domain_model_bouncemail>
+
+    <!-- hard bounce 2 -->
+    <tx_rkwmailer_domain_model_bouncemail>
+        <uid>10</uid>
+        <pid>1</pid>
+        <type>hard</type>
+        <email>bouncedMail3@rkw.de</email>
+        <header />
+        <header_full />
+        <body />
+        <body_full />
+    </tx_rkwmailer_domain_model_bouncemail>
+
+    <tx_rkwmailer_domain_model_bouncemail>
+        <uid>11</uid>
+        <pid>1</pid>
+        <type>hard</type>
+        <email>bouncedMail3@rkw.de</email>
+        <header />
+        <header_full />
+        <body />
+        <body_full />
+    </tx_rkwmailer_domain_model_bouncemail>
+
+    <tx_rkwmailer_domain_model_bouncemail>
+        <uid>12</uid>
+        <pid>1</pid>
+        <type>hard</type>
+        <email>3@rkw.de</email>
+        <header />
+        <header_full />
+        <body />
+        <body_full />
+    </tx_rkwmailer_domain_model_bouncemail>
 </dataset>
