@@ -22,10 +22,12 @@ module.tx_rkwmailer {
                 templateRootPath = EXT:rkw_mailer/Resources/Private/Templates/
             }
         }
-
     }
+    features {
 
-
+        # see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.5/Breaking-78002-EnforceCHashArgumentForExtbaseActions.html
+        requireCHashArgumentForActionArguments = 0
+    }
     settings {
 
         redirectPid = {$module.tx_rkwmailer.settings.redirectPid}
@@ -40,6 +42,7 @@ module.tx_rkwmailer {
             2 = Alert
         }
     }
+
 }
 
 # Plugin configuration
@@ -60,6 +63,11 @@ plugin.tx_rkwmailer {
             0 = EXT:rkw_mailer/Resources/Private/Partials/
             1 = {$plugin.tx_rkwmailer.view.partialRootPath}
         }
+    }
+    features {
+
+        # see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.5/Breaking-78002-EnforceCHashArgumentForExtbaseActions.html
+        requireCHashArgumentForActionArguments = 0
     }
 }
 
