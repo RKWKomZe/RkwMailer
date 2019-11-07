@@ -14,7 +14,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
 
 <f:section name="content">
 
-	<f:flashMessages />
+	<f:render partial="FlashMessages" arguments="{_all}" />
 
 	<h1><f:translate key="templates_backend_clickstatistics.headline" /></h1>
 	<h2><f:format.crop maxCharacters="250" respectWordBoundaries="false">{queueMail.subject}</f:format.crop> (id={queueMail.uid})</h2>
