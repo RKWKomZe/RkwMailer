@@ -1,13 +1,6 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
-}
-
-
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_rkwmailer_domain_model_statisticopening', 'EXT:rkw_mailer/Resources/Private/Language/locallang_csh_tx_rkwmailer_domain_model_statisticopening.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_rkwmailer_domain_model_statisticopening');
-$GLOBALS['TCA']['tx_rkwmailer_domain_model_statisticopening'] = array(
-	'ctrl' => array(
+return [
+	'ctrl' => [
 		'title'	=> 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_statisticopening',
 		'label' => 'mail_id',
 		'tstamp' => 'tstamp',
@@ -17,54 +10,54 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_statisticopening'] = array(
 
 		'searchFields' => 'pixel, click_count',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_statisticopening.gif'
-	),
-	'interface' => array(
+	],
+	'interface' => [
 		'showRecordFieldList' => 'pixel, click_count',
-	),
-	'types' => array(
-		'1' => array('showitem' => 'pixel, click_count'),
-	),
-	'palettes' => array(
-		'1' => array('showitem' => ''),
-	),
-	'columns' => array(
+	],
+	'types' => [
+		'1' => ['showitem' => 'pixel, click_count'],
+	],
+	'palettes' => [
+		'1' => ['showitem' => ''],
+	],
+	'columns' => [
 
-        'queue_mail' => array(
-            'config' => array(
+        'queue_mail' => [
+            'config' => [
                 'type' => 'passthrough',
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuemail',
-            ),
-        ),
-		'queue_recipient' => array(
-            'config' => array(
+            ],
+        ],
+		'queue_recipient' => [
+            'config' => [
                 'type' => 'passthrough',
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuerecipient',
-            ),
-		),
-        'link' => array(
-            'config' => array(
+            ],
+		],
+        'link' => [
+            'config' => [
                 'type' => 'passthrough',
                 'foreign_table' => 'tx_rkwmailer_domain_model_link',
-            ),
-        ),
-		'pixel' => array(
+            ],
+        ],
+		'pixel' => [
 			'exclude' => 1,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_statisticopening.pixel',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 4,
 				'eval' => 'int'
-			),
-		),
+			],
+		],
 
-		'click_count' => array(
+		'click_count' => [
 			'exclude' => 1,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_statisticopening.click_count',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 4,
 				'eval' => 'int'
-			)
-		),
-	),
-);
+			],
+		],
+	],
+];

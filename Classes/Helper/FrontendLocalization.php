@@ -29,5 +29,10 @@ namespace RKW\RkwMailer\Helper;
  */
 class FrontendLocalization extends \RKW\RkwMailer\Utility\FrontendLocalizationUtility
 {
+    public function __construct()
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ' is deprecated and will be removed soon.');
+    }
+
 
 }

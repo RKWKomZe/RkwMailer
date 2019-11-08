@@ -1177,13 +1177,6 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
 
-
-
-
-
-
-
-
     /**
      * Gets TypoScript framework settings
      *

@@ -1,13 +1,6 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
-}
-
-
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_rkwmailer_domain_model_link', 'EXT:rkw_mailer/Resources/Private/Language/locallang_csh_tx_rkwmailer_domain_model_link.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_rkwmailer_domain_model_link');
-$GLOBALS['TCA']['tx_rkwmailer_domain_model_bouncemail'] = array(
-	'ctrl' => array(
+return [
+	'ctrl' => [
 		'title'	=> 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail',
 		'label' => 'uid',
 		'tstamp' => 'tstamp',
@@ -17,22 +10,22 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_bouncemail'] = array(
 
 		'searchFields' => 'hash, url',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_bouncemail.gif'
-	),
-	'interface' => array(
+	],
+	'interface' => [
 		'showRecordFieldList' => 'status, type, email, subject, rule_number, rule_category, header, body, header_full, body_full',
-	),
-	'types' => array(
-		'1' => array('showitem' => 'status, type, email, subject, rule_number, rule_category, header, body, header_full, body_full'),
-	),
-	'palettes' => array(
-		'1' => array('showitem' => ''),
-	),
-	'columns' => array(
+	],
+	'types' => [
+		'1' => ['showitem' => 'status, type, email, subject, rule_number, rule_category, header, body, header_full, body_full'],
+	],
+	'palettes' => [
+		'1' => ['showitem' => ''],
+	],
+	'columns' => [
 
-        'status' => array(
+        'status' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.status',
-            'config' => array(
+            'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'size' => 1,
@@ -41,91 +34,91 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_bouncemail'] = array(
                 'maxitems' => 1,
                 'default' => 2,
                 'readOnly' => 1,
-                'items' => array(
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.status.I.new', 0),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.status.I.processed', 100),
-                ),
-            )
-        ),
+                'items' => [
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.status.I.new', 0],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.status.I.processed', 100],
+                ],
+            ],
+        ],
 
-		'type' => array(
+		'type' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.type',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim'
-			),
-		),
+			],
+		],
 
-        'email' => array(
+        'email' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.email',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'subject' => array(
+            ],
+        ],
+        'subject' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.subject',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'rule_number' => array(
+            ],
+        ],
+        'rule_number' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.rule_number',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
+            ],
+        ],
 
-        'rule_category' => array(
+        'rule_category' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.rule_category',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'header' => array(
+            ],
+        ],
+        'header' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.header',
-            'config' => array(
+            'config' => [
                 'type' => 'text',
                 'rows' => 40,
-            ),
-        ),
-        'body' => array(
+            ],
+        ],
+        'body' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.body',
-            'config' => array(
+            'config' => [
                 'type' => 'text',
                 'rows' => 40,
-            ),
-        ),
-        'header_full' => array(
+            ],
+        ],
+        'header_full' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.header_full',
-            'config' => array(
+            'config' => [
                 'type' => 'text',
                 'rows' => 40,
-            ),
-        ),
-        'body_full' => array(
+            ],
+        ],
+        'body_full' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_bouncemail.body_full',
-            'config' => array(
+            'config' => [
                 'type' => 'text',
                 'rows' => 40,
-            ),
-        ),
-	),
-);
+            ],
+        ],
+	],
+];
