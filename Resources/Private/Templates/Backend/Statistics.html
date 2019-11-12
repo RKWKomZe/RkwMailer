@@ -14,7 +14,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
 
 <f:section name="content">
 
-	<f:flashMessages />
+	<f:render partial="FlashMessages" arguments="{_all}" />
 
 	<f:form action="statistics" name="timeFrame">
 		<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>

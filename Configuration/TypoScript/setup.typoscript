@@ -1,0 +1,74 @@
+# Module configuration
+module.tx_rkwmailer {
+    persistence {
+        storagePid = {$module.tx_rkwmailer.persistence.storagePid}
+    }
+    view {
+        layoutRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Layouts/
+            1 = {$module.tx_rkwmailer.view.layoutRootPath}
+        }
+        templateRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Templates/
+            1 = {$module.tx_rkwmailer.view.templateRootPath}
+        }
+        partialRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Partials/
+            1 = {$module.tx_rkwmailer.view.partialRootPath}
+        }
+
+        widget {
+            TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\PaginateViewHelper {
+                templateRootPath = EXT:rkw_mailer/Resources/Private/Templates/
+            }
+        }
+    }
+    features {
+
+        # see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.5/Breaking-78002-EnforceCHashArgumentForExtbaseActions.html
+        requireCHashArgumentForActionArguments = 0
+    }
+    settings {
+
+        redirectPid = {$module.tx_rkwmailer.settings.redirectPid}
+        redirectDelay = {$module.tx_rkwmailer.settings.redirectDelay}
+        counterPixelPid = {$module.tx_rkwmailer.settings.counterPixelPid}
+        baseUrl = {$module.tx_rkwmailer.settings.baseUrl}
+        basePathImages = {$module.tx_rkwmailer.settings.basePathImages}
+        basePathLogo = {$module.tx_rkwmailer.settings.basePathLogo}
+        types {
+            0 = Message
+            1 = Newsletter
+            2 = Alert
+        }
+    }
+
+}
+
+# Plugin configuration
+plugin.tx_rkwmailer {
+    persistence {
+        storagePid = {$plugin.tx_rkwmailer.persistence.storagePid}
+    }
+    view {
+        layoutRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Layouts/
+            1 = {$plugin.tx_rkwmailer.view.layoutRootPath}
+        }
+        templateRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Templates/
+            1 = {$plugin.tx_rkwmailer.view.templateRootPath}
+        }
+        partialRootPaths {
+            0 = EXT:rkw_mailer/Resources/Private/Partials/
+            1 = {$plugin.tx_rkwmailer.view.partialRootPath}
+        }
+    }
+    features {
+
+        # see: https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/8.5/Breaking-78002-EnforceCHashArgumentForExtbaseActions.html
+        requireCHashArgumentForActionArguments = 0
+    }
+}
+
+plugin.tx_rkwmailer.settings < module.tx_rkwmailer.settings

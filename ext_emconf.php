@@ -10,7 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'RKW Mailer',
 	'description' => 'Extension sending e-mails and bulk-mailings',
 	'category' => 'plugin',
@@ -21,17 +21,15 @@ $EM_CONF[$_EXTKEY] = array(
 	'uploadfolder' => '0',
 	'createDirs' => '',
 	'clearCacheOnLoad' => 0,
-	'version' => '8.7.22',
-	'constraints' => array(
-		'depends' => array(
-            'extbase' => '7.6.0-8.7.99',
-            'fluid' => '7.6.0-8.7.99',
+	'version' => '8.7.23',
+	'constraints' => [
+		'depends' => [
             'typo3' => '7.6.0-8.7.99',
             'rkw_basics' => '8.7.2-8.7.99'
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
-);
+		],
+		'conflicts' => [
+		],
+		'suggests' => [
+		],
+	],
+];

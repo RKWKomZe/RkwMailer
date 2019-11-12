@@ -27,4 +27,18 @@ namespace RKW\RkwMailer\Service;
 class MailException extends \RKW\RkwMailer\Exception
 {
 
+    /**
+     * Construct the exception. Note: The message is NOT binary safe.
+     * @link https://php.net/manual/en/exception.construct.php
+     * @param string $message [optional] The Exception message to throw.
+     * @param int $code [optional] The Exception code.
+     * @param \Throwable $previous [optional] The previous throwable used for the exception chaining.
+     * @since 5.1.0
+     */
+    public function __construct($message = "", $code = 0, \Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ' is deprecated and will be removed soon.');
+    }
+
 }
