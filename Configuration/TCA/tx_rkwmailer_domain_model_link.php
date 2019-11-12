@@ -1,13 +1,6 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
-}
-
-
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_rkwmailer_domain_model_link', 'EXT:rkw_mailer/Resources/Private/Language/locallang_csh_tx_rkwmailer_domain_model_link.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_rkwmailer_domain_model_link');
-$GLOBALS['TCA']['tx_rkwmailer_domain_model_link'] = array(
-	'ctrl' => array(
+return [
+	'ctrl' => [
 		'title'	=> 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_link',
 		'label' => 'uid',
 		'tstamp' => 'tstamp',
@@ -17,44 +10,43 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_link'] = array(
 
 		'searchFields' => 'hash, url',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_link.gif'
-	),
-	'interface' => array(
+	],
+	'interface' => [
 		'showRecordFieldList' => 'hash, url',
-	),
-	'types' => array(
-		'1' => array('showitem' => 'hash, url'),
-	),
-	'palettes' => array(
-		'1' => array('showitem' => ''),
-	),
-	'columns' => array(
+	],
+	'types' => [
+		'1' => ['showitem' => 'hash, url'],
+	],
+	'palettes' => [
+		'1' => ['showitem' => ''],
+	],
+	'columns' => [
 
 		
-		'hash' => array(
+		'hash' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_link.hash',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim'
-			),
-		),
-		'url' => array(
+			],
+		],
+		'url' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_link.url',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim'
-			),
-		),
+			],
+		],
 
-        'queue_mail' => array(
-            'config' => array(
+        'queue_mail' => [
+            'config' => [
                 'type' => 'passthrough',
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuemail',
-            ),
-        ),
-
-	),
-);
+            ],
+        ],
+	],
+];

@@ -27,5 +27,10 @@ namespace RKW\RkwMailer\Helper;
  */
 class FrontendUriBuilder extends \RKW\RkwMailer\UriBuilder\FrontendUriBuilder
 {
+    public function __construct()
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ' is deprecated and will be removed soon.');
+    }
+
 
 }

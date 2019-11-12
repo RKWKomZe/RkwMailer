@@ -30,5 +30,10 @@ namespace RKW\RkwMailer\Helper;
 class TimePeriod  extends \RKW\RkwMailer\Utility\TimePeriodUtility
 {
 
+    public function __construct()
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ' is deprecated and will be removed soon.');
+    }
+
 
 }

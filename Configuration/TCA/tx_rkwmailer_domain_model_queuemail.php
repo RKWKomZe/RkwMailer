@@ -1,12 +1,6 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
-}
-
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_rkwmailer_domain_model_queuemail', 'EXT:rkw_mailer/Resources/Private/Language/locallang_csh_tx_rkwmailer_domain_model_queuemail.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_rkwmailer_domain_model_queuemail');
-$GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
-	'ctrl' => array(
+return [
+	'ctrl' => [
 		'title'	=> 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail',
 		'label' => 'subject',
 		'tstamp' => 'tstamp',
@@ -17,22 +11,22 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 		'sortby' => 'sorting',
 		'searchFields' => 'status, type, pipeline, queue_recipients, from_name, from_address, reply_address, return_path, subject, body_text, settings_pid, campaign_parameter priority, plaintext_template, html_template, calendar_template, tstamp_fav_sending, tstamp_real_sending, tstamp_send_finish',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_queuemail.gif'
-	),
-	'interface' => array(
+	],
+	'interface' => [
 		'showRecordFieldList' => 'status, type, pipeline, queue_recipients, from_name, from_address, reply_address, return_path, subject, body_text, settings_pid, campaign_parameter priority, plaintext_template, html_template, calendar_template, tstamp_fav_sending, tstamp_real_sending, tstamp_send_finish',
-	),
-	'types' => array(
-		'1' => array('showitem' => 'subject, body_text, queue_recipients, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.from, from_name, from_address, reply_address, return_path, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.settings, settings_pid, plaintext_template, html_template, calendar_template, campaign_parameter, priority, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.sending, tstamp_fav_sending, tstamp_real_sending, tstamp_send_finish, status, type, pipeline'),
-	),
-	'palettes' => array(
-		'1' => array('showitem' => ''),
-	),
-	'columns' => array(
+	],
+	'types' => [
+		'1' => ['showitem' => 'subject, body_text, queue_recipients, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.from, from_name, from_address, reply_address, return_path, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.settings, settings_pid, plaintext_template, html_template, calendar_template, campaign_parameter, priority, --div--;LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tabs.sending, tstamp_fav_sending, tstamp_real_sending, tstamp_send_finish, status, type, pipeline'],
+	],
+	'palettes' => [
+		'1' => ['showitem' => ''],
+	],
+	'columns' => [
 
-        'status' => array(
+        'status' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status',
-            'config' => array(
+            'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'size' => 1,
@@ -41,20 +35,20 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'maxitems' => 1,
                 'default' => 2,
                 'readOnly' => 1,
-                'items' => array(
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.draft', 1),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.waiting', 2),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.sending', 3),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.sent', 4),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.error', 99),
-                ),
-            )
-        ),
+                'items' => [
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.draft', 1],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.waiting', 2],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.sending', 3],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.sent', 4],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.status.I.error', 99],
+                ],
+            ],
+        ],
 
-        'type' => array(
+        'type' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type',
-            'config' => array(
+            'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'size' => 1,
@@ -63,163 +57,163 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'maxitems' => 1,
                 'default' => 0,
                 'readOnly' => 1,
-                'items' => array(
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.0', 0),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.1', 1),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.2', 2),
-                ),
-            )
+                'items' => [
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.0', 0],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.1', 1],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.type.I.2', 2],
+                ],
+            ],
 
-        ),
-        'pipeline' => array(
+        ],
+        'pipeline' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.pipeline',
-            'config' => array(
+            'config' => [
                 'type' => 'check',
-            ),
-        ),
+            ],
+        ],
 
-		'from_name' => array(
+		'from_name' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.from_name',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim'
-			),
-		),
-		'from_address' => array(
+			],
+		],
+		'from_address' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.from_address',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim,email'
-			),
-		),
-		'reply_address' => array(
+			],
+		],
+		'reply_address' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.reply_address',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim,email'
-			),
-		),
-		'return_path' => array(
+			],
+		],
+		'return_path' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.return_path',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim,email'
-			),
-		),
-		'subject' => array(
+			],
+		],
+		'subject' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.subject',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 30,
 				'eval' => 'trim'
-			),
-		),
-        'body_text' => array(
+			],
+		],
+        'body_text' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.body_text',
-			'config' => array(
+			'config' => [
 				'type' => 'text',
                 'rows' => 40,
-			),
-		),
-        'attachment' => array(
+			],
+		],
+        'attachment' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.attachment',
-			'config' => array(
+			'config' => [
                 'type' => 'passthrough',
-			)
-		),
-        'attachment_type' => array(
+			],
+		],
+        'attachment_type' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.attachment_type',
-            'config' => array(
+            'config' => [
                 'type' => 'passthrough',
-            )
-        ),
-        'attachment_name' => array(
+            ],
+        ],
+        'attachment_name' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.attachment_name',
-            'config' => array(
+            'config' => [
                 'type' => 'passthrough',
-            )
-        ),
-        'plaintext_template' => array(
+            ],
+        ],
+        'plaintext_template' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.plaintext_template',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'html_template' => array(
+            ],
+        ],
+        'html_template' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.html_template',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'calendar_template' => array(
+            ],
+        ],
+        'calendar_template' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.calendar_template',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-		'layout_paths' => array(
+            ],
+        ],
+		'layout_paths' => [
 			'exclude' => 0,
-			'config' => array(
+			'config' => [
 				'type' => 'passthrough',
-			),
-		),
-		'partial_paths' => array(
+			],
+		],
+		'partial_paths' => [
 			'exclude' => 0,
-			'config' => array(
+			'config' => [
 				'type' => 'passthrough',
-			),
-		),
-        'template_paths' => array(
+			],
+		],
+        'template_paths' => [
             'exclude' => 0,
-            'config' => array(
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'category' => array(
+            ],
+        ],
+        'category' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.category',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-        'campaign_parameter' => array(
+            ],
+        ],
+        'campaign_parameter' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.campaign_parameter',
-            'config' => array(
+            'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ),
-        ),
-		'priority' => array(
+            ],
+        ],
+		'priority' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority',
-			'config' => array(
+			'config' => [
                 'type' => 'select',
 				'renderType' => 'selectSingle',
                 'size' => 1,
@@ -228,68 +222,68 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
                 'maxitems' => 1,
                 'default' => 2,
                 'readOnly' => 1,
-                'items' => array(
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.highest', 1),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.high', 2),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.default', 3),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.low', 4),
-                    array('LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.lowest', 5),
-                ),
-			)
-		),
-        'settings_pid' => array(
+                'items' => [
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.highest', 1],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.high', 2],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.default', 3],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.low', 4],
+                    ['LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.priority.I.lowest', 5],
+                ],
+			],
+		],
+        'settings_pid' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.settings_pid',
-            'config' => array(
+            'config' => [
                 'foreign_table' => 'pages',
                 'type' => 'input',
                 'size' => '30',
                 'max' => '256',
                 'eval' => 'int,required',
-                'wizards' => array(
-                    'link' => array(
+                'wizards' => [
+                    'link' => [
                         'type' => 'popup',
                         'title' => 'LLL:EXT:cms/locallang_ttc.xlf:header_link_formlabel',
                         'icon' => 'EXT:backend/Resources/Public/Images/FormFieldWizard/wizard_link.gif',
-                        'module' => array(
+                        'module' => [
                             'name' => 'wizard_link',
-                            'urlParameters' => array(
+                            'urlParameters' => [
                                 'mode' => 'wizard',
-                            )
-                        ),
+                            ],
+                        ],
                         'JSopenParams' => 'height=400,width=550,status=0,menubar=0,scrollbars=1',
-                        'params' => Array(
+                        'params' => [
                             // List of tabs to hide in link window. Allowed values are:
                             // file, mail, page, spec, folder, url
                             'blindLinkOptions' => 'mail,file,url,spec,folder',
 
                             // allowed extensions for file
                             //'allowedExtensions' => 'mp3,ogg',
-                        )
-                    )
-                ),
+                        ],
+                    ],
+                ],
                 'softref' => 'typolink'
-            )
-        ),
-		'tstamp_fav_sending' => array(
+            ],
+        ],
+		'tstamp_fav_sending' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_fav_sending',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 13,
 				'max' => 20,
 				'eval' => 'datetime',
 				'checkbox' => 0,
 				'default' => 0,
-				'range' => array(
-					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y'))
-				),
-			),
-		),
-		'tstamp_real_sending' => array(
+				'range' => [
+					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y')),
+				],
+			],
+		],
+		'tstamp_real_sending' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_real_sending',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 13,
 				'max' => 20,
@@ -297,15 +291,15 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 				'checkbox' => 0,
 				'default' => 0,
                 'readOnly' =>1,
-				'range' => array(
-					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y'))
-				),
-			),
-		),
-		'tstamp_send_finish' => array(
+				'range' => [
+					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y')),
+				],
+			],
+		],
+		'tstamp_send_finish' => [
 			'exclude' => 0,
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_send_finish',
-			'config' => array(
+			'config' => [
 				'type' => 'input',
 				'size' => 13,
 				'max' => 20,
@@ -313,51 +307,50 @@ $GLOBALS['TCA']['tx_rkwmailer_domain_model_queuemail'] = array(
 				'checkbox' => 0,
 				'default' => 0,
                 'readOnly' =>1,
-				'range' => array(
-					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y'))
-				),
-			),
-		),
-        'total' => array(
-            'config' => array(
+				'range' => [
+					'lower' => mktime(0, 0, 0, date('m'), date('d'), date('Y')),
+				],
+			],
+		],
+        'total' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'sent' => array(
-            'config' => array(
+            ],
+        ],
+        'sent' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'successful' => array(
-            'config' => array(
+            ],
+        ],
+        'successful' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'failed' => array(
-            'config' => array(
+            ],
+        ],
+        'failed' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'deferred' => array(
-            'config' => array(
+            ],
+        ],
+        'deferred' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'bounced' => array(
-            'config' => array(
+            ],
+        ],
+        'bounced' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'opened' => array(
-            'config' => array(
+            ],
+        ],
+        'opened' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-        'clicked' => array(
-            'config' => array(
+            ],
+        ],
+        'clicked' => [
+            'config' => [
                 'type' => 'passthrough',
-            ),
-        ),
-
-    ),
-);
+            ],
+        ],
+    ],
+];

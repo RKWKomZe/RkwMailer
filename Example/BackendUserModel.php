@@ -24,8 +24,33 @@ namespace RKW\RkwExample\Domain\Model;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class BackendUser extends \RKW\RkwRegistration\Domain\Model\BackendUser
+class BackendUser extends \TYPO3\CMS\Extbase\Domain\Model\BackendUser
 {
+    /**
+     * @var string
+     */
+    protected $lang = 'en';
+
+
+    /**
+     * Gets the lang of the user
+     *
+     * @param string $lang
+     */
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+    }
+
+    /**
+     * Gets the lang of the user
+     *
+     * @return string
+     */
+    public function getLang()
+    {
+        return $this->lang;
+    }
 
 
 }
