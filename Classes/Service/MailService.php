@@ -1087,7 +1087,8 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
 
         /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper $dataMapper */
-        $dataMapper = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+        $dataMapper = GeneralUtility::makeInstance(ObjectManager::class)->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+
         foreach ($marker as $key => $value) {
 
             // replace current entry with "table => uid" reference
