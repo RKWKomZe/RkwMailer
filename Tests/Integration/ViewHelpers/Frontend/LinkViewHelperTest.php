@@ -43,7 +43,6 @@ class LinkViewHelperTest extends FunctionalTestCase
         'typo3conf/ext/rkw_basics',
         'typo3conf/ext/rkw_mailer',
         'typo3conf/ext/realurl'
-
     ];
 
     /**
@@ -175,6 +174,9 @@ class LinkViewHelperTest extends FunctionalTestCase
          * Given a queueMailUid is set
          * When the link is rendered
          * Then an absolute link to the redirect page is generated
+         * Then the redirect link calls the redirect plugin of rkw_mailer
+         * Then the redirect link contains the queueMailUid
+         * Then the redirect link contains a hash-value
          */
         $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check30.xml');
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
@@ -184,9 +186,12 @@ class LinkViewHelperTest extends FunctionalTestCase
 
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/test/tx-rkw-basics/media/list/', $result);
+        static::assertStringStartsWith('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?', $result);
+        static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=', $result);
 
-        // WARUM IST LINK EINFACH LEER; WENN REDIRECT PID NICHT EXISTIERT?????
+        //@toDo: WARUM IST DER LINK EINFACH LEER, WENN REDIRECT-PID NICHT EXISTIERT?????
     }
 
     //=============================================
