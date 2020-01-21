@@ -123,6 +123,7 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
                 $GLOBALS['TSFE']->determineId();
                 $GLOBALS['TSFE']->initTemplate();
                 $GLOBALS['TSFE']->getConfigArray();
+                $GLOBALS['LANG']->csConvObj = $GLOBALS['TSFE']->csConvObj;
 
                 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
                     $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);

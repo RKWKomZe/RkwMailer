@@ -76,7 +76,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
             ->setSection($section)
             ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
             ->setArguments($additionalParams)
-            ->setCreateAbsoluteUri($absolute)
+            ->setCreateAbsoluteUri(true) // force absolute link
             ->setAddQueryString($addQueryString)
             ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
 
@@ -100,7 +100,6 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
      */
     protected function initTSFE($id = 1, $typeNum = 0)
     {
-
         // only if in BE-Mode!!! Otherwise FE will be crashed
         if (TYPO3_MODE == 'BE') {
             if (!is_object($GLOBALS['TT'])) {
@@ -119,6 +118,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
                 $GLOBALS['TSFE']->determineId();
                 $GLOBALS['TSFE']->initTemplate();
                 $GLOBALS['TSFE']->getConfigArray();
+                $GLOBALS['LANG']->csConvObj = $GLOBALS['TSFE']->csConvObj;
 
                 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
                     $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
