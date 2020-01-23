@@ -30,23 +30,20 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
     /**
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param integer $counterPixelPid
      * @return string
      */
-    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $counterPixelPid = 0)
+    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null)
     {
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
+            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'RkwMailer', 'user'
+        );
 
-        if (!$counterPixelPid) {
-            $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
-                \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-                'RkwMailer', 'user'
-            );
-            $counterPixelPid = $extbaseFrameworkConfiguration['counterPixelPid'];
-        }
+        $counterPixelPid = intval($extbaseFrameworkConfiguration['counterPixelPid']);
 
         if (
             ($counterPixelPid > 0)
@@ -68,20 +65,18 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             $uriBuilder->setTargetPageUid($counterPixelPid)
                 ->setNoCache(true)
                 ->setUseCacheHash(false)
+                ->setCreateAbsoluteUri(true)
                 ->setArguments(
                     array(
                         'tx_rkwmailer_rkwmailer[uid]' => intval($queueRecipient->getUid()),
                         'tx_rkwmailer_rkwmailer[mid]' => intval($queueMail->getUid()),
                     )
-                )
-                ->setCreateAbsoluteUri(true);
+                );
 
             return '<img src="' . urldecode($uriBuilder->uriFor('confirmation', array(), 'Link', 'rkwmailer', 'Rkwmailer')) . '" width="1" height="1" alt="" />';
-            //===
         }
 
         return '';
-        //===
     }
 
 

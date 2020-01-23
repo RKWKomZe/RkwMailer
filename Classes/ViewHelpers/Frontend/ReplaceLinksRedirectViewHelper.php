@@ -47,6 +47,7 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
      */
     protected $additionalParams = array();
 
+
     /**
      * Replaces all set links with redirect links
      *
@@ -67,7 +68,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
 
         if (!is_string($value)) {
             return $value;
-            //===
         }
 
         $this->queueMail = $queueMail;
@@ -79,18 +79,15 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
             if ($isPlaintext == true) {
 
                 return preg_replace_callback('/(http[s]?:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
-                //===
 
             } else {
                 // U for non-greedy behavior: take as less signs as possible
                 return preg_replace_callback('/(<a.+href=")([^"]+)(")/U', array($this, 'replaceHtml'), $value);
-                //===
             }
 
         }
 
         return $value;
-        //===
     }
 
 
@@ -114,11 +111,9 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
             && (strpos($matches[2], 'mailto:') !== 0)
         ) {
             return $matches[1] . $this->replace($matches[2]) . $matches[3];
-            //===
         }
 
         return $matches[0];
-        //===
     }
 
 
@@ -146,7 +141,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         }
 
         return $matches[0];
-        //===
     }
 
 
@@ -177,7 +171,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
             ->setArguments($this->additionalParams);
 
         return $uriBuilder->build();
-        //===
     }
 
 
@@ -246,7 +239,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         }
 
         return $this->redirectPid;
-        //===
     }
 
 

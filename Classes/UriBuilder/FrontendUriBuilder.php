@@ -298,7 +298,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
                 // set all params for redirect link!
                 $this->setTargetPageUid($this->getRedirectPid())
-                    // ->setNoCache(true)
+                    ->setNoCache($this->getNoCache())
                     ->setUseCacheHash(false)
                     ->setCreateAbsoluteUri(true)
                     ->setArguments(
