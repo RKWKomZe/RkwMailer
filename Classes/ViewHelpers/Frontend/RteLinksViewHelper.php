@@ -63,16 +63,13 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 
         if (!is_string($value)) {
             return $value;
-            //===
         }
 
         if ($plaintextFormat == true) {
             return preg_replace_callback('/(<link ([^>]+)>([^<]+)<\/link>)/', array($this, 'replacePlaintext'), $value);
-            //===
         }
 
         return preg_replace_callback('/(<link ([^>]+)>([^<]+)<\/link>)/', array($this, 'replaceHtml'), $value);
-        //===
 
     }
 
@@ -91,13 +88,10 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
         ) {
 
             $url = $this->buildLink($matches[2]);
-
             return '<a href="' . $url . '" ' . ($this->style ? 'style="' . $this->style . '"' : '') . ' target="_blank">' . $matches[3] . '</a>';
-            //===
         }
 
         return $matches[0];
-        //===
     }
 
     /**
@@ -113,13 +107,10 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
         (count($matches) == 4)
         ) {
             $url = $this->buildLink($matches[2]);
-
             return $matches[3] . ' < ' . $url . ' > ';
-            //===
         }
 
         return $matches[0];
-        //===
     }
 
 
@@ -157,7 +148,6 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
         }
 
         return $content;
-        //===
 
     }
 

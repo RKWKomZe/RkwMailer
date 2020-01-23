@@ -74,7 +74,7 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         $this->queueRecipient = $queueRecipient;
         $this->additionalParams = $additionalParams;
 
-        if ($this->queueMail > 0) {
+        if ($this->queueMail) {
 
             if ($isPlaintext == true) {
 
@@ -106,7 +106,6 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         // do replacement but not for anchors and mailto's
         if (
             (count($matches) == 4)
-            && ($this->queueMail)
             && (strpos($matches[2], '#') !== 0)
             && (strpos($matches[2], 'mailto:') !== 0)
         ) {
@@ -131,13 +130,11 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
         // do replacement but not for anchors and mailto's
         if (
             (count($matches) == 2)
-            && ($this->queueMail)
             && (strpos($matches[1], '#') !== 0)
             && (strpos($matches[1], 'mailto:') !== 0)
         ) {
 
             return $this->replace($matches[1]);
-            //===
         }
 
         return $matches[0];
@@ -155,22 +152,27 @@ class ReplaceLinksRedirectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Ab
     protected function replace($link)
     {
 
-        // load FrontendUriBuilder
-        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        if ($this->queueMail) {
 
-        /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-        $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
-        $uriBuilder->reset();
+            // load FrontendUriBuilder
+            /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-        $uriBuilder->setUseRedirectLink(true)
-            ->setRedirectPid($this->getRedirectPid())
-            ->setQueueMail($this->queueMail)
-            ->setQueueRecipient($this->queueRecipient)
-            ->setRedirectLink($link)
-            ->setArguments($this->additionalParams);
+            /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+            $uriBuilder->reset();
 
-        return $uriBuilder->build();
+            $uriBuilder->setUseRedirectLink(true)
+                ->setRedirectPid($this->getRedirectPid())
+                ->setQueueMail($this->queueMail)
+                ->setQueueRecipient($this->queueRecipient)
+                ->setRedirectLink($link)
+                ->setArguments($this->additionalParams);
+
+            return $uriBuilder->build();
+        }
+
+        return $link;
     }
 
 

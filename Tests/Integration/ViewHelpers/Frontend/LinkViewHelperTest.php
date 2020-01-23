@@ -198,7 +198,7 @@ class LinkViewHelperTest extends FunctionalTestCase
         static::assertStringStartsWith('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?', $result);
         static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=e442b5ecbe646ecad7cbfa2727d255392ab7be71', $result);
 
     }
 
@@ -239,7 +239,7 @@ class LinkViewHelperTest extends FunctionalTestCase
         static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=e442b5ecbe646ecad7cbfa2727d255392ab7be71', $result);
 
     }
 
