@@ -30,23 +30,19 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
     /**
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param integer $counterPixelPid
      * @return string
      */
-    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $counterPixelPid = 0)
+    public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null)
     {
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-
-        if (!$counterPixelPid) {
-            $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
-                \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-                'RkwMailer', 'user'
-            );
-            $counterPixelPid = $extbaseFrameworkConfiguration['counterPixelPid'];
-        }
+        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
+            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'RkwMailer', 'user'
+        );
+        $counterPixelPid = intval($extbaseFrameworkConfiguration['counterPixelPid']);
 
         if (
             ($counterPixelPid > 0)
@@ -54,8 +50,8 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             && ($queueMail > 0)
         ) {
 
-            // set pid
-            $this->initTSFE(intval($counterPixelPid));
+            // init frontend
+            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
 
             // load FrontendUriBuilder
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
@@ -68,60 +64,18 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             $uriBuilder->setTargetPageUid($counterPixelPid)
                 ->setNoCache(true)
                 ->setUseCacheHash(false)
+                ->setCreateAbsoluteUri(true)
                 ->setArguments(
                     array(
                         'tx_rkwmailer_rkwmailer[uid]' => intval($queueRecipient->getUid()),
                         'tx_rkwmailer_rkwmailer[mid]' => intval($queueMail->getUid()),
                     )
-                )
-                ->setCreateAbsoluteUri(true);
+                );
 
             return '<img src="' . urldecode($uriBuilder->uriFor('confirmation', array(), 'Link', 'rkwmailer', 'Rkwmailer')) . '" width="1" height="1" alt="" />';
-            //===
         }
 
         return '';
-        //===
     }
 
-
-    /**
-     * init frontend to render frontend links in task
-     *
-     * @param integer $id
-     * @param integer $typeNum
-     * @return void
-     */
-    protected function initTSFE($id = 1, $typeNum = 0)
-    {
-
-        // only if in BE-Mode!!! Otherwise FE will be crashed
-        if (TYPO3_MODE == 'BE') {
-
-            if (!is_object($GLOBALS['TT'])) {
-                $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-                $GLOBALS['TT']->start();
-            }
-
-            if (
-                (!$GLOBALS['TSFE'] instanceof \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController)
-                || ($GLOBALS['TSFE']->id != $id)
-                || ($GLOBALS['TSFE']->type != $typeNum)
-            ) {
-                $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', $GLOBALS['TYPO3_CONF_VARS'], $id, $typeNum);
-                $GLOBALS['TSFE']->connectToDB();
-                $GLOBALS['TSFE']->initFEuser();
-                $GLOBALS['TSFE']->determineId();
-                $GLOBALS['TSFE']->initTemplate();
-                $GLOBALS['TSFE']->getConfigArray();
-
-                if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-                    $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-                    $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-                    $_SERVER['HTTP_HOST'] = $host;
-                    $GLOBALS['TSFE']->config['config']['absRefPrefix'] = $host;
-                }
-            }
-        }
-    }
 }

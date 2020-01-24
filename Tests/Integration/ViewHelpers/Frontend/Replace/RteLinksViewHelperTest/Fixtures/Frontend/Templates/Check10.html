@@ -1,0 +1,22 @@
+{namespace rkwMailer=RKW\RkwMailer\ViewHelpers}
+
+<rkwMailer:frontend.replace.rteLinks plaintextFormat="true" style="color:red;">
+    Testen Sie hier <link http://www.google.de _blank test Titel ist Titel>mit Klick</link>!
+    Testen Sie da <link http://www.yahoo.de/#anchor-1 _blank test "Titel ist Titel">mit Klick</link>!
+    Testen Sie dort <link mail@rkw.de _blank test "Titel ist Titel">mit Klick</link>!
+    Testen Sie überall <link 9999 _blank test "Titel ist Titel">mit Klick</link>!
+    Testen Sie hüben <link 9999#anchor-1 _blank test "Titel ist Titel">mit Klick</link>!
+    Testen Sie drüben <link file:999 _blank test "Titel ist Titel">mit Klick</link>!
+
+</rkwMailer:frontend.replace.rteLinks>
+
+<rkwMailer:frontend.replace.rteLinks style="color:green;">
+    <p>
+        Testen Sie hier <link http://www.google.de _blank test Titel ist Titel>mit Klick</link>!
+        Testen Sie da <link http://www.yahoo.de/#anchor-1 _blank test "Titel ist Titel">mit Klick</link>!
+        Testen Sie dort <link mail@rkw.de _blank test "Titel ist Titel">mit Klick</link>!
+        Testen Sie überall <link 9999 _blank test "Titel ist Titel">mit Klick</link>!
+        Testen Sie hüben <link 9999#anchor-1 _blank test "Titel ist Titel">mit Klick</link>!
+        Testen Sie drüben <link file:999 _blank test ">Titel ist Titel"mit Klick</link>!
+    </p>
+</rkwMailer:frontend.replace.rteLinks>
