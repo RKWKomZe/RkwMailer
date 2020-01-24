@@ -73,8 +73,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     public function statisticsAction($timeFrame = 0, $mailType = -1)
     {
 
-        var_dump($GLOBALS['BE_USER']);
-
         $period = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
         $sentMails = $this->queueMailRepository->findAllSentOrSendingWithStatistics($period['from'], $period['to'], $mailType);
 
