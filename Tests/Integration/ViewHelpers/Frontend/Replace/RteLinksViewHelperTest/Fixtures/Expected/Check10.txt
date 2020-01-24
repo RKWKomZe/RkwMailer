@@ -1,0 +1,21 @@
+
+
+
+    Testen Sie hier mit Klick [http://www.google.de]!
+    Testen Sie da mit Klick [http://www.yahoo.de/#anchor-1]!
+    Testen Sie dort mit Klick [mailto:mail@rkw.de]!
+    Testen Sie überall mit Klick [http://www.rkw-kompetenzzentrum.rkw.local/testseite/]!
+    Testen Sie hüben mit Klick [http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1]!
+    Testen Sie drüben mit Klick [http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf]!
+
+
+
+
+    <p>
+        Testen Sie hier <a href="http://www.google.de" title="Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie da <a href="http://www.yahoo.de/#anchor-1" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie dort <a href="mailto:mail@rkw.de" title="Titel ist Titel" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie überall <a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie hüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie drüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf" target="_blank" class="test" style="color:green;">Titel ist Titel"mit Klick</a>!
+    </p>
