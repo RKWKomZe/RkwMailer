@@ -27,14 +27,14 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 
 /**
- * ReplaceLinksRedirectHelperTest
+ * PixelCounterViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
- * @package RKW_RkwShop
+ * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
+class PixelCounterViewHelperTest extends FunctionalTestCase
 {
 
     /**
@@ -66,6 +66,7 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
      */
     private $queueRecipientRepository;
 
+
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      */
@@ -85,18 +86,18 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
     {
 
         // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Frontend/ReplaceLinksRedirectHelperTest/Fixtures/RealUrlConfiguration.php');
+        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Frontend/PixelCounterViewHelperTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/PixelCounterHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(__DIR__ . '/PixelCounterViewHelperTest/Fixtures/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/ReplaceLinksRedirectHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/PixelCounterViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
@@ -111,7 +112,7 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Frontend/Templates'
+                0 => __DIR__ . '/PixelCounterViewHelperTest/Fixtures/Frontend/Templates'
             ]
         );
 
@@ -124,7 +125,7 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itReplacesNoLinkWhenNoQueueMailGiven ()
+    public function itRendersNoTrackingLinkWhenNoQueueMailGiven ()
     {
 
         /**
@@ -134,19 +135,18 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
         * Given a queueRecipient is defined
         * Given there is no queueMail given
         * When the ViewHelper is rendered
-        * Then no replacement takes place
+        * Then no tracking link is returned
         */
-        $this->importDataSet(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check10.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Expected/Check10.txt');
-        $result = $this->standAloneViewHelper->render();
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        static::assertEmpty($result);
     }
 
     /**
@@ -154,7 +154,7 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itReplacesLinkWhenQueueMailButNoQueueRecipientGiven ()
+    public function itRendersNoTrackingLinkWhenNoQueueRecipientGiven ()
     {
 
         /**
@@ -164,19 +164,18 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
          * Given a queueMail is defined
          * Given there is no queueRecipient given
          * When the ViewHelper is rendered
-         * Then the replacement takes place
+         * Then no tracking link is returned
          */
-        $this->importDataSet(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Database/Check20.xml');
+        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check20.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
 
-        $expected = file_get_contents(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Expected/Check20.txt');
-        $result = $this->standAloneViewHelper->render();
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        static::assertEmpty($result);
     }
 
     /**
@@ -184,19 +183,19 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itReplacesLinkWhenQueueMailAndQueueRecipientGiven ()
+    public function itRendersTrackingLink ()
     {
 
         /**
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueMail is defined
          * Given a queueRecipient is defined
+         * Given a queueMail is defined
          * When the ViewHelper is rendered
-         * Then the replacement takes place
+         * Then no tracking link is returned
          */
-        $this->importDataSet(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Database/Check30.xml');
+        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check30.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
@@ -205,10 +204,10 @@ class ReplaceLinksRedirectHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/ReplaceLinksRedirectHelperTest/Fixtures/Expected/Check30.txt');
-        $result = $this->standAloneViewHelper->render();
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        static::assertEquals('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=confirmation&tx_rkwmailer_rkwmailer[controller]=Link" width="1" height="1" alt="" />', $result);
+
     }
 
 

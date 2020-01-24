@@ -36,22 +36,11 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      *
      * @param string $parameter stdWrap.typolink style parameter string
      * @param string $additionalParams
-     * @param int $pageUid pageUid for FE-configuration (optional)
      * @return string
      * @see https://docs.typo3.org/typo3cms/TyposcriptReference/Functions/Typolink/Index.html#resource-references
      */
-    public function render($parameter, $additionalParams = '', $pageUid = null)
+    public function render($parameter, $additionalParams = '')
     {
-        if (!$pageUid) {
-            $pageUid = 1;
-        }
-
-        // check for pid in parameters for getting correct domain
-        if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
-            $pageUid = $matches[3];
-        }
-
-        $this->initTSFE($pageUid);
 
         return static::renderStatic(
             [
@@ -76,6 +65,17 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
         $parameter = $arguments['parameter'];
         $additionalParams = $arguments['additionalParams'];
 
+        // check for pid in parameters for getting correct domain
+        $pageUid = 1;
+        if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
+            if ($matches[3] > 0) {
+                $pageUid = $matches[3];
+            }
+        }
+
+        // init frontend
+        \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
+
         $content = '';
         if ($parameter) {
             $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
@@ -90,48 +90,6 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
         }
 
         return $content;
-        //===
     }
 
-
-    /**
-     * init frontend to render frontend links in task
-     *
-     * @param integer $id
-     * @param integer $typeNum
-     * @return void
-     */
-    protected function initTSFE($id = 1, $typeNum = 0)
-    {
-
-        // only if in BE-Mode!!! Otherwise FE will be crashed
-        if (TYPO3_MODE == 'BE') {
-            if (!is_object($GLOBALS['TT'])) {
-                $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-                $GLOBALS['TT']->start();
-            }
-
-            if (
-                (!$GLOBALS['TSFE'] instanceof \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController)
-                || ($GLOBALS['TSFE']->id != $id)
-                || ($GLOBALS['TSFE']->type != $typeNum)
-            ) {
-
-                $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', $GLOBALS['TYPO3_CONF_VARS'], $id, $typeNum);
-                $GLOBALS['TSFE']->connectToDB();
-                $GLOBALS['TSFE']->initFEuser();
-                $GLOBALS['TSFE']->determineId();
-                $GLOBALS['TSFE']->initTemplate();
-                $GLOBALS['TSFE']->getConfigArray();
-                $GLOBALS['LANG']->csConvObj = $GLOBALS['TSFE']->csConvObj;
-
-                if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-                    $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-                    $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-                    $_SERVER['HTTP_HOST'] = $host;
-                    $GLOBALS['TSFE']->config['config']['absRefPrefix'] = $host;
-                }
-            }
-        }
-    }
 }

@@ -42,7 +42,6 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'RkwMailer', 'user'
         );
-
         $counterPixelPid = intval($extbaseFrameworkConfiguration['counterPixelPid']);
 
         if (
@@ -51,8 +50,8 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             && ($queueMail > 0)
         ) {
 
-            // set pid
-            $this->initTSFE(intval($counterPixelPid));
+            // init frontend
+            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
 
             // load FrontendUriBuilder
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
@@ -79,45 +78,4 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
         return '';
     }
 
-
-    /**
-     * init frontend to render frontend links in task
-     *
-     * @param integer $id
-     * @param integer $typeNum
-     * @return void
-     */
-    protected function initTSFE($id = 1, $typeNum = 0)
-    {
-
-        // only if in BE-Mode!!! Otherwise FE will be crashed
-        if (TYPO3_MODE == 'BE') {
-
-            if (!is_object($GLOBALS['TT'])) {
-                $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-                $GLOBALS['TT']->start();
-            }
-
-            if (
-                (!$GLOBALS['TSFE'] instanceof \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController)
-                || ($GLOBALS['TSFE']->id != $id)
-                || ($GLOBALS['TSFE']->type != $typeNum)
-            ) {
-                $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', $GLOBALS['TYPO3_CONF_VARS'], $id, $typeNum);
-                $GLOBALS['TSFE']->connectToDB();
-                $GLOBALS['TSFE']->initFEuser();
-                $GLOBALS['TSFE']->determineId();
-                $GLOBALS['TSFE']->initTemplate();
-                $GLOBALS['TSFE']->getConfigArray();
-                $GLOBALS['LANG']->csConvObj = $GLOBALS['TSFE']->csConvObj;
-
-                if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-                    $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-                    $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-                    $_SERVER['HTTP_HOST'] = $host;
-                    $GLOBALS['TSFE']->config['config']['absRefPrefix'] = $host;
-                }
-            }
-        }
-    }
 }
