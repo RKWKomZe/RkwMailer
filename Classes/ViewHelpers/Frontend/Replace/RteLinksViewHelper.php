@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
@@ -56,23 +58,33 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
      */
     public function render($value = null, $plaintextFormat = false, $style = '')
     {
-        $this->contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $this->style = $style;
-        $this->plaintextFormat = (bool) $plaintextFormat;
-        if ($value === null) {
-            $value = $this->renderChildren();
+
+        try {
+
+            $this->contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $this->style = $style;
+            $this->plaintextFormat = (bool) $plaintextFormat;
+            if ($value === null) {
+                $value = $this->renderChildren();
+            }
+
+            if (!is_string($value)) {
+                return $value;
+            }
+
+            $callbackFunction = 'replaceHtml';
+            if ($this->plaintextFormat) {
+                $callbackFunction = 'replacePlaintext';
+            }
+
+            return preg_replace_callback('/(<link ([^>]+)>([^<]+)<\/link>)/', array($this, $callbackFunction), $value);
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
         }
 
-        if (!is_string($value)) {
-            return $value;
-        }
+        return $value;
 
-        $callbackFunction = 'replaceHtml';
-        if ($this->plaintextFormat) {
-            $callbackFunction = 'replacePlaintext';
-        }
-
-        return preg_replace_callback('/(<link ([^>]+)>([^<]+)<\/link>)/', array($this, $callbackFunction), $value);
     }
 
 
@@ -154,5 +166,13 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
         return $matches[0];
     }
 
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger()
+    {
+        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    }
 
 }

@@ -16,6 +16,8 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 
@@ -74,35 +76,45 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $key = $arguments['key'];
-        $languageKey = $arguments['languageKey'];
-        $id = $arguments['id'];
-        $default = $arguments['default'];
-        $htmlEscape = $arguments['htmlEscape'];
-        $extensionName = $arguments['extensionName'];
-        $arguments = $arguments['arguments'];
 
-        // Wrapper including a compatibility layer for TYPO3 Flow Translation
-        if ($id === null) {
-            $id = $key;
-        }
+        try {
 
-        if ((string)$id === '') {
-            throw new InvalidVariableException('An argument "key" or "id" has to be provided', 1351584844);
-            //===
-        }
+            $key = $arguments['key'];
+            $languageKey = $arguments['languageKey'];
+            $id = $arguments['id'];
+            $default = $arguments['default'];
+            $htmlEscape = $arguments['htmlEscape'];
+            $extensionName = $arguments['extensionName'];
+            $arguments = $arguments['arguments'];
 
-        $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
-        if ($value === null) {
-            $value = $default !== null ? $default : $renderChildrenClosure();
-            if (!empty($arguments)) {
-                $value = vsprintf($value, $arguments);
+            // Wrapper including a compatibility layer for TYPO3 Flow Translation
+            if ($id === null) {
+                $id = $key;
             }
-        } elseif ($htmlEscape) {
-            $value = htmlspecialchars($value);
+
+            if ((string)$id === '') {
+                throw new InvalidVariableException('An argument "key" or "id" has to be provided', 1351584844);
+            }
+
+            $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
+            if ($value === null) {
+                $value = $default !== null ? $default : $renderChildrenClosure();
+                if (!empty($arguments)) {
+                    $value = vsprintf($value, $arguments);
+                }
+            } elseif ($htmlEscape) {
+                $value = htmlspecialchars($value);
+            }
+
+            return $value;
+
+        } catch (\Exception $e) {
+
+            /** @var \TYPO3\CMS\Core\Log\Logger $logger */
+            $logger =  GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to translate: %s', $e->getMessage()));
         }
 
-        return $value;
-        //===
+        return '';
     }
 }
