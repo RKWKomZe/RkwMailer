@@ -15,6 +15,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -62,34 +63,44 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $parameter = $arguments['parameter'];
-        $additionalParams = $arguments['additionalParams'];
-
-        // check for pid in parameters for getting correct domain
-        $pageUid = 1;
-        if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
-            if ($matches[3] > 0) {
-                $pageUid = $matches[3];
-            }
-        }
-
-        // init frontend
-        \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
 
         $content = '';
-        if ($parameter) {
-            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $content = $contentObject->typoLink_URL(
-                [
-                    'parameter'        => self::createTypolinkParameterArrayFromArguments($parameter, $additionalParams),
-                    'forceAbsoluteUrl' => 1,
-                    'target'           => '_blank',
-                    'extTarget'        => '_blank',
-                ]
-            );
+        try {
+            $parameter = $arguments['parameter'];
+            $additionalParams = $arguments['additionalParams'];
+
+            // check for pid in parameters for getting correct domain
+            $pageUid = 1;
+            if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
+                if ($matches[3] > 0) {
+                    $pageUid = $matches[3];
+                }
+            }
+
+            // init frontend
+            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
+
+            if ($parameter) {
+                $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+                $content = $contentObject->typoLink_URL(
+                    [
+                        'parameter'        => self::createTypolinkParameterArrayFromArguments($parameter, $additionalParams),
+                        'forceAbsoluteUrl' => 1,
+                        'target'           => '_blank',
+                        'extTarget'        => '_blank',
+                    ]
+                );
+            }
+
+        } catch (\Exception $e) {
+
+            /** @var \TYPO3\CMS\Core\Log\Logger $logger */
+            $logger =  GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
         }
 
         return $content;
     }
+
 
 }
