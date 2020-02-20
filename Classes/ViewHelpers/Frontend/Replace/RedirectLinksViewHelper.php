@@ -15,6 +15,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class RedirectLinksViewHelper
  *
@@ -60,32 +64,38 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
     public function render($value = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, $isPlaintext = false, $additionalParams = array())
     {
 
-        // init frontend
-        \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($this->getRedirectPid()));
+        try {
 
-        if ($value === null) {
-            $value = $this->renderChildren();
-        }
+            // init frontend
+            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($this->getRedirectPid()));
 
-        if (!is_string($value)) {
-            return $value;
-        }
-
-        $this->queueMail = $queueMail;
-        $this->queueRecipient = $queueRecipient;
-        $this->additionalParams = $additionalParams;
-
-        if ($this->queueMail) {
-
-            if ($isPlaintext == true) {
-
-                return preg_replace_callback('/(http[s]?:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
-
-            } else {
-                // U for non-greedy behavior: take as less signs as possible
-                return preg_replace_callback('/(<a.+href=")([^"]+)(")/U', array($this, 'replaceHtml'), $value);
+            if ($value === null) {
+                $value = $this->renderChildren();
             }
 
+            if (!is_string($value)) {
+                return $value;
+            }
+
+            $this->queueMail = $queueMail;
+            $this->queueRecipient = $queueRecipient;
+            $this->additionalParams = $additionalParams;
+
+            if ($this->queueMail) {
+
+                if ($isPlaintext == true) {
+
+                    return preg_replace_callback('/(http[s]?:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
+
+                } else {
+                    // U for non-greedy behavior: take as less signs as possible
+                    return preg_replace_callback('/(<a.+href=")([^"]+)(")/U', array($this, 'replaceHtml'), $value);
+                }
+
+            }
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
         }
 
         return $value;
@@ -204,4 +214,11 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
     }
 
 
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger()
+    {
+        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    }
 }

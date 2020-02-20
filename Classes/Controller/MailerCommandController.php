@@ -175,6 +175,11 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         try {
 
+            // security check
+            if (!$this->securityCheck($settingsPid)) {
+                throw new \RKW\RkwMailer\Exception('Cache directory is not secure. Please fix this first');
+            }
+
             /** @var \RKW\RkwMailer\Validation\QueueMailValidator $sendMailHelper */
             $queueMailValidator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueueMailValidator::class);
 
@@ -230,9 +235,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                             }
                         }
 
-                        // ====================================================
-                        // Set QueueMail status as "sent" (4), if there are no more recipients
-                        // except for the queueMail is used as pipeline
+                    // ====================================================
+                    // Set QueueMail status as "sent" (4), if there are no more recipients
+                    // except for the queueMail is used as pipeline
                     } else {
 
                         if (!$queueMail->getPipeline()) {
@@ -249,7 +254,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     $this->queueMailRepository->update($queueMail);
                     $this->persistenceManager->persistAll();
 
-                    // try to catch error and set status to 99
+                // try to catch error and set status to 99
                 } catch (\Exception $e) {
 
                     $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to send e-mails. Mail with id %s has been canceled. Error: %s.', $queueMail->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
@@ -398,6 +403,39 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         return $this->logger;
         //===
+    }
+
+
+    /**
+     * Checks if cache directory is protected
+     *
+     * @param int $settingsPid
+     * @return bool
+     */
+    protected function securityCheck($settingsPid = 1) {
+
+        $return = false;
+        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($settingsPid);
+        $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+        $url= 'http://' . $host .  '/typo3temp/Cache/Data/rkw_mailer/index.html';
+
+        $handle = curl_init($url);
+        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($handle, CURLOPT_NOPROXY, $host);
+
+        // Get the Link
+        $response = curl_exec($handle);
+
+        // Check for 403 (forbidden)
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+
+        if($httpCode == 403) {
+            $return = true;
+        }
+
+        curl_close($handle);
+
+        return $return;
     }
 
 
