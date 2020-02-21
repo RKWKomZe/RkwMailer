@@ -67,7 +67,6 @@ class MailBodyCache
 
         $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
         return $this->getCache($cacheIdentifier);
-        //===
     }
 
 
@@ -95,7 +94,6 @@ class MailBodyCache
     {
         $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'html');
         return $this->getCache($cacheIdentifier);
-        //===
     }
 
 
@@ -123,7 +121,6 @@ class MailBodyCache
     {
         $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'calendar');
         return $this->getCache($cacheIdentifier);
-        //===
     }
 
     /**
@@ -161,7 +158,6 @@ class MailBodyCache
     protected function getCacheIdentifier($queueRecipient, $property)
     {
         return 'MailBodyCache_' . intval($queueRecipient->getUid()) . '_' . $property;
-        //===
     }
 
 
@@ -179,11 +175,9 @@ class MailBodyCache
             // get cached content
             $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Getting MailBodyCache for identifier "%s".', $cacheIdentifier));
             return $this->cache->get($cacheIdentifier);
-            //===
         }
 
         return '';
-        //===
 
     }
 
