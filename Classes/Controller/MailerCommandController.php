@@ -3,6 +3,7 @@
 namespace RKW\RkwMailer\Controller;
 
 use \RKW\RkwMailer\Validation\QueueMailValidator;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -176,7 +177,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
         try {
 
             // security check
-            if (!$this->securityCheck($settingsPid)) {
+            if (!$this->securityCheck()) {
                 throw new \RKW\RkwMailer\Exception('Cache directory is not secure. Please fix this first');
             }
 
@@ -409,33 +410,43 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     /**
      * Checks if cache directory is protected
      *
-     * @param int $settingsPid
      * @return bool
      */
-    protected function securityCheck($settingsPid = 1) {
+    protected function securityCheck() {
 
-        $return = false;
-        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($settingsPid);
-        $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-        $url= 'http://' . $host .  '/typo3temp/Cache/Data/rkw_mailer/index.html';
 
-        $handle = curl_init($url);
-        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($handle, CURLOPT_NOPROXY, $host);
+        if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['generateApacheHtaccess']) {
 
-        // Get the Link
-        $response = curl_exec($handle);
+            // build path
+            $pathToFile =  'typo3temp' . DIRECTORY_SEPARATOR . 'Cache' . DIRECTORY_SEPARATOR . 'Data' . DIRECTORY_SEPARATOR . 'rkw_mailer' . DIRECTORY_SEPARATOR . '.htaccess';
+            if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) <= 9000000) {
+                $pathToFile = PATH_site . $pathToFile;
+            } else {
+                $pathToFile = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . $pathToFile;
+            }
 
-        // Check for 403 (forbidden)
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            // create .htaccess if there is none!
+            if (! file_exists($pathToFile)) {
 
-        if($httpCode == 403) {
-            $return = true;
+                $htaccessContent = '
+# Apache < 2.3
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+	Satisfy All
+</IfModule>
+
+# Apache ≥ 2.3
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+			';
+
+                return (bool) file_put_contents($pathToFile, $htaccessContent);
+            }
         }
 
-        curl_close($handle);
-
-        return $return;
+        return true;
     }
 
 
