@@ -40,7 +40,6 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      * @return string
      * @see https://docs.typo3.org/typo3cms/TyposcriptReference/Functions/Typolink/Index.html#resource-references
      */
-    /*
     public function render($parameter, $additionalParams = '')
     {
 
@@ -53,7 +52,6 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
             $this->renderingContext
         );
     }
-    */
 
     /**
      * Initialize arguments

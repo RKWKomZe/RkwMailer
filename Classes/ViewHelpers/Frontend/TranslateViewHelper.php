@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 
@@ -36,13 +36,8 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      */
     public function initializeArguments()
     {
-        $this->registerArgument('key', 'string', 'Translation Key', false, null);
+        parent::initializeArguments();
         $this->registerArgument('languageKey', 'string', 'Language Key', false, null);
-        $this->registerArgument('id', 'string', 'Translation Key compatible to TYPO3 Flow', false, null);
-        $this->registerArgument('default', 'string', 'If the given locallang key could not be found, this value is used. If this argument is not set, child nodes will be used to render the default', false, null);
-        $this->registerArgument('arguments', 'array', 'Arguments to be replaced in the resulting string', false, false);
-        $this->registerArgument('extensionName', 'string', 'UpperCamelCased extension key (for example BlogExample)', false, null);
-        $this->registerArgument('htmlEscape', 'bool', 'TRUE if the result should be htmlescaped. This won\'t have an effect for the default value', false, false);
     }
 
 
@@ -51,7 +46,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      *
      * @return string The translated key or tag body if key doesn't exist
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
-
+     */
     public function render(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         return static::renderStatic(
@@ -67,7 +62,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
         );
-    } */
+    }
 
 
 
@@ -90,6 +85,15 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
         $extensionName = $arguments['extensionName'];
         $arguments = $arguments['arguments'];
 
+
+        if ($htmlEscape !== null) {
+            GeneralUtility::logDeprecatedViewHelperAttribute(
+                'htmlEscape',
+                $renderingContext,
+                'Please wrap the view helper in <f:format.raw> if you want to disable HTML escaping, which is enabled by default now.'
+            );
+        }
+
         // Wrapper including a compatibility layer for TYPO3 Flow Translation
         if ($id === null) {
             $id = $key;
@@ -97,20 +101,21 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
 
         if ((string)$id === '') {
             throw new InvalidVariableException('An argument "key" or "id" has to be provided', 1351584844);
-            //===
         }
 
-        $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
+        $request = $renderingContext->getControllerContext()->getRequest();
+        $extensionName = $extensionName === null ? $request->getControllerExtensionName() : $extensionName;
+        try {
+            $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
+        } catch (\InvalidArgumentException $e) {
+            $value = null;
+        }
         if ($value === null) {
             $value = $default !== null ? $default : $renderChildrenClosure();
             if (!empty($arguments)) {
                 $value = vsprintf($value, $arguments);
             }
-        } elseif ($htmlEscape) {
-            $value = htmlspecialchars($value);
         }
-
         return $value;
-        //===
     }
 }
