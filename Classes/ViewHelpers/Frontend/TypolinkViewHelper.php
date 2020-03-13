@@ -16,8 +16,9 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+
 
 /**
  * Class TypolinkViewHelper
@@ -39,6 +40,7 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      * @return string
      * @see https://docs.typo3.org/typo3cms/TyposcriptReference/Functions/Typolink/Index.html#resource-references
      */
+    /*
     public function render($parameter, $additionalParams = '')
     {
 
@@ -51,12 +53,23 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
             $this->renderingContext
         );
     }
+    */
+
+    /**
+     * Initialize arguments
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('pageUid', 'int', 'pageUid for FE-configuration (optional)', false, null);
+
+    }
 
     /**
      * Except for "forceAbsoluteUrl" this is an exact copy of the parent-class
      *
      * @param array $arguments
-     * @param callable $renderChildrenClosure
+     * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
@@ -64,9 +77,15 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
     {
         $parameter = $arguments['parameter'];
         $additionalParams = $arguments['additionalParams'];
+        $pageUid = $arguments['pageUid'];
+
+        // Start: Added content from old render() function
+        if (!$pageUid) {
+            $pageUid = 1;
+        }
 
         // check for pid in parameters for getting correct domain
-        $pageUid = 1;
+        //$pageUid = 1;
         if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
             if ($matches[3] > 0) {
                 $pageUid = $matches[3];
@@ -79,14 +98,25 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
         $content = '';
         if ($parameter) {
             $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $content = $contentObject->typoLink_URL(
-                [
-                    'parameter'        => self::createTypolinkParameterArrayFromArguments($parameter, $additionalParams),
-                    'forceAbsoluteUrl' => 1,
-                    'target'           => '_blank',
-                    'extTarget'        => '_blank',
-                ]
-            );
+            if (version_compare(TYPO3_version, '8.7.0', '<=')) {
+                $content = $contentObject->typoLink_URL(
+                    [
+                        'parameter'        => self::createTypolinkParameterArrayFromArguments($parameter, $additionalParams),
+                        'forceAbsoluteUrl' => 1,
+                        'target'           => '_blank',
+                        'extTarget'        => '_blank',
+                    ]
+                );
+            } else {
+                $content = $contentObject->typoLink_URL(
+                    [
+                        'parameter'        => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
+                        'forceAbsoluteUrl' => 1,
+                        'target'           => '_blank',
+                        'extTarget'        => '_blank',
+                    ]
+                );
+            }
         }
 
         return $content;

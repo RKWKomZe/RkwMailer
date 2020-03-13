@@ -32,35 +32,43 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
 {
 
     /**
+     * initializeArguments
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('key', 'string', 'Translation Key', false, null);
+        $this->registerArgument('languageKey', 'string', 'Language Key', false, null);
+        $this->registerArgument('id', 'string', 'Translation Key compatible to TYPO3 Flow', false, null);
+        $this->registerArgument('default', 'string', 'If the given locallang key could not be found, this value is used. If this argument is not set, child nodes will be used to render the default', false, null);
+        $this->registerArgument('arguments', 'array', 'Arguments to be replaced in the resulting string', false, false);
+        $this->registerArgument('extensionName', 'string', 'UpperCamelCased extension key (for example BlogExample)', false, null);
+        $this->registerArgument('htmlEscape', 'bool', 'TRUE if the result should be htmlescaped. This won\'t have an effect for the default value', false, false);
+    }
+
+
+    /**
      * Render translation
      *
-     * @param string $key Translation Key
-     * @param string $languageKey Language Key
-     * @param string $id Translation Key compatible to TYPO3 Flow
-     * @param string $default If the given locallang key could not be found, this value is used. If this argument is not set,
-     *     child nodes will be used to render the default
-     * @param array $arguments Arguments to be replaced in the resulting string
-     * @param string $extensionName UpperCamelCased extension key (for example BlogExample)
-     * @param bool $htmlEscape TRUE if the result should be htmlescaped. This won't have an effect for the default value
      * @return string The translated key or tag body if key doesn't exist
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
-     */
-    public function render($key = null, $languageKey = null, $id = null, $default = null, array $arguments = null, $extensionName = null, $htmlEscape = false)
+
+    public function render(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         return static::renderStatic(
             array(
-                'key'           => $key,
-                'languageKey'   => $languageKey,
-                'id'            => $id,
-                'default'       => $default,
-                'htmlEscape'    => $htmlEscape,
-                'arguments'     => $arguments,
-                'extensionName' => $extensionName,
+                'key'           => $arguments['key'],
+                'languageKey'   => $arguments['languageKey'],
+                'id'            => $arguments['id'],
+                'default'       => $arguments['default'],
+                'htmlEscape'    => $arguments['htmlEscape'],
+                'arguments'     => $arguments['arguments'],
+                'extensionName' => $arguments['extensionName'],
             ),
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
         );
-    }
+    } */
+
 
 
     /**
