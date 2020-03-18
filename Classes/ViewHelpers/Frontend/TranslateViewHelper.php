@@ -15,12 +15,16 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 
 /**
  * Class TranslateViewHelper
+ *
+ * @deprecated For TYPO3 7.6 only
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
@@ -32,38 +36,35 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
 {
 
     /**
-     * initializeArguments
-     */
-    public function initializeArguments()
-    {
-        parent::initializeArguments();
-        $this->registerArgument('languageKey', 'string', 'Language Key', false, null);
-    }
-
-
-    /**
      * Render translation
      *
+     * @param string $key Translation Key
+     * @param string $languageKey Language Key
+     * @param string $id Translation Key compatible to TYPO3 Flow
+     * @param string $default If the given locallang key could not be found, this value is used. If this argument is not set,
+     *     child nodes will be used to render the default
+     * @param array $arguments Arguments to be replaced in the resulting string
+     * @param string $extensionName UpperCamelCased extension key (for example BlogExample)
+     * @param bool $htmlEscape TRUE if the result should be htmlescaped. This won't have an effect for the default value
      * @return string The translated key or tag body if key doesn't exist
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
      */
-    public function render(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public function render($key = null, $languageKey = null, $id = null, $default = null, array $arguments = null, $extensionName = null, $htmlEscape = false)
     {
         return static::renderStatic(
             array(
-                'key'           => $arguments['key'],
-                'languageKey'   => $arguments['languageKey'],
-                'id'            => $arguments['id'],
-                'default'       => $arguments['default'],
-                'htmlEscape'    => $arguments['htmlEscape'],
-                'arguments'     => $arguments['arguments'],
-                'extensionName' => $arguments['extensionName'],
+                'key'           => $key,
+                'languageKey'   => $languageKey,
+                'id'            => $id,
+                'default'       => $default,
+                'htmlEscape'    => $htmlEscape,
+                'arguments'     => $arguments,
+                'extensionName' => $extensionName,
             ),
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
         );
     }
-
 
 
     /**
@@ -77,45 +78,45 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $key = $arguments['key'];
-        $languageKey = $arguments['languageKey'];
-        $id = $arguments['id'];
-        $default = $arguments['default'];
-        $htmlEscape = $arguments['htmlEscape'];
-        $extensionName = $arguments['extensionName'];
-        $arguments = $arguments['arguments'];
 
-
-        if ($htmlEscape !== null) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'htmlEscape',
-                $renderingContext,
-                'Please wrap the view helper in <f:format.raw> if you want to disable HTML escaping, which is enabled by default now.'
-            );
-        }
-
-        // Wrapper including a compatibility layer for TYPO3 Flow Translation
-        if ($id === null) {
-            $id = $key;
-        }
-
-        if ((string)$id === '') {
-            throw new InvalidVariableException('An argument "key" or "id" has to be provided', 1351584844);
-        }
-
-        $request = $renderingContext->getControllerContext()->getRequest();
-        $extensionName = $extensionName === null ? $request->getControllerExtensionName() : $extensionName;
         try {
-            $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
-        } catch (\InvalidArgumentException $e) {
-            $value = null;
-        }
-        if ($value === null) {
-            $value = $default !== null ? $default : $renderChildrenClosure();
-            if (!empty($arguments)) {
-                $value = vsprintf($value, $arguments);
+
+            $key = $arguments['key'];
+            $languageKey = $arguments['languageKey'];
+            $id = $arguments['id'];
+            $default = $arguments['default'];
+            $htmlEscape = $arguments['htmlEscape'];
+            $extensionName = $arguments['extensionName'];
+            $arguments = $arguments['arguments'];
+
+            // Wrapper including a compatibility layer for TYPO3 Flow Translation
+            if ($id === null) {
+                $id = $key;
             }
+
+            if ((string)$id === '') {
+                throw new InvalidVariableException('An argument "key" or "id" has to be provided', 1351584844);
+            }
+
+            $value = \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
+            if ($value === null) {
+                $value = $default !== null ? $default : $renderChildrenClosure();
+                if (!empty($arguments)) {
+                    $value = vsprintf($value, $arguments);
+                }
+            } elseif ($htmlEscape) {
+                $value = htmlspecialchars($value);
+            }
+
+            return $value;
+
+        } catch (\Exception $e) {
+
+            /** @var \TYPO3\CMS\Core\Log\Logger $logger */
+            $logger =  GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to translate: %s', $e->getMessage()));
         }
-        return $value;
+
+        return '';
     }
 }
