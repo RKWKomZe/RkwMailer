@@ -134,10 +134,21 @@ class TypolinkViewHelperTest extends FunctionalTestCase
         * When the ViewHelper is rendered
         * Then the links are rendered like in frontend context
         */
-        $this->standAloneViewHelper->setTemplate('Check10.html');
 
-        $expected = file_get_contents(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Expected/Check10.txt');
-        $result = $this->standAloneViewHelper->render();
+        if (version_compare(TYPO3_version, '8.7.0', '<=')) {
+            $this->standAloneViewHelper->setTemplate('Check10.html');
+
+            $expected = file_get_contents(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Expected/Check10.txt');
+            $result = $this->standAloneViewHelper->render();
+
+        } else {
+            $this->standAloneViewHelper->setTemplate('Check87.html');
+
+            $expected = file_get_contents(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Expected/Check87.txt');
+
+            $result = $this->standAloneViewHelper->renderStatic();
+        }
+
 
         static::assertEquals($expected, $result);
     }
