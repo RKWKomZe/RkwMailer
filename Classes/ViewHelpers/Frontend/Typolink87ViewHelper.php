@@ -33,27 +33,6 @@ class Typolink87ViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkView
 {
 
     /**
-     * Render
-     *
-     * @param string $parameter stdWrap.typolink style parameter string
-     * @param string $additionalParams
-     * @return string
-     * @see https://docs.typo3.org/typo3cms/TyposcriptReference/Functions/Typolink/Index.html#resource-references
-     */
-    public function render($parameter, $additionalParams = '')
-    {
-
-        return static::renderStatic(
-            [
-                'parameter'        => $parameter,
-                'additionalParams' => $additionalParams,
-            ],
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
-    }
-
-    /**
      * Initialize arguments
      */
     public function initializeArguments()
