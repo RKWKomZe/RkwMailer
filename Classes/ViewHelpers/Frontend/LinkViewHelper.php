@@ -79,6 +79,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
                 ->setSection($section)
                 ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
                 ->setArguments($additionalParams)
+                ->setAbsoluteUriScheme('https') // force https
                 ->setCreateAbsoluteUri(true)// force absolute link
                 ->setAddQueryString($addQueryString)
                 ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
