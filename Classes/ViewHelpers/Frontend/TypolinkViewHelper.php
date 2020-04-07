@@ -63,10 +63,10 @@ if ($currentVersion <= 8000000) {
          *
          * @param array $arguments
          * @param callable $renderChildrenClosure
-         * @param RenderingContextInterface $renderingContext
+         * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
          * @return string
          */
-        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
         {
 
             $content = '';
@@ -140,7 +140,7 @@ if ($currentVersion <= 8000000) {
          *
          * @param array $arguments
          * @param \Closure $renderChildrenClosure
-         * @param RenderingContextInterface $renderingContext
+         * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
          * @return string
          */
         public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
