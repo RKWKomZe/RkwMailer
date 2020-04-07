@@ -22,7 +22,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 $currentVersion = VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
 if ($currentVersion <= 8000000) {
 
-    use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
     /**
      * Class TypolinkViewHelper
@@ -67,7 +66,7 @@ if ($currentVersion <= 8000000) {
          * @param RenderingContextInterface $renderingContext
          * @return string
          */
-        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
         {
 
             $content = '';
@@ -114,8 +113,6 @@ if ($currentVersion <= 8000000) {
 
 } else {
 
-    use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-
     /**
      * Class TypolinkViewHelper
      *
@@ -146,7 +143,7 @@ if ($currentVersion <= 8000000) {
          * @param RenderingContextInterface $renderingContext
          * @return string
          */
-        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+        public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
         {
             $parameter = $arguments['parameter'];
             $additionalParams = $arguments['additionalParams'];
