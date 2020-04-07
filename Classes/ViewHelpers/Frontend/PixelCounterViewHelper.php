@@ -15,6 +15,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class PixelCounterViewHelper
  *
@@ -35,47 +39,62 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
     public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null)
     {
 
-        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-        $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'RkwMailer', 'user'
-        );
-        $counterPixelPid = intval($extbaseFrameworkConfiguration['counterPixelPid']);
+        try {
 
-        if (
-            ($counterPixelPid > 0)
-            && ($queueRecipient > 0)
-            && ($queueMail > 0)
-        ) {
-
-            // init frontend
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
-
-            // load FrontendUriBuilder
+            /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+            $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+            $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
+                \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+                'RkwMailer', 'user'
+            );
+            $counterPixelPid = intval($extbaseFrameworkConfiguration['counterPixelPid']);
 
-            /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
-            $uriBuilder->reset();
+            if (
+                ($counterPixelPid > 0)
+                && ($queueRecipient > 0)
+                && ($queueMail > 0)
+            ) {
 
-            // build link to controller action with needed params
-            $uriBuilder->setTargetPageUid($counterPixelPid)
-                ->setNoCache(true)
-                ->setUseCacheHash(false)
-                ->setCreateAbsoluteUri(true)
-                ->setArguments(
-                    array(
-                        'tx_rkwmailer_rkwmailer[uid]' => intval($queueRecipient->getUid()),
-                        'tx_rkwmailer_rkwmailer[mid]' => intval($queueMail->getUid()),
-                    )
-                );
+                // init frontend
+                \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
 
-            return '<img src="' . urldecode($uriBuilder->uriFor('confirmation', array(), 'Link', 'rkwmailer', 'Rkwmailer')) . '" width="1" height="1" alt="" />';
+                // load FrontendUriBuilder
+                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+
+                /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+                $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+                $uriBuilder->reset();
+
+                // build link to controller action with needed params
+                $uriBuilder->setTargetPageUid($counterPixelPid)
+                    ->setNoCache(true)
+                    ->setUseCacheHash(false)
+                    ->setCreateAbsoluteUri(true)
+                    ->setArguments(
+                        array(
+                            'tx_rkwmailer_rkwmailer[uid]' => intval($queueRecipient->getUid()),
+                            'tx_rkwmailer_rkwmailer[mid]' => intval($queueMail->getUid()),
+                        )
+                    );
+
+                return '<img src="' . urldecode($uriBuilder->uriFor('confirmation', array(), 'Link', 'rkwmailer', 'Rkwmailer')) . '" width="1" height="1" alt="" />';
+            }
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set pixel-counter: %s', $e->getMessage()));
         }
 
         return '';
+    }
+
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger()
+    {
+        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
 }

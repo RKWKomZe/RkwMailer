@@ -15,6 +15,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class LinkViewHelper
  *
@@ -57,38 +61,50 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
     public function render($action = null, array $arguments = array(), $controller = null, $extensionName = null, $pluginName = null, $pageUid = null, $pageType = 0, $noCache = false, $noCacheHash = false, $section = '', $linkAccessRestrictedPages = false, array $additionalParams = array(), $absolute = false, $addQueryString = false, array $argumentsToBeExcludedFromQueryString = array(), \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null)
     {
 
-        if (!$pageUid) {
-            $pageUid = 1;
+        try {
+
+            // init frontend
+            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
+
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+            /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+            $uriBuilder->reset();
+
+            // build link based on given data
+            $uriBuilder->setTargetPageUid($pageUid)
+                ->setTargetPageType($pageType)
+                ->setNoCache($noCache)
+                ->setUseCacheHash(!$noCacheHash)
+                ->setSection($section)
+                ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
+                ->setArguments($additionalParams)
+                ->setAbsoluteUriScheme('https') // force https
+                ->setCreateAbsoluteUri(true)// force absolute link
+                ->setAddQueryString($addQueryString)
+                ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
+
+            if ($queueMail) {
+                $uriBuilder->setUseRedirectLink(true)
+                    ->setQueueMail($queueMail)
+                    ->setQueueRecipient($queueRecipient);
+            }
+
+            return $uriBuilder->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
+
+        } catch (\Exception $e) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set link: %s', $e->getMessage()));
         }
 
-        // init frontend
-        \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
-
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-        /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-        $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
-        $uriBuilder->reset();
-
-        // build link based on given data
-        $uriBuilder->setTargetPageUid($pageUid)
-            ->setTargetPageType($pageType)
-            ->setNoCache($noCache)
-            ->setUseCacheHash(!$noCacheHash)
-            ->setSection($section)
-            ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
-            ->setArguments($additionalParams)
-            ->setCreateAbsoluteUri(true) // force absolute link
-            ->setAddQueryString($addQueryString)
-            ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
-
-        if ($queueMail) {
-            $uriBuilder->setUseRedirectLink(true)
-                ->setQueueMail($queueMail)
-                ->setQueueRecipient($queueRecipient);
-        }
-
-        return $uriBuilder->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
-        //===
+        return '';
     }
 
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger()
+    {
+        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    }
 }
