@@ -30,7 +30,7 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
      * Handles line breaks in plaintext mode
      *
      * @param string $value
-     * @param bool $keep
+     * @param bool $keepLineBreaks
      * @return string
      */
     public function render($value = null, $keepLineBreaks = false)

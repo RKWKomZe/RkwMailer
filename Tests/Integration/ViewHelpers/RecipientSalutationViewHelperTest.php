@@ -275,6 +275,36 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
 
 
 
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function itRendersMaleSalutationAllOptions ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given a queueRecipient is defined
+         * When the ViewHelper is rendered
+         * Then a male salutation with fallbackText is returned
+         */
+        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
+
+        $this->standAloneViewHelper->setTemplate('Check70.html');
+        $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
+
+        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check70.txt');
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
+
+        static::assertEquals($expected, $result);
+    }
+
+
+
     //=============================================
 
     /**
