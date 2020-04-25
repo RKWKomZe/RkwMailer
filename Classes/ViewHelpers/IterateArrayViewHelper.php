@@ -34,7 +34,8 @@ class IterateArrayViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
      */
     public function render($index, $list)
     {
-
+        // by MF: Seems not be used in extension. Maybe not even necessary while using fluid
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Seems never to be used.');
         return $list[$index];
         //===
     }

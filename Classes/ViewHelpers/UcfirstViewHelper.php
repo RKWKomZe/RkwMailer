@@ -33,7 +33,7 @@ class UcfirstViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHel
      */
     public function render($string)
     {
-
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Seems never to be used.');
         return ucfirst($string);
         //===
     }

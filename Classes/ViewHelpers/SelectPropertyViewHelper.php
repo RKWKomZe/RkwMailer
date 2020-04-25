@@ -38,6 +38,8 @@ class SelectPropertyViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
     public function render($property, $objectList, $iterationNumber)
     {
 
+        // by MF: Seems not be used in extension
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Seems never to be used.');
         $i = 0;
         foreach ($objectList as $object) {
 
