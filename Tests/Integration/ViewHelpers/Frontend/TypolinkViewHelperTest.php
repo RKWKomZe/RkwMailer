@@ -122,7 +122,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersLinks ()
     {
