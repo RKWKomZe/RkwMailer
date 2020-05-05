@@ -121,7 +121,7 @@ class LinkViewHelperTest extends FunctionalTestCase
 
     /**
      * @test
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersAbsoluteLink ()
     {
@@ -144,7 +144,7 @@ class LinkViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersAbsoluteLinkToGivenPage ()
     {
@@ -169,7 +169,7 @@ class LinkViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersAbsoluteLinkWithQueueMailAndRedirect ()
     {
@@ -204,7 +204,7 @@ class LinkViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersAbsoluteLinkWithQueueRecipientRedirect ()
     {

@@ -123,7 +123,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersNoTrackingLinkWhenNoQueueMailGiven ()
     {
@@ -152,7 +152,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersNoTrackingLinkWhenNoQueueRecipientGiven ()
     {
@@ -181,7 +181,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
     /**
      * @test
      * @throws \Exception
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersTrackingLink ()
     {

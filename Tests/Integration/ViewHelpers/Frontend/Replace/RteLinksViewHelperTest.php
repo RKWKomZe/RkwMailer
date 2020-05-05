@@ -121,7 +121,7 @@ class RteLinksViewHelperTest extends FunctionalTestCase
 
     /**
      * @test
-     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
     public function itRendersLinks ()
     {
