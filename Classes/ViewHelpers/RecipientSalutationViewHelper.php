@@ -25,6 +25,8 @@ if ($currentVersion < 8000000) {
     /**
      * Class RecipientSalutationViewHelper
      *
+     * @deprecated For TYPO3 7.6 only
+     *
      * @author Maximilian Fäßler <maximilian@faesslerweb.de>
      * @author Steffen Kroggel <developer@steffenkroggel.de>
      * @copyright Rkw Kompetenzzentrum
@@ -67,10 +69,10 @@ if ($currentVersion < 8000000) {
          *
          * @param array $arguments
          * @param \Closure $renderChildrenClosure
-         * @param TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+         * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
          * @return string
          */
-        static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
+        static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
         {
             /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
             $queueRecipient = $arguments['queueRecipient'];
