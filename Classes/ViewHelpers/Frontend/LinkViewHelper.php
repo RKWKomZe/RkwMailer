@@ -16,8 +16,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  */
 
 use Psr\Log\LoggerInterface;
+use RKW\RkwBasics\Helper\Common;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class LinkViewHelper
@@ -30,6 +32,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+
+    protected $urlScheme;
+
+    protected $settings;
+
+    public function __construct()
+    {
+        $this->settings = $this->getSettings();
+        $this->urlScheme = $this->getUrlScheme();
+    }
 
     /**
      * Example how to use in fluid:
@@ -79,7 +91,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
                 ->setSection($section)
                 ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
                 ->setArguments($additionalParams)
-                ->setAbsoluteUriScheme('https') // force https
+                ->setAbsoluteUriScheme($this->urlScheme) // force url scheme based on base_url
                 ->setCreateAbsoluteUri(true)// force absolute link
                 ->setAddQueryString($addQueryString)
                 ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString);
@@ -99,6 +111,26 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
         return '';
     }
 
+    /**
+     * @return mixed
+     */
+    protected function getUrlScheme() {
+        $parsedUrl = parse_url($this->settings['baseUrl']);
+
+        return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http');
+    }
+
+    /**
+     * Returns TYPO3 settings
+     *
+     * @param string $which Which type of settings will be loaded
+     * @return array
+     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     */
+    protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    {
+        return Common::getTyposcriptConfiguration('Rkwmailer', $which);
+    }
 
     /**
      * @return LoggerInterface
