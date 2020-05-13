@@ -1031,7 +1031,6 @@ class MailService
             }
 
             // add attachment if set
-            /*
             if (
                 ($queueMail->getAttachment())
                 && ($queueMail->getAttachmentName())
@@ -1041,7 +1040,6 @@ class MailService
                 $attachment = \Swift_Attachment::newInstance($queueMail->getAttachment(), $queueMail->getAttachmentName(), $queueMail->getAttachmentType());
                 $message->attach($attachment);
             }
-            */
 
             // ====================================================
             // Send mail
