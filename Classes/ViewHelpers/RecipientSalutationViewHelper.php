@@ -105,7 +105,13 @@ if ($currentVersion <= 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+
+            // Does not work. Minimum the salutation would build a string: string(8) "Herr Dr."
+            //if (!$finalName) {
+            if (
+                !trim($queueRecipient->getFirstName())
+                && !trim($queueRecipient->getLastName())
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;
@@ -193,7 +199,13 @@ if ($currentVersion <= 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+
+            // Does not work. Minimum the salutation would build a string: string(8) "Herr Dr."
+            //if (!$finalName) {
+            if (
+                !trim($queueRecipient->getFirstName())
+                && !trim($queueRecipient->getLastName())
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;

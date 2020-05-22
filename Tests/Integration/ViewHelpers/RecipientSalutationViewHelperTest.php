@@ -250,7 +250,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itRendersMaleSalutationUsingFallbackText ()
+    public function itRendersSalutationUsingFallbackText ()
     {
         /**
          * Scenario:
@@ -260,7 +260,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with fallbackText is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check60.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(3);
 
