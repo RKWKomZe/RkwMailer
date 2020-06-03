@@ -18,6 +18,7 @@ namespace RKW\RkwMailer\ViewHelpers;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use \TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 $currentVersion = VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
 if ($currentVersion <= 8000000) {
@@ -142,6 +143,9 @@ if ($currentVersion <= 8000000) {
      */
     class RecipientSalutationViewHelper extends AbstractViewHelper implements CompilableInterface
     {
+        // fix for not founding "render()":
+        // https://docs.typo3.org/m/typo3/book-extbasefluid/master/en-us/8-Fluid/8-developing-a-custom-viewhelper.html
+        use CompileWithRenderStatic;
 
         /**
          * initializeArguments
@@ -160,9 +164,6 @@ if ($currentVersion <= 8000000) {
         /**
          * Static rendering
          *
-         * @param array                     $arguments
-         * @param \Closure                  $renderChildrenClosure
-         * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
          * @return string
          */
         static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
