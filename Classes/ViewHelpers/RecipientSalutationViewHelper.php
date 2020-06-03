@@ -164,6 +164,9 @@ if ($currentVersion <= 8000000) {
         /**
          * Static rendering
          *
+         * @param array                     $arguments
+         * @param \Closure                  $renderChildrenClosure
+         * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
          * @return string
          */
         static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
