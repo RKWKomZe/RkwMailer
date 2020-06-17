@@ -92,7 +92,27 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         //====
     }
 
+    /**
+     * findByEmailAndQueueMail
+     *
+     * @param string $email
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @todo: Write Testing
+     */
+    public function findOneByEmailAndQueueMail($email, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    {
 
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('email', $email),
+                $query->equals('queueMail', $queueMail)
+            )
+        );
+
+        return $query->execute()->getFirst();
+    }
 
     /**
      * findAllLastBounced

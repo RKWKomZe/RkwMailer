@@ -550,7 +550,10 @@ class MailService
     {
 
         self::debugTime(__LINE__, __METHOD__);
-        if ($this->queueRecipientValidator->validate($queueRecipient)) {
+        if (
+            ($this->queueRecipientValidator->validate($queueRecipient))
+            && (! $this->hasQueueRecipient($queueRecipient))
+        ){
 
             // get queueMail-object
             $queueMail = $this->getQueueMail();
@@ -572,11 +575,32 @@ class MailService
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Added recipient with email "%s" (uid=%s) to queueMail with uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
 
             return true;
-            //===
         }
 
         return false;
-        //===
+    }
+
+
+    /**
+     * check if queue recipient already exists for queueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient|string $email
+     * @throws \Exception
+     * @return bool
+     */
+    public function hasQueueRecipient($email)
+    {
+        if ($email instanceof \RKW\RkwMailer\Domain\Model\QueueRecipient){
+            $email = $email->getEmail();
+        }
+
+        self::debugTime(__LINE__, __METHOD__);
+        if ($this->queueRecipientRepository->findOneByEmailAndQueueMail($email, $this->getQueueMail())) {
+            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Recipient with email "%s" already exists for queueMail with uid=%s.', $email, $this->getQueueMail()->getUid()));
+            return true;
+        }
+
+        return false;
     }
 
 
