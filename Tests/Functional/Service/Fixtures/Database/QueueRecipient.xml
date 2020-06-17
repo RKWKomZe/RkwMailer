@@ -249,11 +249,11 @@
         <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 
-    <!-- recipient for QueueMail 13, bounced three times hard -->
+    <!-- recipient for QueueMail 15, already added  -->
     <tx_rkwmailer_domain_model_queuerecipient>
         <uid>30</uid>
         <pid>2</pid>
-        <queue_mail>14</queue_mail>
+        <queue_mail>15</queue_mail>
         <frontend_user>0</frontend_user>
         <email>mail@rkw.de</email>
         <first_name>Karl</first_name>

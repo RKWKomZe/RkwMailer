@@ -310,7 +310,7 @@ class MailServiceTest extends FunctionalTestCase
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(14);
+        $queueMail = $this->queueMailRepository->findByIdentifier(15);
         $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
@@ -332,7 +332,7 @@ class MailServiceTest extends FunctionalTestCase
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(14);
+        $queueMail = $this->queueMailRepository->findByIdentifier(15);
         $this->subject->setQueueMail($queueMail);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
@@ -1555,15 +1555,6 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals('text/calendar', $mimePartCalendar->getContentType());
         static::assertContains('SUMMARY:Test Kalender', $mimePartCalendar->getBody());
 
-        /** @var \Swift_Attachment  $mimePartAttachment
-         * @toDo: not working!
-        $mimePartAttachment = $result->getChildren()[3];
-        static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
-        static::assertEquals('test.txt', $mimePartAttachment->getFilename());
-        static::assertEquals('text/plain', $mimePartAttachment->getContentType());
-        static::assertContains('Lorem Ipsum', $mimePartAttachment->getBody());
-         */
-
     }
 
     /**
@@ -1802,6 +1793,56 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals(MailMessage::class, get_class($result));
 
         static::assertEquals('Testbetreff der QueueMail', $result->getSubject());
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function prepareEmailForRecipient_UsingQueueMailWithTemplatesAndAttachmentsSetAndGivenQueueRecipient_AddsAttachmentsToMessageObject()
+    {
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(14);
+        $this->subject->setQueueMail($queueMail);
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(4);
+
+        /** @var \TYPO3\CMS\Core\Mail\MailMessage $result */
+        $result = $this->subject->prepareEmailForRecipient($queueRecipient);
+        static::assertEquals(MailMessage::class, get_class($result));
+
+        static::assertCount(4, $result->getChildren());
+
+        /** @var \Swift_MimePart  $mimePartHtml */
+        $mimePartHtml = $result->getChildren()[0];
+        static::assertEquals(\Swift_MimePart::class, get_class($mimePartHtml));
+        static::assertContains('TEST-TEMPLATE-HTML', $mimePartHtml->getBody());
+
+        /** @var \Swift_MimePart  $mimePartPlaintext */
+        $mimePartPlaintext = $result->getChildren()[1];
+        static::assertEquals(\Swift_MimePart::class, get_class($mimePartPlaintext));
+        static::assertContains('TEST-TEMPLATE-PLAINTEXT', $mimePartPlaintext->getBody());
+
+        /** @var \Swift_Attachment  $mimePartCalendar */
+        $mimePartCalendar = $result->getChildren()[2];
+        static::assertEquals(\Swift_Attachment::class, get_class($mimePartCalendar));
+        static::assertEquals('meeting.ics', $mimePartCalendar->getFilename());
+        static::assertEquals('text/calendar', $mimePartCalendar->getContentType());
+        static::assertContains('SUMMARY:Test Kalender', $mimePartCalendar->getBody());
+
+        /** @var \Swift_Attachment  $mimePartAttachment */
+        $mimePartAttachment = $result->getChildren()[3];
+        static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
+        static::assertEquals('Attachment.pdf', $mimePartAttachment->getFilename());
+        static::assertEquals('application/pdf', $mimePartAttachment->getContentType());
+        static::assertContains('Lorem Ipsum', $mimePartAttachment->getBody());
 
     }
 
