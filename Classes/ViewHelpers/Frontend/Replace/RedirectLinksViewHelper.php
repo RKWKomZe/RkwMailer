@@ -37,7 +37,6 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
      */
     protected $escapeOutput = false;
 
-
     /**
      * @var integer
      */

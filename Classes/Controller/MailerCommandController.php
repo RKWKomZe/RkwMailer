@@ -109,16 +109,17 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     /**
      * Creates test-emails
      *
-     * @param integer $numberOfTestMails Number of test-mails to generate
+     * @param int $numberOfTestMails Number of test-mails to generate
      * @param string $emails Comma-separated list of email-addresses to write to
-     * @param integer $settingsPid Pid to fetch TypoScript-settings from
+     * @param int $settingsPid Pid to fetch TypoScript-settings from
+     * @param int $linkPid Pid to link to
      * @throws \Exception
      * @throws \RKW\RkwMailer\Service\MailException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function createTestEmailsCommand($numberOfTestMails = 1, $emails = '', $settingsPid = 0)
+    public function createTestEmailsCommand($numberOfTestMails = 1, $emails = '', $settingsPid = 0, $linkPid = 1)
     {
 
         // initialize globals
@@ -136,14 +137,14 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Eins', 'lastName' => 'Mustermann'),
                         array(
                             'marker' => array(
-                                'pageUid' => intval($GLOBALS['TSFE']->id),
+                                'pageUid' => intval($linkPid),
                             ),
                         )
                     );
                     $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Zwei', 'lastName' => 'Mustermann'),
                         array(
                             'marker' => array(
-                                'pageUid' => intval($GLOBALS['TSFE']->id),
+                                'pageUid' => intval($linkPid),
                             ),
                         )
                     );
