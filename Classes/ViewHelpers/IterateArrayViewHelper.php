@@ -23,6 +23,7 @@ namespace RKW\RkwMailer\ViewHelpers;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated
  */
 class IterateArrayViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
@@ -34,9 +35,8 @@ class IterateArrayViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
      */
     public function render($index, $list)
     {
-
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Do not use it any more.');
         return $list[$index];
-        //===
     }
 
 

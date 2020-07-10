@@ -14,7 +14,7 @@
     <p>
         Testen Sie hier <a href="http://www.google.de" title="Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
         Testen Sie da <a href="http://www.yahoo.de/#anchor-1" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
-        Testen Sie dort <a href="mailto:mail@rkw.de" title="Titel ist Titel" class="test" style="color:green;">mit Klick</a>!
+        Testen Sie dort <a href="mailto:mail@rkw.de" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
         Testen Sie überall <a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
         Testen Sie hüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1" title="Titel ist Titel" target="_blank" class="test" style="color:green;">mit Klick</a>!
         Testen Sie drüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf" target="_blank" class="test" style="color:green;">Titel ist Titel"mit Klick</a>!

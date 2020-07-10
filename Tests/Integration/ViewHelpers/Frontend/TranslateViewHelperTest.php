@@ -134,8 +134,8 @@ class TranslateViewHelperTest extends FunctionalTestCase
         * When the ViewHelper is rendered
         * Then the translations are rendered like in frontend context
         */
-        $this->standAloneViewHelper->setTemplate('Check10.html');
 
+        $this->standAloneViewHelper->setTemplate('Check10.html');
         $expected = file_get_contents(__DIR__ . '/TranslateViewHelperTest/Fixtures/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 

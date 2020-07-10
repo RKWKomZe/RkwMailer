@@ -23,6 +23,7 @@ namespace RKW\RkwMailer\ViewHelpers;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated
  */
 class SelectPropertyViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
@@ -37,6 +38,8 @@ class SelectPropertyViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
      */
     public function render($property, $objectList, $iterationNumber)
     {
+
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Do not use it any more.');
 
         $i = 0;
         foreach ($objectList as $object) {

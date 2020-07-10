@@ -32,6 +32,14 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 {
 
     /**
+     * The output must not be escaped.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+
+    /**
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return string

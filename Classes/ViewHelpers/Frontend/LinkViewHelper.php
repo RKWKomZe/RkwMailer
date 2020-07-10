@@ -44,6 +44,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
     }
 
     /**
+     * The output must not be escaped.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Example how to use in fluid:
      * <vh:frontendLink pageId='3' actionName='optIn' controller='Notification' extensionName='rkwNewsletter'
      * pluginName='Notification' params='{token_yes: marker.token_yes, user: marker.user}' />

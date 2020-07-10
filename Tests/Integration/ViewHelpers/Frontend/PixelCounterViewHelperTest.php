@@ -162,7 +162,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          *
          * Given the ViewHelper is used in a template
          * Given a queueMail is defined
-         * Given there is no queueRecipient given
+         * Given there is no queueRecipient defined
          * When the ViewHelper is rendered
          * Then no tracking link is returned
          */
@@ -193,7 +193,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          * Given a queueRecipient is defined
          * Given a queueMail is defined
          * When the ViewHelper is rendered
-         * Then no tracking link is returned
+         * Then a valid tracking link is returned
          */
         $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check30.xml');
 
