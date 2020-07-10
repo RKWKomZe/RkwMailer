@@ -201,11 +201,6 @@ if ($currentVersion <= 8000000) {
                 $fullName[] = ucFirst($queueRecipient->getLastName());
             }
 
-
-            $finalName = trim(implode(' ', $fullName));
-
-            // Does not work. Minimum the salutation would build a string: string(8) "Herr Dr."
-            //if (!$finalName) {
             if (
                 !trim($queueRecipient->getFirstName())
                 && !trim($queueRecipient->getLastName())
@@ -213,17 +208,12 @@ if ($currentVersion <= 8000000) {
 
                 if ($fallbackText) {
                     return $fallbackText;
-                    //===
                 }
 
                 return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
-                //===
             }
 
             return ($prependText ? $prependText : '') . trim(implode(' ', $fullName)) . ($appendText ? $appendText : '');
-            //===
         }
-
-
     }
 }

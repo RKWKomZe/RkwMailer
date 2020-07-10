@@ -108,9 +108,9 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueRecipient is defined
+         * Given a text without line break
          * When the ViewHelper is rendered
-         * Then the text without line break is rendered by VH default settings
+         * Then the text is rendered without line breaks
          */
         $text = "Without line break, remove line breaks.";
 
@@ -135,9 +135,10 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueRecipient is defined
+         * Given a text with line break
          * When the ViewHelper is rendered
-         * Then the text with line break is rendered by VH default settings
+         * Then the text is rendered with line break
+         * Then the whitespace at the end of the first line is keept
          */
         // @toDo: currently also the whitespace after the comma is removed by the VH. Is this expected?
         $text = "With line break, \nremove line breaks.";
@@ -163,9 +164,9 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueRecipient is defined
+         * Given a text without line break
          * When the ViewHelper is rendered
-         * Then the text with line break is rendered by VH default settings
+         * Then the text break is rendered with manual line breaks
          */
         $text = "With line break, \nkeep line breaks.";
 

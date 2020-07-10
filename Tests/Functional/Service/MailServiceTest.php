@@ -219,14 +219,14 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     */
+
     public function setQueueMail_GivenSavedQueueMail_Works()
     {
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
         $queueMail = $this->queueMailRepository->findByIdentifier(2);
         $this->subject->setQueueMail($queueMail);
-
     }
+     */
 
     //=============================================
 

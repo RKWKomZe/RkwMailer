@@ -43,7 +43,6 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 
         if (! is_string($value)) {
             return $value;
-            //===
         }
 
         if ($keepLineBreaks) {
@@ -52,7 +51,7 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
         } else {
 
             // replace real line breaks and indents
-            $value = preg_replace('/\r|\n|\t|\s\s+/', '', $value);
+            $value = preg_replace('/\r|\n|\t|([ ]{2,})/', '', $value);
 
             // set manual line breaks
             $value = str_replace('\n', "\n", $value);
@@ -60,7 +59,6 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
         }
 
         return $value;
-        //===
 
     }
 

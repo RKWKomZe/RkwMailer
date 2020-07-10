@@ -113,14 +113,15 @@ class ImageViewHelperTest extends FunctionalTestCase
         *
         * Given the ViewHelper is used in a template
         * When the ViewHelper is rendered
-        * Then the links are rendered like in frontend context
+        * Then the images are rendered like in frontend context
         */
         $this->standAloneViewHelper->setTemplate('Check10.html');
 
-        $expected = file_get_contents(__DIR__ . '/ImageViewHelperTest/Fixtures/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
-        static::assertEquals($expected, $result);
+        static::assertContains('<img src="', $result);
+        static::assertContains('width="536"', $result);
+        static::assertContains('height="200"', $result);
     }
 
 
