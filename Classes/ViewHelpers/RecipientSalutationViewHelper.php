@@ -108,7 +108,10 @@ if ($currentVersion < 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+            if (
+                (!trim($queueRecipient->getFirstName()))
+                && (!trim($queueRecipient->getLastName()))
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;
@@ -117,12 +120,13 @@ if ($currentVersion < 8000000) {
                 return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
             }
 
-            return ($prependText ? $prependText : '') . trim(implode(' ', $fullName)) . ($appendText ? $appendText : '');
+            return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
         }
 
     }
 
 } else {
+
     /**
      * Class RecipientSalutationViewHelper
      *
@@ -196,7 +200,10 @@ if ($currentVersion < 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+            if (
+                (!trim($queueRecipient->getFirstName()))
+                && (!trim($queueRecipient->getLastName()))
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;
@@ -204,7 +211,7 @@ if ($currentVersion < 8000000) {
                 return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
             }
 
-            return ($prependText ? $prependText : '') . trim(implode(' ', $fullName)) . ($appendText ? $appendText : '');
+            return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
         }
 
     }
