@@ -9,9 +9,9 @@
 <rkwMailer:frontend.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
 \n\n
 <rkwMailer:frontend.replace.redirectLinks queueMail="{queueMail}" queueRecipient="{queueRecipient}" isPlaintext="true" additionalParams="{queueMail.campaignParameterExploded}">
-	<a href="http://www.google.de">Testen</a>\n
-	<a href="http://www.google.de">Testen</a>\n
-	<a href="mailto:mail@steffenkroggel.de">Blalalal</a>\n
+	[ http://www.google.de ] Testen\n
+	[ http://www.google.de ] Testen\n
+	[ mailto:mail@steffenkroggel.de ] Blalalal\n
 </rkwMailer:frontend.replace.redirectLinks>
 \n\n
 <rkwMailer:frontend.replace.rteLinks plaintextFormat="true">
@@ -22,7 +22,7 @@
 \n\n
 Test with typolink: <rkwMailer:frontend.typolink parameter='http://www.google.de'  />
 \n\n
-<rkwMailer:frontend.link action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="TRUE" pageUid="{pageUid}" queueMail="{queueMail}" queueRecipient="{queueRecipient}" additionalParams="{queueMail.campaignParameterExploded}"/>
+<rkwMailer:frontend.link action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{queueMail.campaignParameterExploded}"/>
 </rkwMailer:plaintextLineBreaks></f:section>
 
 <!-- HTML -->
@@ -54,11 +54,11 @@ Test with typolink: <rkwMailer:frontend.typolink parameter='http://www.google.de
     </p>
 
     <p>
-	    <img src="###baseUrlImages###/test.gif" alt="test" />
+	    <img src="###baseUrlImages###/logo.svg" alt="test" />
     </p>
 
     <p>
-	    <a href="<rkwMailer:frontend.link action='optIn' controller='Registration' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='TRUE' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_yes: token_yes, user: user_sha1}}'/>">Test</a>
+	    <a href="<rkwMailer:frontend.link action='optIn' controller='Registration' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='true' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_yes: token_yes, user: user_sha1}}'/>">Test</a>
     </p>
 
 </f:section>

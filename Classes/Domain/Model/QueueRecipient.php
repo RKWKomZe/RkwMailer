@@ -254,12 +254,9 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
                 array(),
                 $this->getLanguageCode()
             );
-            //===
-
         }
 
         return '';
-        //===
     }
 
     /**

@@ -18,6 +18,8 @@ namespace RKW\RkwMailer\ViewHelpers;
 
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 $currentVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
 if ($currentVersion < 8000000) {
@@ -106,7 +108,10 @@ if ($currentVersion < 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+            if (
+                (!trim($queueRecipient->getFirstName()))
+                && (!trim($queueRecipient->getLastName()))
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;
@@ -115,14 +120,17 @@ if ($currentVersion < 8000000) {
                 return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
             }
 
-            return ($prependText ? $prependText : '') . trim(implode(' ', $fullName)) . ($appendText ? $appendText : '');
+            return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
         }
 
     }
 
 } else {
+
     /**
      * Class RecipientSalutationViewHelper
+     *
+     * For Typo3 >= 8.7
      *
      * @author Maximilian Fäßler <maximilian@faesslerweb.de>
      * @author Steffen Kroggel <developer@steffenkroggel.de>
@@ -130,33 +138,23 @@ if ($currentVersion < 8000000) {
      * @package RKW_RkwMailer
      * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
      */
-    class RecipientSalutationViewHelper extends AbstractViewHelper
+    class RecipientSalutationViewHelper extends AbstractViewHelper implements CompilableInterface
     {
+        // fix for not founding "render()":
+        // https://docs.typo3.org/m/typo3/book-extbasefluid/master/en-us/8-Fluid/8-developing-a-custom-viewhelper.html
+        use CompileWithRenderStatic;
 
         /**
-         * Build a full salutation for the queueRecipient
-         *
-         * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-         * @param bool $useFirstName
-         * @param string $prependText
-         * @param string $appendText
-         * @param string $fallbackText
-         * @return string $string
+         * initializeArguments
          */
-        public function render(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, $useFirstName = false, $prependText = '', $appendText = '', $fallbackText = '')
+        public function initializeArguments()
         {
-
-            return static::renderStatic(
-                array(
-                    'queueRecipient' => $queueRecipient,
-                    'useFirstName'   => $useFirstName,
-                    'appendText'     => $appendText,
-                    'prependText'    => $prependText,
-                    'fallbackText'   => $fallbackText
-                ),
-                $this->buildRenderChildrenClosure(),
-                $this->renderingContext
-            );
+            parent::initializeArguments();
+            $this->registerArgument('queueRecipient', '\RKW\RkwMailer\Domain\Model\QueueRecipient', 'The queue recipient', true);
+            $this->registerArgument('useFirstName', 'bool', 'Set to true if first name should be used in salutation', false, false);
+            $this->registerArgument('appendText', 'string', 'Set text you want to append to the salutation', false, '');
+            $this->registerArgument('prependText', 'string', 'Set text you want to prepend to the salutation', false, '');
+            $this->registerArgument('fallbackText', 'string', 'Set text you want to use as general fallback', false, '');
         }
 
 
@@ -202,7 +200,10 @@ if ($currentVersion < 8000000) {
 
 
             $finalName = trim(implode(' ', $fullName));
-            if (!$finalName) {
+            if (
+                (!trim($queueRecipient->getFirstName()))
+                && (!trim($queueRecipient->getLastName()))
+            ) {
 
                 if ($fallbackText) {
                     return $fallbackText;
@@ -210,7 +211,7 @@ if ($currentVersion < 8000000) {
                 return trim(($prependText ? $prependText : '')) . ($appendText ? $appendText : '');
             }
 
-            return ($prependText ? $prependText : '') . trim(implode(' ', $fullName)) . ($appendText ? $appendText : '');
+            return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
         }
 
     }
