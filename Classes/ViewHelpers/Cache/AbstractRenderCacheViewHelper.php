@@ -32,6 +32,13 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected $logger;
 
+    /**
+     * The output must not be escaped.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
 
     /**
      * Replaces marker in content
