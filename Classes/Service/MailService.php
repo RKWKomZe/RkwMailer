@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
@@ -758,6 +759,9 @@ class MailService
         $partialRootPaths = $this->getSettings('partialRootPaths', 'view');
         $templateRootPaths = $this->getSettings('templateRootPaths', 'view');
 
+        // simulate frontend
+        FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
+
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
         $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
         $emailView->setLayoutRootPaths($layoutRootPaths);
@@ -798,10 +802,9 @@ class MailService
         $emailView->assignMultiple($finalMarkerArray);
 
         // replace baseURLs in final email  - replacement with asign only works in template-files, not on layout-files
-        $renderedTemplate = preg_replace('/###baseUrl###/', $queueMail->getSettings('baseUrl'), $emailView->render());
-        $renderedTemplate = preg_replace('/###baseUrlImages###/', $this->getImageUrl(), $renderedTemplate);
-        $renderedTemplate = preg_replace('/###baseUrlLogo###/', $this->getLogoUrl(), $renderedTemplate);
-
+        $renderedTemplate = preg_replace('/###baseUrl###/', rtrim($queueMail->getSettings('baseUrl'), '/'), $emailView->render());
+        $renderedTemplate = preg_replace('/###baseUrlImages###/', rtrim($this->getImageUrl(), '/'), $renderedTemplate);
+        $renderedTemplate = preg_replace('/###baseUrlLogo###/', rtrim($this->getLogoUrl(), '/'), $renderedTemplate);
 
         // replace relative paths and absolute paths to server-root!
         /* @toDo: Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
@@ -813,7 +816,10 @@ class MailService
         foreach ($replacePaths as $replacePath) {
             $renderedTemplate = preg_replace('/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/', '$1="' . '/$2"', $renderedTemplate);
         }
-        $renderedTemplate = preg_replace('/(src|href)="\/([^"]+)"/', '$1="' . $queueMail->getSettings('baseUrl') . '/$2"', $renderedTemplate);
+        $renderedTemplate = preg_replace('/(src|href)="\/([^"]+)"/', '$1="' . rtrim($queueMail->getSettings('baseUrl'), '/') . '/$2"', $renderedTemplate);
+
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
 
         return $renderedTemplate;
         //===

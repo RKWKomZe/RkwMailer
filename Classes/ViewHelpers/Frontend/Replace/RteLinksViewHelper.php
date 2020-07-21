@@ -117,6 +117,8 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                     $pid = $matches[3];
                 }
             }
+
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pid));
 
             // get url
@@ -157,6 +159,8 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                     $pid = $matches[3];
                 }
             }
+
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pid));
 
             // get url

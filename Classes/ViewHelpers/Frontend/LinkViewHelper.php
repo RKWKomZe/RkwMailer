@@ -34,6 +34,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
     /**
+     * The output must not be escaped.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * @var string
      */
     protected $urlScheme;
@@ -42,7 +49,6 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
      * @var array
      */
     protected $settings;
-
 
     /**
      * LinkViewHelper constructor.
@@ -54,13 +60,6 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
         $this->settings = $this->getSettings();
         $this->urlScheme = $this->getUrlScheme();
     }
-
-    /**
-     * The output must not be escaped.
-     *
-     * @var bool
-     */
-    protected $escapeOutput = false;
 
     /**
      * Example how to use in fluid:
@@ -109,6 +108,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
         try {
 
             // init frontend
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
 
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');

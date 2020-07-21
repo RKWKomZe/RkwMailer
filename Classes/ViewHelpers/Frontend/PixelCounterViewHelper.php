@@ -65,6 +65,7 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
             ) {
 
                 // init frontend
+                /** @todo: should not be necessary any more - try removing this */
                 \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
 
                 // load FrontendUriBuilder

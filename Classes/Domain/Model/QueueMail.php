@@ -15,6 +15,9 @@ namespace RKW\RkwMailer\Domain\Model;
  * The TYPO3 project - inspiring people to share!
 */
 
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+
+
 /**
  * QueueMail
  *
@@ -1190,6 +1193,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
         if (!$this->settings) {
 
+            // simulate frontend
+            FrontendSimulatorUtility::simulateFrontendEnvironment($this->getSettingsPid());
+
             /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
@@ -1214,6 +1220,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
                     'user'
                 );
             }
+
+            // reset frontend
+            FrontendSimulatorUtility::resetFrontendEnvironment();
         }
 
         if ($param) {
