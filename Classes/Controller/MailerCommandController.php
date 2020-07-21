@@ -2,9 +2,6 @@
 
 namespace RKW\RkwMailer\Controller;
 
-use \RKW\RkwMailer\Validation\QueueMailValidator;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -17,6 +14,9 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+use \RKW\RkwMailer\Validation\QueueMailValidator;
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 
 /**
  * MailerCommandController
@@ -122,6 +122,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     public function createTestEmailsCommand($numberOfTestMails = 1, $emails = '', $settingsPid = 0, $linkPid = 1)
     {
 
+        // simulate frontend
+        FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
+
         // initialize globals
         $this->initializeController();
 
@@ -157,6 +160,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                 $mailService->send();
             }
         }
+
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
     }
 
 
@@ -171,6 +177,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     public function sendEmailsCommand($emailsPerJob = 5, $emailsPerInterval = 10, $settingsPid = 0, $sleep = 0.0)
     {
+
+        // simulate frontend
+        FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
 
         // initialize globals
         $this->initializeController();
@@ -274,6 +283,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             $this->persistenceManager->persistAll();
         }
 
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
+
     }
 
 
@@ -325,6 +337,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     public function analyseBouncedMailsCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
     {
+
 
         try {
 

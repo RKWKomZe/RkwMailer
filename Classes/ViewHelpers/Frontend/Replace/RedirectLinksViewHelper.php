@@ -74,6 +74,7 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
         try {
 
             // init frontend
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($this->getRedirectPid()));
 
             if ($value === null) {

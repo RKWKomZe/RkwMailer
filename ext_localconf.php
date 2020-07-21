@@ -39,6 +39,13 @@ call_user_func(
         }
 
         //=================================================================
+        // Register xClass
+        //=================================================================
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager::class] = [
+            'className' => RKW\RkwMailer\Xclass\BackendConfigurationManager::class
+        ];
+
+        //=================================================================
         // Register Logger
         //=================================================================
         $GLOBALS['TYPO3_CONF_VARS']['LOG']['RKW']['RkwMailer']['writerConfiguration'] = array(
