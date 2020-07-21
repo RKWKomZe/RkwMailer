@@ -14,104 +14,222 @@ namespace RKW\RkwMailer\ViewHelpers\Widget;
  * The TYPO3 project - inspiring people to share!
  */
 
-/**
- * Class UriViewHelper
- *
- * @author Christian Dilger <c.dilger@addorange.de>
- * @copyright Rkw Kompetenzzentrum
- * @package RKW_RkwMailer
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- */
-class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
-{
+$currentVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
+if ($currentVersion < 8000000) {
 
     /**
-     * Render the Uri.
+     * Class UriViewHelper
      *
-     * @param string $action Target action
-     * @param array $arguments Arguments
-     * @param string $section The anchor to be added to the URI
-     * @param string $format The requested format, e.g. ".html
-     * @param bool $ajax TRUE if the URI should be to an AJAX widget, FALSE otherwise.
-     * @return string The rendered link
-     * @api
+     * @author Christian Dilger <c.dilger@addorange.de>
+     * @copyright Rkw Kompetenzzentrum
+     * @package RKW_RkwMailer
+     * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
      */
-    public function render($action = null, $arguments = [], $section = '', $format = '', $ajax = false)
+    class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
     {
-        if ($ajax === true) {
-            return $this->getAjaxUri();
-        } else {
-            return $this->getWidgetUri(
-                ['timeFrame', 'mailType'],
-                'tx_rkwmailer_tools_rkwmailermailadministration'
-            );
-        }
-    }
 
-    /**
-     * Get the URI for a non-AJAX Request.
-     *
-     * Thanks to https://www.npostnik.de/typo3/pagination-widget-im-backend-anpassen/
-     *
-     * @param array  $argumentKeys
-     * @param string $moduleKey
-     *
-     * @return string the Widget URI
-     */
-    protected function getWidgetUri($argumentKeys = [], $moduleKey = '')
-    {
-        $uriBuilder = $this->controllerContext->getUriBuilder();
-        $argumentPrefix = $this->controllerContext->getRequest()->getArgumentPrefix();
-        $arguments = $this->hasArgument('arguments') ? $this->arguments['arguments'] : [];
-        if ($this->hasArgument('action')) {
-            $arguments['action'] = $this->arguments['action'];
-        }
-        if ($this->hasArgument('format') && $this->arguments['format'] !== '') {
-            $arguments['format'] = $this->arguments['format'];
-        }
-        $uriArguments = [$argumentPrefix => $arguments];
-        if (isset($moduleKey)) {
-            \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($uriArguments, $this->getFilterArguments($argumentKeys, $moduleKey));
-        }
-
-        return $uriBuilder->reset()
-            ->setArguments($uriArguments)
-            ->setSection($this->arguments['section'])
-            ->setAddQueryString(true)
-            ->setAddQueryStringMethod($this->arguments['addQueryStringMethod'])
-            ->setArgumentsToBeExcludedFromQueryString([$argumentPrefix, 'cHash'])
-            ->setFormat($this->arguments['format'])
-            ->build();
-    }
-
-    /**
-     * @param array  $argumentKeys
-     * @param string $moduleKey
-     *
-     * @return array
-     */
-    protected function getFilterArguments($argumentKeys = [], $moduleKey = '')
-    {
-        $moduleArguments = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($moduleKey);
-
-        if(!is_array($moduleArguments) && empty($moduleArguments)) {
-            return [];
-        }
-
-        $arguments = [];
-        foreach($argumentKeys as $key) {
-            if ($key === 'mailType') {  //  @todo: $mailType = 0 corresponds to message, so it should not be tested on empty
-                if(array_key_exists($key, $moduleArguments)) {
-                    $arguments[$key] = $moduleArguments[$key];
-                }
+        /**
+         * Render the Uri.
+         *
+         * @param string $action Target action
+         * @param array $arguments Arguments
+         * @param string $section The anchor to be added to the URI
+         * @param string $format The requested format, e.g. ".html
+         * @param bool $ajax TRUE if the URI should be to an AJAX widget, FALSE otherwise.
+         * @return string The rendered link
+         * @api
+         */
+        public function render($action = null, $arguments = [], $section = '', $format = '', $ajax = false)
+        {
+            if ($ajax === true) {
+                return $this->getAjaxUri();
             } else {
-                if(array_key_exists($key, $moduleArguments) && !empty($moduleArguments[$key])) {
-                    $arguments[$key] = $moduleArguments[$key];
-                }
+                return $this->getWidgetUri(
+                    ['timeFrame', 'mailType'],
+                    'tx_rkwmailer_tools_rkwmailermailadministration'
+                );
             }
         }
 
-        return [$moduleKey => $arguments];
+        /**
+         * Get the URI for a non-AJAX Request.
+         *
+         * Thanks to https://www.npostnik.de/typo3/pagination-widget-im-backend-anpassen/
+         *
+         * @param array  $argumentKeys
+         * @param string $moduleKey
+         *
+         * @return string the Widget URI
+         */
+        protected function getWidgetUri($argumentKeys = [], $moduleKey = '')
+        {
+            $uriBuilder = $this->controllerContext->getUriBuilder();
+            $argumentPrefix = $this->controllerContext->getRequest()->getArgumentPrefix();
+            $arguments = $this->hasArgument('arguments') ? $this->arguments['arguments'] : [];
+            if ($this->hasArgument('action')) {
+                $arguments['action'] = $this->arguments['action'];
+            }
+            if ($this->hasArgument('format') && $this->arguments['format'] !== '') {
+                $arguments['format'] = $this->arguments['format'];
+            }
+            $uriArguments = [$argumentPrefix => $arguments];
+            if (isset($moduleKey)) {
+                \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($uriArguments, $this->getFilterArguments($argumentKeys, $moduleKey));
+            }
+
+            return $uriBuilder->reset()
+                ->setArguments($uriArguments)
+                ->setSection($this->arguments['section'])
+                ->setAddQueryString(true)
+                ->setAddQueryStringMethod($this->arguments['addQueryStringMethod'])
+                ->setArgumentsToBeExcludedFromQueryString([$argumentPrefix, 'cHash'])
+                ->setFormat($this->arguments['format'])
+                ->build();
+        }
+
+        /**
+         * @param array  $argumentKeys
+         * @param string $moduleKey
+         *
+         * @return array
+         */
+        protected function getFilterArguments($argumentKeys = [], $moduleKey = '')
+        {
+            $moduleArguments = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($moduleKey);
+
+            if(!is_array($moduleArguments) && empty($moduleArguments)) {
+                return [];
+            }
+
+            $arguments = [];
+            foreach($argumentKeys as $key) {
+                if ($key === 'mailType') {  //  @todo: $mailType = 0 corresponds to message, so it should not be tested on empty
+                    if(array_key_exists($key, $moduleArguments)) {
+                        $arguments[$key] = $moduleArguments[$key];
+                    }
+                } else {
+                    if(array_key_exists($key, $moduleArguments) && !empty($moduleArguments[$key])) {
+                        $arguments[$key] = $moduleArguments[$key];
+                    }
+                }
+            }
+
+            return [$moduleKey => $arguments];
+        }
+
     }
 
+} else {
+    /**
+     * Class UriViewHelper
+     *
+     * For Typo3 >= 8.7
+     *
+     * @author Christian Dilger <c.dilger@addorange.de>
+     * @copyright Rkw Kompetenzzentrum
+     * @package RKW_RkwMailer
+     * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+     */
+    class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
+    {
+
+        /**
+         * initializeArguments
+         */
+        public function initializeArguments()
+        {
+            parent::initializeArguments();
+        }
+
+        /**
+         * Render the Uri.
+         *
+         * @return string The rendered link
+         * @api
+         */
+        public function render()
+        {
+            $action = $this->arguments['action'];
+            $arguments = $this->arguments['arguments'];
+            $section = $this->arguments['section'];
+            $format = $this->arguments['format'];
+            $ajax = $this->arguments['ajax'];
+
+            if ($ajax === true) {
+                return $this->getAjaxUri();
+            } else {
+                return $this->getWidgetUri(
+                    ['timeFrame', 'mailType'],
+                    'tx_rkwmailer_tools_rkwmailermailadministration'
+                );
+            }
+        }
+
+        /**
+         * Get the URI for a non-AJAX Request.
+         *
+         * Thanks to https://www.npostnik.de/typo3/pagination-widget-im-backend-anpassen/
+         *
+         * @param array  $argumentKeys
+         * @param string $moduleKey
+         *
+         * @return string the Widget URI
+         */
+        protected function getWidgetUri($argumentKeys = [], $moduleKey = '')
+        {
+            $uriBuilder = $this->controllerContext->getUriBuilder();
+            $argumentPrefix = $this->controllerContext->getRequest()->getArgumentPrefix();
+            $arguments = $this->hasArgument('arguments') ? $this->arguments['arguments'] : [];
+            if ($this->hasArgument('action')) {
+                $arguments['action'] = $this->arguments['action'];
+            }
+            if ($this->hasArgument('format') && $this->arguments['format'] !== '') {
+                $arguments['format'] = $this->arguments['format'];
+            }
+            $uriArguments = [$argumentPrefix => $arguments];
+            if (isset($moduleKey)) {
+                \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($uriArguments, $this->getFilterArguments($argumentKeys, $moduleKey));
+            }
+
+            return $uriBuilder->reset()
+                ->setArguments($uriArguments)
+                ->setSection($this->arguments['section'])
+                ->setAddQueryString(true)
+                ->setAddQueryStringMethod($this->arguments['addQueryStringMethod'])
+                ->setArgumentsToBeExcludedFromQueryString([$argumentPrefix, 'cHash'])
+                ->setFormat($this->arguments['format'])
+                ->build();
+        }
+
+        /**
+         * @param array  $argumentKeys
+         * @param string $moduleKey
+         *
+         * @return array
+         */
+        protected function getFilterArguments($argumentKeys = [], $moduleKey = '')
+        {
+            $moduleArguments = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($moduleKey);
+
+            if(!is_array($moduleArguments) && empty($moduleArguments)) {
+                return [];
+            }
+
+            $arguments = [];
+            foreach($argumentKeys as $key) {
+                if ($key === 'mailType') {  //  @todo: $mailType = 0 corresponds to message, so it should not be tested on empty
+                    if(array_key_exists($key, $moduleArguments)) {
+                        $arguments[$key] = $moduleArguments[$key];
+                    }
+                } else {
+                    if(array_key_exists($key, $moduleArguments) && !empty($moduleArguments[$key])) {
+                        $arguments[$key] = $moduleArguments[$key];
+                    }
+                }
+            }
+
+            return [$moduleKey => $arguments];
+        }
+
+    }
 }
