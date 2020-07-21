@@ -83,6 +83,7 @@ if ($currentVersion <= 8000000) {
                 }
 
                 // init frontend
+                /** @todo: should not be necessary any more - try removing this */
                 \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
 
                 if ($parameter) {
@@ -163,6 +164,7 @@ if ($currentVersion <= 8000000) {
             }
 
             // init frontend
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
 
             $content = '';

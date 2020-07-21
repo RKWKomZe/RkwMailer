@@ -26,7 +26,7 @@
         "php": ">=5.6",
         "ext-json" : "*",
         "typo3/cms-core": "~7.6.0 || ~8.7.0",
-        "rkw/rkw-basics": "~8.7.12",
+        "rkw/rkw-basics": "~8.7.25",
         "voku/bounce-mail-handler": "^5.5"
     },
     "autoload": {

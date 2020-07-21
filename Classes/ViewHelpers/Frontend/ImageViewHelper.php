@@ -55,7 +55,9 @@ if ($currentVersion < 8000000)  {
          */
         public function render($src = null, $width = null, $height = null, $minWidth = null, $minHeight = null, $maxWidth = null, $maxHeight = null, $treatIdAsReference = false, $image = null, $crop = null, $absolute = false)
         {
+
             // init frontend
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext();
 
             try {
@@ -163,7 +165,9 @@ if ($currentVersion < 8000000)  {
          */
         public function render()
         {
+
             // init frontend
+            /** @todo: should not be necessary any more - try removing this */
             \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext();
 
             try {

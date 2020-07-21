@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
@@ -758,6 +759,9 @@ class MailService
         $partialRootPaths = $this->getSettings('partialRootPaths', 'view');
         $templateRootPaths = $this->getSettings('templateRootPaths', 'view');
 
+        // simulate frontend
+        FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
+
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
         $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
         $emailView->setLayoutRootPaths($layoutRootPaths);
@@ -802,7 +806,6 @@ class MailService
         $renderedTemplate = preg_replace('/###baseUrlImages###/', $this->getImageUrl(), $renderedTemplate);
         $renderedTemplate = preg_replace('/###baseUrlLogo###/', $this->getLogoUrl(), $renderedTemplate);
 
-
         // replace relative paths and absolute paths to server-root!
         /* @toDo: Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
         $replacePaths = [
@@ -814,6 +817,9 @@ class MailService
             $renderedTemplate = preg_replace('/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/', '$1="' . '/$2"', $renderedTemplate);
         }
         $renderedTemplate = preg_replace('/(src|href)="\/([^"]+)"/', '$1="' . $queueMail->getSettings('baseUrl') . '/$2"', $renderedTemplate);
+
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
 
         return $renderedTemplate;
         //===
