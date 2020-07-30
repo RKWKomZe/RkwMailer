@@ -34,12 +34,13 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * objectManager
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @inject
      */
     protected $objectManager;
 
 
     /**
-     * objectManager
+     * persistenceManager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @inject
@@ -91,22 +92,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
 
     /**
-     * Initialize the controller.
-     */
-    protected function initializeController()
-    {
-
-        $this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-
-        // get settings
-        $this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-        $this->settings = $this->configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'RkwMailer', 'user'
-        );
-    }
-
-    /**
      * Creates test-emails
      *
      * @param int $numberOfTestMails Number of test-mails to generate
@@ -124,9 +109,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         // simulate frontend
         FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
-
-        // initialize globals
-        $this->initializeController();
 
         /** @var \RKW\RkwMailer\Service\MailService $mailService */
         $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
@@ -178,12 +160,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     public function sendEmailsCommand($emailsPerJob = 5, $emailsPerInterval = 10, $settingsPid = 0, $sleep = 0.0)
     {
 
-        // simulate frontend
-        FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
-
-        // initialize globals
-        $this->initializeController();
-
         try {
 
             // security check
@@ -213,6 +189,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     if (!$queueMail->getSettingsPid()) {
                         $queueMail->setSettingsPid(intval($settingsPid));
                     }
+
+                    // simulate frontend - based on PID set in queueMail
+                    FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
 
                     // set status to sending and set sending time (if not already set)
                     $queueMail->setStatus(3);
@@ -265,6 +244,9 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     $this->queueMailRepository->update($queueMail);
                     $this->persistenceManager->persistAll();
 
+                    // reset frontend
+                    FrontendSimulatorUtility::resetFrontendEnvironment();
+
                 // try to catch error and set status to 99
                 } catch (\Exception $e) {
 
@@ -274,7 +256,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                     $this->queueMailRepository->update($queueMail);
                     $this->persistenceManager->persistAll();
                     continue;
-                    //===
                 }
             }
 
@@ -283,8 +264,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             $this->persistenceManager->persistAll();
         }
 
-        // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
 
     }
 
@@ -353,7 +332,8 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             ];
 
             /** @var \RKW\RkwMailer\Utility\BounceMailUtility $bounceMailUtility */
-            $bounceMailUtility = $this->objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+            $bounceMailUtility = $objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
             $bounceMailUtility->analyseMails($maxEmails);
 
         } catch (\Exception $e) {
@@ -417,7 +397,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
         }
 
         return $this->logger;
-        //===
     }
 
 
