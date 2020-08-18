@@ -15,12 +15,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  * The TYPO3 project - inspiring people to share!
  */
 
-use phpDocumentor\Reflection\Types\Void_;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Class RteLinks
