@@ -165,8 +165,6 @@ class StatisticsUtility
 
 
 
-
-
     /**
      * Returns logger instance
      *
@@ -180,6 +178,5 @@ class StatisticsUtility
         }
 
         return $this->logger;
-        //===
     }
 }

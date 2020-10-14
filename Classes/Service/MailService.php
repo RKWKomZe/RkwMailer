@@ -25,6 +25,7 @@ use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
 use RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwMailer\Validation\QueueRecipientValidator;
+use RKW\RkwMailer\Validation\EmailValidator;
 
 /**
  * MailService
@@ -1077,14 +1078,14 @@ class MailService
             $queueRecipient->setStatus(3);
 
             // build message based on given data
-            $recipientAddress = $queueRecipient->getEmail();
+            $recipientAddress = EmailValidator::cleanUpEmail($queueRecipient->getEmail());
             $recipientName = trim(ucfirst($queueRecipient->getFirstName()) . ' ' . ucfirst($queueRecipient->getLastName()));
             if (trim($recipientName)) {
-                $recipientAddress = [$queueRecipient->getEmail() => $recipientName];
+                $recipientAddress = [EmailValidator::cleanUpEmail($queueRecipient->getEmail()) => $recipientName];
             }
 
             $message->setFrom(array($queueMail->getFromAddress() => $queueMail->getFromName()))
-                ->setReplyTo($queueMail->getReplyAddress())
+                ->setReplyTo(EmailValidator::cleanUpEmail($queueMail->getReplyAddress()))
                 ->setTo($recipientAddress)
                 ->setSubject($queueRecipient->getSubject() ? $queueRecipient->getSubject() : $queueMail->getSubject())
                 ->setPriority(intval($queueMail->getPriority()))
