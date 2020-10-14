@@ -16,7 +16,7 @@ namespace RKW\RkwMailer\Domain\Model;
 */
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
-
+use RKW\RkwMailer\Validation\EmailValidator;
 
 /**
  * QueueMail
@@ -491,7 +491,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setFromAddress($fromAddress)
     {
-        $this->fromAddress = $fromAddress;
+        $this->fromAddress = EmailValidator::cleanUpEmail($fromAddress);
     }
 
     /**
@@ -512,7 +512,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setReplyAddress($replyAddress)
     {
-        $this->replyAddress = $replyAddress;
+        $this->replyAddress = EmailValidator::cleanUpEmail($replyAddress);
     }
 
     /**
@@ -533,7 +533,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setReturnPath($returnPath)
     {
-        $this->returnPath = $returnPath;
+        $this->returnPath = EmailValidator::cleanUpEmail($returnPath);
     }
 
     /**
@@ -971,7 +971,6 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         }
 
         return $result;
-        //===
     }
 
     /**

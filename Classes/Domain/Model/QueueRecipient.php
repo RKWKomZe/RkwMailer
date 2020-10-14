@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Model;
  *
  * The TYPO3 project - inspiring people to share!
 */
+use RKW\RkwMailer\Validation\EmailValidator;
 
 /**
  * QueueRecipient
@@ -204,7 +205,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        $this->email = EmailValidator::cleanUpEmail($email);
     }
 
     /**
