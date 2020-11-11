@@ -942,6 +942,11 @@ class MailService
                 $message = $this->prepareEmailForRecipient($queueRecipient);
                 $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array(&$queueMail, &$queueRecipient));
 
+                // add mailing list header if it is a pipeline
+                if ($this->queueMail->getPipeline()) {
+                    $message->getHeaders()->addTextHeader('List-Unsubscribe', $queueMail->getFromAddress());
+                }
+
                 $message->send();
                 $status = true;
 
