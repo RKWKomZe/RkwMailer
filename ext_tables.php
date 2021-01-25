@@ -8,6 +8,9 @@ call_user_func(
         //=================================================================
         // Register BackendModule
         //=================================================================
+        // "ExtensionUtility::registerModule" is allowed here:
+        // https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ExtensionArchitecture/ConfigurationFiles/Index.html#id4
+
         if (TYPO3_MODE === 'BE') {
 
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
@@ -26,28 +29,14 @@ call_user_func(
             );
         }
 
-        //=================================================================
-        // Register Plugin
-        //=================================================================
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            'RKW.' . $extKey,
-            'Rkwmailer',
-            'RKW Mailer'
-        );
-
-        //=================================================================
-        // Add TypoScript
-        //=================================================================
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-            $extKey,
-            'Configuration/TypoScript',
-            'RKW Mailer'
-        );
 
 
         //=================================================================
         // Add tables
         //=================================================================
+        // "\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages" is allowed here:
+        // https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ExtensionArchitecture/ConfigurationFiles/Index.html#id4
+
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages(
             'tx_rkwmailer_domain_model_link'
         );

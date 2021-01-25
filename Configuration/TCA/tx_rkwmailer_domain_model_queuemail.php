@@ -235,34 +235,10 @@ return [
             'exclude' => 0,
             'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.settings_pid',
             'config' => [
-                'foreign_table' => 'pages',
                 'type' => 'input',
                 'size' => '30',
                 'max' => '256',
                 'eval' => 'int,required',
-                'wizards' => [
-                    'link' => [
-                        'type' => 'popup',
-                        'title' => 'LLL:EXT:cms/locallang_ttc.xlf:header_link_formlabel',
-                        'icon' => 'EXT:backend/Resources/Public/Images/FormFieldWizard/wizard_link.gif',
-                        'module' => [
-                            'name' => 'wizard_link',
-                            'urlParameters' => [
-                                'mode' => 'wizard',
-                            ],
-                        ],
-                        'JSopenParams' => 'height=400,width=550,status=0,menubar=0,scrollbars=1',
-                        'params' => [
-                            // List of tabs to hide in link window. Allowed values are:
-                            // file, mail, page, spec, folder, url
-                            'blindLinkOptions' => 'mail,file,url,spec,folder',
-
-                            // allowed extensions for file
-                            //'allowedExtensions' => 'mp3,ogg',
-                        ],
-                    ],
-                ],
-                'softref' => 'typolink'
             ],
         ],
 		'tstamp_fav_sending' => [
@@ -270,8 +246,8 @@ return [
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_fav_sending',
 			'config' => [
 				'type' => 'input',
+                'renderType' => 'inputDateTime',
 				'size' => 13,
-				'max' => 20,
 				'eval' => 'datetime',
 				'checkbox' => 0,
 				'default' => 0,
@@ -285,8 +261,8 @@ return [
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_real_sending',
 			'config' => [
 				'type' => 'input',
+                'renderType' => 'inputDateTime',
 				'size' => 13,
-				'max' => 20,
 				'eval' => 'datetime',
 				'checkbox' => 0,
 				'default' => 0,
@@ -301,8 +277,8 @@ return [
 			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail.tstamp_send_finish',
 			'config' => [
 				'type' => 'input',
+                'renderType' => 'inputDateTime',
 				'size' => 13,
-				'max' => 20,
 				'eval' => 'datetime',
 				'checkbox' => 0,
 				'default' => 0,
