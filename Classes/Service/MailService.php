@@ -1068,13 +1068,17 @@ class MailService
 
             // add attachment if set
             if (
-                ($queueMail->getAttachment())
-                && ($queueMail->getAttachmentName())
-                && ($queueMail->getAttachmentType())
+                $queueMail->getAttachment()
+                || is_array(json_decode($queueMail->getAttachment(), true))
             ) {
 
-                $attachment = \Swift_Attachment::newInstance($queueMail->getAttachment(), $queueMail->getAttachmentName(), $queueMail->getAttachmentType());
-                $message->attach($attachment);
+                $attachments = json_decode($queueMail->getAttachment(), true);
+
+                foreach ($attachments as $attachment) {
+                    $file = \Swift_Attachment::fromPath($attachment['path']);
+                    $message->attach($file);
+                }
+
             }
 
             // ====================================================
