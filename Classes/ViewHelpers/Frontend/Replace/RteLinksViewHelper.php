@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  */
 
 use Psr\Log\LoggerInterface;
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -114,7 +115,6 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
             $parameters = $matches[2];
             $linkText = $matches[3];
 
-            // init frontend
             $pid = 1;
             if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameters, $matchesSub)) {
                 if ($matchesSub[3] > 0) {
@@ -122,8 +122,8 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                 }
             }
 
-            /** @todo: should not be necessary any more - try removing this */
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pid));
+            // init frontend
+            FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
 
             // get url
             $conf = [
@@ -134,7 +134,13 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                 'fileTarget' => '_blank',
                 'ATagParams' => ($this->style ? 'style="' . $this->style . '"' : '')
             ];
-            return $this->contentObject->typoLink($linkText, $conf);
+
+            $url = $this->contentObject->typoLink($linkText, $conf);
+
+            // reset frontend
+            FrontendSimulatorUtility::resetFrontendEnvironment();
+
+            return $url;
         }
 
         return $matches[0];
@@ -156,7 +162,6 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
             $parameters = $matches[2];
             $linkText = $matches[3];
 
-            // init frontend
             $pid = 1;
             if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameters, $matchesSub)) {
                 if ($matchesSub[3] > 0) {
@@ -164,8 +169,8 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                 }
             }
 
-            /** @todo: should not be necessary any more - try removing this */
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pid));
+            // init frontend
+            FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
 
             // get url
             $url = $this->contentObject->typoLink_URL(
@@ -174,6 +179,9 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                     'forceAbsoluteUrl' => 1,
                 ]
             );
+
+            // reset frontend
+            FrontendSimulatorUtility::resetFrontendEnvironment();
 
             return $linkText . ' [' . $url . ']';
         }
@@ -198,19 +206,19 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
             $linkText = $matches[5];
 
             // check for pid in parameters for getting correct domain
-            $pageUid = 1;
+            $pid = 1;
             if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $typoLink , $matchesSub)) {
                 if ($matchesSub[3] > 0) {
-                    $pageUid = $matchesSub[3];
+                    $pid = $matchesSub[3];
                 }
             }
 
-            // init frontend
-            /** @todo: should not be necessary any more - try removing this */
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
-
             $url = '';
             if ($typoLink) {
+
+                // init frontend
+                FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
+
                 $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
                 $url = $contentObject->typoLink_URL(
                     [
@@ -218,6 +226,9 @@ class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
                         'forceAbsoluteUrl' => 1,
                     ]
                 );
+
+                // reset frontend
+                FrontendSimulatorUtility::resetFrontendEnvironment();
             }
 
             // add styles if needed

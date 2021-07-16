@@ -1,41 +1,69 @@
-{namespace vh=RKW\RkwMailer\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
+	data-namespace-typo3-fluid="true">
 
-<!-- PLAINTEXT -->
-<f:section name="Plaintext">
+	<!-- PLAINTEXT -->
+	<f:section name="Plaintext"><rkwMailer:plaintextLineBreaks>
+		\n\n
+		------------------------------------------------------------------------------------------------\n\n
 
-------------------------------------------------------------------------------------------------
+		RKW Rationalisierungs- und Innovationszentrum der Deutschen Wirtschaft e.V.\n
+		Kompetenzzentrum\n
+		Düsseldorfer Strasse 40 A\n
+		65760 Eschborn\n
+		Tel: 06196 495-0\n
+		www.rkw-kompetenzzentrum.de\n
 
-RKW Rationalisierungs- und Innovationszentrum der Deutschen Wirtschaft e.V.
-Kompetenzzentrum
-Düsseldorfer Strasse 40 A
-65760 Eschborn
-Tel: 06196 495-0
-www.rkw-kompetenzzentrum.de
-</f:section>
+		<f:if condition="{settings.privacyPid}">\n
+			<rkwMailer:frontend.translate
+				key="partials_email_footer.privacyText1"
+				languageKey="{queueRecipient.languageCode}"
+				extensionName="rkwMailer" />\n
+			<rkwMailer:frontend.translate
+				key="partials_email_footer.privacyText2"
+				languageKey="{queueRecipient.languageCode}"
+				extensionName="rkwMailer" /> <rkwMailer:frontend.translate
+				key="partials_email_footer.privacyText3"
+				languageKey="{queueRecipient.languageCode}"
+				extensionName="rkwMailer" />:\n
+			<rkwMailer:frontend.link absolute="true" pageUid="{settings.privacyPid}" noCacheHash="true"/>\n
+		</f:if>
+	</rkwMailer:plaintextLineBreaks></f:section>
 
 
+	<!-- HTML -->
+	<f:section name="Html">
+		<tr>
+			<td style="padding: 32px 16px 0 16px">
+				<p style="margin: 0; padding: 9px 0 9px; border-top: 1px solid #000; font-size: 12px; line-height:12px;">
+					&nbsp;
+				</p>
+			</td>
+		</tr>
 
-<!-- HTML -->
-<f:section name="Html">
-	<tr>
-		<td style="padding: 48px 16px 0 16px">
-			<p style="margin: 0; padding: 9px 0 9px; border-top: 1px solid #000; font-size: 12px; line-height:12px;">
-				&nbsp;
-			</p>
-		</td>
-	</tr>
+		<tr>
+			<td style="padding: 16px" class="footer">
+				<p>
+					RKW Rationalisierungs- und Innovationszentrum der Deutschen Wirtschaft e.V.<br>
+					Kompetenzzentrum<br>
+					Düsseldorfer Strasse 40 A<br>
+					65760 Eschborn<br>
+					Tel: 06196 495-0<br>
+					<a href="###baseUrl###">www.rkw-kompetenzzentrum.de</a>
+				</p>
+			</td>
+		</tr>
+		<f:if condition="{settings.privacyPid}">
+			<tr>
+				<td style="padding:8px 16px 16px 16px" class="footer">
+					<p>
+						<rkwMailer:frontend.translate key="partials_email_footer.privacyText1" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /><br>
+						<rkwMailer:frontend.translate key="partials_email_footer.privacyText2" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" />
+						<a href="{rkwMailer:frontend.link(absolute:'true', pageUid:'{settings.privacyPid}', noCacheHash:'true')}"><rkwMailer:frontend.translate key="partials_email_footer.privacyText3" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /></a>.
+					</p>
+				</td>
+			</tr>
+		</f:if>
 
-	<tr>
-		<td style="padding: 16px" class="footer">
-			<p>
-				RKW Rationalisierungs- und Innovationszentrum der Deutschen Wirtschaft e.V.<br>
-				Kompetenzzentrum<br>
-				Düsseldorfer Strasse 40 A<br>
-				65760 Eschborn<br>
-				Tel: 06196 495-0<br>
-				<a href="###baseUrl###">www.rkw-kompetenzzentrum.de</a>
-			</p>
-		</td>
-	</tr>
-
-</f:section>
+	</f:section>
+</html>

@@ -30,6 +30,7 @@ module.tx_rkwmailer {
     }
     settings {
 
+        privacyPid = {$module.tx_rkwmailer.settings.privacyPid}
         redirectPid = {$module.tx_rkwmailer.settings.redirectPid}
         redirectDelay = {$module.tx_rkwmailer.settings.redirectDelay}
         counterPixelPid = {$module.tx_rkwmailer.settings.counterPixelPid}

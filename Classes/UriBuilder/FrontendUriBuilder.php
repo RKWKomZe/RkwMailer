@@ -15,6 +15,9 @@ namespace RKW\RkwMailer\UriBuilder;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+
 /**
  * FrontendUriBuilder
  *
@@ -54,12 +57,44 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
 
     /**
+     * Life-cycle method that is called by the DI container as soon as this object is completely built
+     */
+    public function initializeObject()
+    {
+
+        // init frontend wit defaults
+        FrontendSimulatorUtility::simulateFrontendEnvironment();
+
+        parent::initializeObject();
+    }
+
+
+    /**
      * Override the normal EnvironmentService with own
      */
     public function injectEnvironmentServiceOverride()
     {
-        $this->environmentService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\EnvironmentService');
+        $this->environmentService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\RKW\RkwMailer\Service\EnvironmentService::class);
     }
+
+
+    /**
+     * Uid of the target page
+     *
+     * @param int $targetPageUid
+     * @return \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder the current UriBuilder to allow method chaining
+     * @api
+     */
+    public function setTargetPageUid($targetPageUid)
+    {
+        // init frontend with given pid
+        FrontendSimulatorUtility::simulateFrontendEnvironment(intval($targetPageUid));
+
+        $this->targetPageUid = $targetPageUid;
+        return $this;
+    }
+
+
 
     /**
      * Sets $useRedirectLink
@@ -82,7 +117,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getUseRedirectLink()
     {
         return (boolean)$this->useRedirectLink;
-        //===
     }
 
     /**
@@ -106,7 +140,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getQueueMail()
     {
         return $this->queueMail;
-        //===
     }
 
     /**
@@ -130,7 +163,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getQueueRecipient()
     {
         return $this->queueRecipient;
-        //===
     }
 
     /**
@@ -154,7 +186,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getRedirectLink()
     {
         return $this->redirectLink;
-        //===
     }
 
     /**
@@ -194,7 +225,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         }
 
         return $this->redirectPid;
-        //===
     }
 
 
@@ -208,6 +238,9 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @param string $extensionName Name of the target extension, without underscores. If not set, current ExtensionName is used.
      * @param string $pluginName Name of the target plugin. If not set, current PluginName is used.
      * @return string the rendered URI
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @api
      * @see build()
      */
@@ -215,20 +248,25 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     {
 
         // kill request-calls for non-set values
-        if (!$controllerName) {
-            $controllerName = '';
+        if ($actionName !== null) {
+            $controllerArguments['action'] = $actionName;
+        }
+        if ($controllerName !== null) {
+            $controllerArguments['controller'] = $controllerName;
         }
 
-        if (!$extensionName) {
-            $extensionName = '';
+        if ($this->format !== '') {
+            $controllerArguments['format'] = $this->format;
+        }
+        if ($this->argumentPrefix !== null) {
+            $prefixedControllerArguments = [$this->argumentPrefix => $controllerArguments];
+        } else {
+            $pluginNamespace = $this->extensionService->getPluginNamespace($extensionName, $pluginName);
+            $prefixedControllerArguments = [$pluginNamespace => $controllerArguments];
         }
 
-        if (!$pluginName) {
-            $pluginName = '';
-        }
-
-        return parent::uriFor($actionName, $controllerArguments, $controllerName, $extensionName, $pluginName);
-        //===
+        ArrayUtility::mergeRecursiveWithOverrule($this->arguments, $prefixedControllerArguments);
+        return $this->build();
     }
 
     /**
@@ -296,6 +334,8 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
 
+                // never use cHash here!
+                // this is a bad thing when sending from BE!
                 // set all params for redirect link!
                 $this->setTargetPageUid($this->getRedirectPid())
                     ->setNoCache($this->getNoCache())
@@ -306,8 +346,12 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                return $this->uriFor('redirect', array(), 'Link', 'rkwmailer', 'Rkwmailer');
-                //===
+                $url = $this->uriFor('redirect', array(), 'Link', 'rkwmailer', 'Rkwmailer');
+
+                // reset frontend
+                FrontendSimulatorUtility::resetFrontendEnvironment();
+
+                return $url;
             }
         }
 
@@ -315,7 +359,25 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         // this is a bad thing when sending from BE!
         //$this->setUseCacheHash(false);
 
-        return $this->buildFrontendUri();
-        //===
+        $url = $this->buildFrontendUri();
+
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
+
+        return $url;
+    }
+
+    /**
+     * Resets all UriBuilder options to their default value
+     *
+     * @return \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder the current UriBuilder to allow method chaining
+     * @api
+     */
+    public function reset()
+    {
+        // reset frontend
+        FrontendSimulatorUtility::resetFrontendEnvironment();
+
+        return parent::reset();
     }
 }

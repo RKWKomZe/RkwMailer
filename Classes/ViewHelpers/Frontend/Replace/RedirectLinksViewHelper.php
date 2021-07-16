@@ -73,10 +73,6 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
 
         try {
 
-            // init frontend
-            /** @todo: should not be necessary any more - try removing this */
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($this->getRedirectPid()));
-
             if ($value === null) {
                 $value = $this->renderChildren();
             }
@@ -178,7 +174,7 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
             /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+            $uriBuilder = $objectManager->get(\RKW\RkwMailer\UriBuilder\FrontendUriBuilder::class);
             $uriBuilder->reset();
 
             $uriBuilder->setUseRedirectLink(true)

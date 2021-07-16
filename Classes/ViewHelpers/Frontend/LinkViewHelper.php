@@ -17,6 +17,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
 
 use Psr\Log\LoggerInterface;
 use RKW\RkwBasics\Helper\Common;
+use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -107,13 +108,9 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 
         try {
 
-            // init frontend
-            /** @todo: should not be necessary any more - try removing this */
-            \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($pageUid));
-
             $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
             /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-            $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+            $uriBuilder = $objectManager->get(\RKW\RkwMailer\UriBuilder\FrontendUriBuilder::class);
             $uriBuilder->reset();
 
             // build link based on given data
@@ -138,11 +135,10 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
             return $uriBuilder->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
 
         } catch (\Exception $e) {
+
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set link: %s', $e->getMessage()));
             return $e->getMessage();
         }
-
-        return '';
     }
 
 
