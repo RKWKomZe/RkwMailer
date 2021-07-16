@@ -64,15 +64,12 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
                 && ($queueMail > 0)
             ) {
 
-                // init frontend
-                /** @todo: should not be necessary any more - try removing this */
-                \RKW\RkwBasics\Helper\Common::initFrontendInBackendContext(intval($counterPixelPid));
 
                 // load FrontendUriBuilder
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
 
                 /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-                $uriBuilder = $objectManager->get('RKW\\RkwMailer\\UriBuilder\\FrontendUriBuilder');
+                $uriBuilder = $objectManager->get(\RKW\RkwMailer\UriBuilder\FrontendUriBuilder::class);
                 $uriBuilder->reset();
 
                 // build link to controller action with needed params

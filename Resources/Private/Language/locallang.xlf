@@ -209,6 +209,19 @@
                 <source>If you don't get redirected, just click here</source>
             </trans-unit>
 
+             <!-- =================================================== -->
+            <!-- Template Email/Footer                               -->
+            <!-- =================================================== -->
+            <trans-unit id="partials_email_footer.privacyText1">
+                <source>Information on the processing of your personal data</source>
+            </trans-unit>
+            <trans-unit id="partials_email_footer.privacyText2">
+                <source>can be found in our</source>
+            </trans-unit>
+            <trans-unit id="partials_email_footer.privacyText3">
+                <source>data protection notices</source>
+            </trans-unit>
+
         </body>
 	</file>
 </xliff>

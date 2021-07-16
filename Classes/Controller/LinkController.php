@@ -106,9 +106,7 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {
                 $this->redirectToUri($url);
-
                 return;
-                //===
             }
 
             $this->addFlashMessage(
@@ -125,8 +123,6 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             );
 
             return;
-            //===
-
         }
 
         $this->addFlashMessage(

@@ -35,7 +35,6 @@ class EnvironmentService extends \TYPO3\CMS\Extbase\Service\EnvironmentService
     public function isEnvironmentInFrontendMode()
     {
         return true;
-        //===
     }
 
     /**
@@ -46,7 +45,6 @@ class EnvironmentService extends \TYPO3\CMS\Extbase\Service\EnvironmentService
     public function isEnvironmentInBackendMode()
     {
         return false;
-        //===
     }
 
     /**
@@ -57,7 +55,6 @@ class EnvironmentService extends \TYPO3\CMS\Extbase\Service\EnvironmentService
     public function isEnvironmentInCliMode()
     {
         return false;
-        //===
     }
 
 }

@@ -20,6 +20,9 @@ module.tx_rkwmailer {
 
     settings {
 
+        # cat=module.tx_rkwmailer; type=integer; label=Pid of privacy information
+        privacyPid = 1
+
         # cat=module.tx_rkwmailer; type=integer; label=Pid of redirect plugin
         redirectPid = 1
 
