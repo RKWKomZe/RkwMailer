@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Database\MarkerReducer;
+use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -174,6 +176,22 @@ class MailService
 
 
     /**
+     * MailStandaloneView
+     *
+     * @var \RKW\RkwMailer\View\MailStandaloneView
+     */
+    protected $view;
+
+
+    /**
+     * MarkerReducer
+     *
+     * @var \RKW\RkwMailer\Database\MarkerReducer
+     */
+    protected $markerReducer;
+
+
+    /**
      * Logger
      *
      * @var \TYPO3\CMS\Core\Log\Logger
@@ -235,7 +253,12 @@ class MailService
         if (!$this->queueRecipientValidator) {
             $this->queueRecipientValidator = $this->objectManager->get(QueueRecipientValidator::class);
         }
-
+        if (!$this->view) {
+            $this->view = $this->objectManager->get(MailStandaloneView::class);
+        }
+        if (!$this->markerReducer) {
+            $this->markerReducer = $this->objectManager->get(MarkerReducer::class);
+        }
         \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': Please use the ObjectManager to load this class.');
     }
 
@@ -606,50 +629,6 @@ class MailService
     }
 
 
-    /**
-     * get url for images
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public function getImageUrl()
-    {
-        // build paths to images and logos
-        $queueMail = $this->getQueueMail();
-        $url = $queueMail->getSettings('baseUrlImages');
-        if (
-            ($queueMail->getSettings('baseUrl'))
-            && ($queueMail->getSettings('basePathImages'))
-        ) {
-            $url = $queueMail->getSettings('baseUrl') . '/' . $this->getRelativePath($queueMail->getSettings('basePathImages'));
-        }
-
-        return $url;
-        //===
-    }
-
-
-    /**
-     * get url for images
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public function getLogoUrl()
-    {
-        // build paths to images and logos
-        $queueMail = $this->getQueueMail();
-        $url = $queueMail->getSettings('baseUrlLogo');
-        if (
-            ($queueMail->getSettings('baseUrl'))
-            && ($queueMail->getSettings('basePathLogo'))
-        ) {
-            $url = $queueMail->getSettings('baseUrl') . '/' . $this->getRelativePath($queueMail->getSettings('basePathLogo'));
-        }
-
-        return $url;
-        //===
-    }
 
 
     /**
@@ -755,38 +734,27 @@ class MailService
             //===
         }
 
-        // get paths
-        $layoutRootPaths = $this->getSettings('layoutRootPaths', 'view');
-        $partialRootPaths = $this->getSettings('partialRootPaths', 'view');
-        $templateRootPaths = $this->getSettings('templateRootPaths', 'view');
-
         // simulate frontend
-        FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
+        // FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
 
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
-        $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
-        $emailView->setLayoutRootPaths($layoutRootPaths);
-        $emailView->setPartialRootPaths($partialRootPaths);
-        $emailView->setTemplateRootPaths($templateRootPaths);
+        /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
+        $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            MailStandaloneView::class,
+            $queueMail->getSettingsPid()
+        );
 
         // set additional layout und partial path
         if ($queueMail->getLayoutPaths()) {
-            $emailView->setLayoutRootPaths(array_merge($layoutRootPaths, $queueMail->getLayoutPaths()));
+            $emailView->addLayoutRootPaths($queueMail->getLayoutPaths());
         }
         if ($queueMail->getPartialPaths()) {
-            $emailView->setPartialRootPaths(array_merge($partialRootPaths, $queueMail->getPartialPaths()));
+            $emailView->addPartialRootPaths($queueMail->getPartialPaths());
         }
         if ($queueMail->getTemplatePaths()) {
-            $emailView->setTemplateRootPaths(array_merge($templateRootPaths, $queueMail->getTemplatePaths()));
+            $emailView->addTemplateRootPaths($queueMail->getTemplatePaths());
         }
 
-        // check for absolute paths!
-        if (strpos($queueMail->$templateGetter(), 'EXT:') === 0) {
-            $templatePathFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($queueMail->$templateGetter() . '.html', true, true);
-            $emailView->setTemplatePathAndFilename($templatePathFile);
-        } else {
-            $emailView->setTemplate($queueMail->$templateGetter());
-        }
+        $emailView->setTemplate($queueMail->$templateGetter());
 
         // assign markers
         $finalMarkerArray = array_merge(
@@ -802,27 +770,10 @@ class MailService
 
         $emailView->assignMultiple($finalMarkerArray);
 
-        // replace baseURLs in final email  - replacement with asign only works in template-files, not on layout-files
-        $renderedTemplate = preg_replace('/###baseUrl###/', rtrim($queueMail->getSettings('baseUrl'), '/'), $emailView->render());
-        $renderedTemplate = preg_replace('/###baseUrlImages###/', rtrim($this->getImageUrl(), '/'), $renderedTemplate);
-        $renderedTemplate = preg_replace('/###baseUrlLogo###/', rtrim($this->getLogoUrl(), '/'), $renderedTemplate);
-
-        // replace relative paths and absolute paths to server-root!
-        /* @toDo: Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
-        $replacePaths = [
-            GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
-            $_SERVER['TYPO3_PATH_ROOT'] .'/'
-        ];
-
-        foreach ($replacePaths as $replacePath) {
-            $renderedTemplate = preg_replace('/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/', '$1="' . '/$2"', $renderedTemplate);
-        }
-        $renderedTemplate = preg_replace('/(src|href)="\/([^"]+)"/', '$1="' . rtrim($queueMail->getSettings('baseUrl'), '/') . '/$2"', $renderedTemplate);
-
         // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
+        // FrontendSimulatorUtility::resetFrontendEnvironment();
 
-        return $renderedTemplate;
+        return $emailView->render();
         //===
     }
 
@@ -1119,78 +1070,16 @@ class MailService
      * @param array $marker
      * @return array
      * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+     * @deprecated Please use $this->markerReducer->method() instead
+     * @toDo: remove
      */
     public function implodeMarker($marker)
     {
         self::debugTime(__LINE__, __METHOD__);
-
-        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper $dataMapper */
-        $dataMapper = $this->objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
-        foreach ($marker as $key => $value) {
-
-            // replace current entry with "table => uid" reference
-            // keep current variable name, don't use "unset"
-            if (is_object($value)) {
-
-                // Normal DomainObject
-                if ($value instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
-
-                    $namespace = filter_var($dataMapper->getDataMap(get_class($value))->getClassName(), FILTER_SANITIZE_STRING);
-                    if ($value->_isNew()) {
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted and will be stored as serialized object in the database. This may cause performance issues!', $namespace));
-                    } else {
-                        $marker[$key] = self::NAMESPACE_KEYWORD . ' ' . $namespace . ":" . $value->getUid();
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $value->getUid()));
-                    }
-
-                // ObjectStorage or QueryResult
-                } else {
-                    if (
-                        ($value instanceof \Iterator)
-                        && (
-                            (
-                                ($value instanceof \TYPO3\CMS\Extbase\Persistence\QueryResultInterface)
-                                && ($firstObject = $value->getFirst())
-                            )
-                            || (
-                                ($value instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage)
-                                && ($firstObject = $value->current())
-                            )
-                        )
-                        && ($firstObject instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity)
-                    ) {
-
-                        $newValues = array();
-                        $namespace = filter_var($dataMapper->getDataMap(get_class($firstObject))->getClassName(), FILTER_SANITIZE_STRING);
-                        $replaceObjectStorage = true;
-                        foreach ($value as $object) {
-                            if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
-                                if ($object->_isNew()) {
-                                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object with namespace %s in marker-array is not persisted. The object storage it belongs to will be stored as serialized object in the database. This may cause performance issues!', $namespace));
-                                    $replaceObjectStorage = false;
-                                    break;
-                                    //===
-                                } else {
-                                    $newValues[] = $namespace . ":" . $object->getUid();
-                                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $object->getUid()));
-                                }
-                            }
-                        }
-                        if ($replaceObjectStorage) {
-                            $marker[$key] = self::NAMESPACE_ARRAY_KEYWORD . ' ' . implode(',', $newValues);
-                        }
-
-                    } else {
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!', get_class($value)));
-                    }
-                }
-            }
-        }
-
+        $marker = $this->markerReducer->implodeMarker($marker);
         self::debugTime(__LINE__, __METHOD__);
 
         return $marker;
-        //===
     }
 
 
@@ -1200,94 +1089,71 @@ class MailService
      *
      * @param array $marker
      * @return array
+     * @deprecated Please use $this->markerReducer->method() instead
+     * @toDo: remove
      */
     public function explodeMarker($marker)
     {
         self::debugTime(__LINE__, __METHOD__);
-
-        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-        foreach ($marker as $key => $value) {
-
-            // check for keyword
-            if (
-                (is_string($value))
-                && (
-                    (strpos(trim($value), self::NAMESPACE_KEYWORD) === 0)
-                    || (strpos(trim($value), self::NAMESPACE_ARRAY_KEYWORD) === 0)
-                )
-            ) {
-
-                // check if we have an array here
-                $isArray = (bool)(strpos(trim($value), self::NAMESPACE_ARRAY_KEYWORD) === 0);
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Detection of objectStorage: %s.', intval($isArray)));
-
-                /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-                $objectStorage = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-
-                // clean value from keyword
-                $cleanedValue = trim(
-                    str_replace(
-                        array(
-                            self::NAMESPACE_ARRAY_KEYWORD,
-                            self::NAMESPACE_KEYWORD,
-                        ),
-                        '',
-                        $value
-                    )
-                );
-
-                // Go through list of objects. May be comma-separated in case of QueryResultInterface or ObjectStorage
-                $listOfObjectDefinitions = GeneralUtility::trimExplode(',', $cleanedValue);
-                foreach ($listOfObjectDefinitions as $objectDefinition) {
-
-                    // explode namespace and uid
-                    $explodedValue = GeneralUtility::trimExplode(':', $objectDefinition);
-                    $namespace = trim($explodedValue[0]);
-                    $uid = intval($explodedValue[1]);
-
-                    if (class_exists($namespace)) {
-
-                        // @toDo: Find a way to get the repository namespace instead of this replace
-                        $repositoryName = str_replace('Model', 'Repository', $namespace) . 'Repository';
-                        if (class_exists($repositoryName)) {
-
-                            /** @var \TYPO3\CMS\Extbase\Persistence\Repository $repository */
-                            $repository = $objectManager->get($repositoryName);
-
-                            // build query - we fetch everything here!
-                            $query = $repository->createQuery();
-                            $query->getQuerySettings()->setRespectStoragePage(false);
-                            $query->getQuerySettings()->setIgnoreEnableFields(true);
-                            $query->getQuerySettings()->setIncludeDeleted(true);
-                            $query->matching(
-                                $query->equals('uid', $uid)
-                            )->setLimit(1);
-
-                            if ($result = $query->execute()->getFirst()) {
-                                $objectStorage->attach($result);
-                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Replacing object with namespace %s and uid %s in marker-array.', $namespace, $result->getUid()));
-                            }
-                        }
-                    }
-                }
-
-                if ($objectStorage->count() > 0) {
-                    if ($isArray) {
-                        $marker[$key] = $objectStorage;
-                    } else {
-                        $objectStorage->rewind();
-                        $marker[$key] = $objectStorage->current();
-                    }
-                }
-            }
-        }
-
+        $marker = $this->markerReducer->explodeMarker($marker);
         self::debugTime(__LINE__, __METHOD__);
+
         return $marker;
-        //===
     }
 
+    /**
+     * get url
+     *
+     * @return string
+     * @throws \Exception
+     * @deprecated Please use $this->view->method() instead
+     * @toDo: remove
+     */
+    public function getBaseUrl()
+    {
+        return $this->view->getBaseUrl();
+    }
+
+
+    /**
+     * get url for images
+     *
+     * @return string
+     * @throws \Exception
+     * @deprecated Please use $this->view->method() instead
+     * @toDo: remove
+     */
+    public function getImageUrl()
+    {
+        return $this->view->getBaseUrlImages();
+    }
+
+
+    /**
+     * get url for images
+     *
+     * @return string
+     * @throws \Exception
+     * @deprecated Please use $this->view->method() instead
+     * @toDo: remove
+     */
+    public function getLogoUrl()
+    {
+        return $this->view->getLogoUrl();
+    }
+
+    /**
+     * Returns the relative image path
+     *
+     * @param string $path
+     * @return string
+     * @deprecated Please use $this->view->method() instead
+     * @toDo: remove
+     */
+    public function getRelativePath($path)
+    {
+        return $this->view->getRelativePath($path);
+    }
 
     /**
      * unset several variables
@@ -1334,32 +1200,6 @@ class MailService
         //===
     }
     
-    /**
-     * Returns the relative image path
-     *
-     * @param string $path
-     * @return string
-     */
-    protected function getRelativePath($path)
-    {
-        if (strpos($path, 'EXT:') === 0) {
-
-            list($extKey, $local) = explode('/', substr($path, 4), 2);
-            if (
-                ((string)$extKey !== '')
-                && (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extKey))
-                && ((string)$local !== '')
-            ) {
-                $path = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($extKey) . $local;
-                if (strpos($path, '../') === 0) {
-                    $path = substr($path, -(strlen($path)-3));
-                }
-            }
-        }
-
-        return $path;
-        //===
-    }
 
 
     /**

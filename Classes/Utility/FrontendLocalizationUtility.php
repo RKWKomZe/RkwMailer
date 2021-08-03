@@ -26,7 +26,8 @@ namespace RKW\RkwMailer\Utility;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @see \TYPO3\CMS\Extbase\Utility\LocalizationUtility
  */
-class FrontendLocalizationUtility extends \RKW\RkwBasics\Helper\FrontendLocalization
+class FrontendLocalizationUtility extends \RKW\RkwBasics\Utility\FrontendLocalizationUtility
 {
+
 
 }
