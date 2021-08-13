@@ -1,6 +1,8 @@
-{namespace rkwMailer=RKW\RkwMailer\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
+    data-namespace-typo3-fluid="true">
 
-<rkwMailer:frontend.replace.rteLinks plaintextFormat="true" style="color:red;">
+<rkwMailer:frontend.replace.rteLinks isPlaintext="true" style="color:green;">
     Testen Sie hier <link https://www.google.de _blank external-link Titel ist Titel>mit Klick</link>!
     Testen Sie da <link http://www.yahoo.de/#anchor-1 _blank external-link "Titel ist Titel">mit Klick</link>!
     Testen Sie dort <link mail@rkw.de _blank mail "Titel ist Titel">mit Klick</link>!
@@ -35,3 +37,5 @@
         Testen Sie drüben <a class="download" href="t3://file?uid=999" target="_blank" title="Titel ist Titel" style="color:red;">mit Klick</a>!
     </p>
 </rkwMailer:frontend.replace.rteLinks>
+
+</html>

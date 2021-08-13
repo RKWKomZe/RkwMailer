@@ -94,7 +94,6 @@ class TimePeriodUtility
         }
 
         return $period;
-        //===
 
     }
 
@@ -145,7 +144,6 @@ class TimePeriodUtility
         $quarters['last']['end'] = $quarters['this']['start'];
 
         return $quarters;
-        //===
     }
 
 
@@ -181,8 +179,6 @@ class TimePeriodUtility
         $halfYear['last']['end'] = $halfYear['this']['start'];
 
         return $halfYear;
-        //===
-
     }
 
 }

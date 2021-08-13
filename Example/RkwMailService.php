@@ -40,7 +40,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @param mixed $signalInformation
      * @return void
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
@@ -125,7 +125,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @param mixed $signalInformation
      * @return void
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException

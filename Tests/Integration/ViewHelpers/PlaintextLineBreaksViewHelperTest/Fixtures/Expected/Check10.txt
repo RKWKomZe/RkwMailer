@@ -1,1 +1,1 @@
-Without line break, remove line breaks.
+Without line break, remove indent only.

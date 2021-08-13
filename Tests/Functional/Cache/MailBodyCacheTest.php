@@ -26,7 +26,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 
 /**
- * StatisticsUtilityTest
+ * MailBodyCacheTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum

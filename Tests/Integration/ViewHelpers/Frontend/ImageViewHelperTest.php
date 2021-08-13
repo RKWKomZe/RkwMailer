@@ -1,15 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\ViewHelpers\Frontend;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use TYPO3\CMS\Fluid\View\StandaloneView;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -23,6 +14,10 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * ImageViewHelperTest
@@ -34,6 +29,12 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class ImageViewHelperTest extends FunctionalTestCase
 {
+
+    /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/ImageViewHelperTest/Fixtures';
+
 
     /**
      * @var string[]
@@ -53,11 +54,6 @@ class ImageViewHelperTest extends FunctionalTestCase
      */
     private $standAloneViewHelper;
 
-       /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
-
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
@@ -73,18 +69,16 @@ class ImageViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/ImageViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/ImageViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
-
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -92,10 +86,9 @@ class ImageViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/ImageViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
 
     }
 
@@ -114,12 +107,13 @@ class ImageViewHelperTest extends FunctionalTestCase
         * Given the ViewHelper is used in a template
         * When the ViewHelper is rendered
         * Then the images are rendered like in frontend context
+        * Then the image-url uses a relative path
         */
         $this->standAloneViewHelper->setTemplate('Check10.html');
 
         $result = $this->standAloneViewHelper->render();
 
-        static::assertContains('<img src="', $result);
+        static::assertContains('<img src="/typo3temp/', $result);
         static::assertContains('width="536"', $result);
         static::assertContains('height="200"', $result);
     }

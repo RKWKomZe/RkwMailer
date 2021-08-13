@@ -38,6 +38,12 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
 {
 
     /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/PixelCounterViewHelperTest/Fixtures';
+
+
+    /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
@@ -66,12 +72,6 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
      */
     private $queueRecipientRepository;
 
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
-
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
@@ -90,19 +90,17 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/PixelCounterViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/PixelCounterViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
-
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-
+        
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
@@ -112,7 +110,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/PixelCounterViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
 
@@ -137,16 +135,15 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         * When the ViewHelper is rendered
         * Then no tracking link is returned
         */
-        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEmpty($result);
+        $result = $this->standAloneViewHelper->render();
+        static::assertNotContains('<img', $result);
     }
 
     /**
@@ -166,16 +163,15 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then no tracking link is returned
          */
-        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check20.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
 
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEmpty($result);
+        $result = $this->standAloneViewHelper->render();
+        static::assertNotContains('<img', $result);
     }
 
     /**
@@ -195,7 +191,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a valid tracking link is returned
          */
-        $this->importDataSet(__DIR__ . '/LinkViewHelperTest/Fixtures/Database/Check30.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '//Database/Check30.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
@@ -204,9 +200,8 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEquals('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=confirmation&tx_rkwmailer_rkwmailer[controller]=Link" width="1" height="1" alt="" />', $result);
+        $result = $this->standAloneViewHelper->render();
+        static::assertContains('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=confirmation&tx_rkwmailer_rkwmailer[controller]=Link" width="1" height="1" alt="" />', $result);
 
     }
 

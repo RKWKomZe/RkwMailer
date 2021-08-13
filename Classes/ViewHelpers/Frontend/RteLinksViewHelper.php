@@ -23,22 +23,17 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated 
  */
 class RteLinksViewHelper extends Replace\RteLinksViewHelper
 {
 
     /**
-     * Replaces all links of WYSIWYG- editor
-     *
-     * @param string $value
-     * @param boolean $plaintextFormat
-     * @param string $style Add CSS-style-attribute
-     * @return string
+     * Constructor
      */
-    public function render($value = null, $plaintextFormat = false, $style = '')
+    public function __construct()
     {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use \RKW\RkwMailer\ViewHelpers\Frontend\Replace\RteLinksViewHelper instead.');
-        return parent::render($value, $plaintextFormat, $style);
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.replace.rteLinks instead.');
     }
 
 }
