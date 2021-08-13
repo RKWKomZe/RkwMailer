@@ -15,6 +15,11 @@ namespace RKW\RkwMailer\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwAjax\Utilities\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
+
 /**
  * Class PlaintextLineBreaksViewHelper
  *
@@ -25,42 +30,61 @@ namespace RKW\RkwMailer\ViewHelpers;
  */
 class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+    use CompileWithContentArgumentAndRenderStatic;
 
     /**
-     * Handles line breaks in plaintext mode
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
+     * Initialize arguments.
      *
-     * @param string $value
-     * @param bool $keepLineBreaks
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('value', 'string', 'String to format');
+        $this->registerArgument('keepLineBreaks', 'boolean', 'Convert line-breaks to \n. DEPRECATED.');
+        $this->registerArgument('convertLineBreaks', 'boolean', 'Convert line-breaks to \n.');
+    }
+
+    /**
+     * Handles line breaks and indents in plaintext mode
+     *
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
-    public function render($value = null, $keepLineBreaks = false)
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-
-
-        if ($value === null) {
-            $value = $this->renderChildren();
+        $value = $renderChildrenClosure();
+        $convertLineBreaks = ($arguments['convertLineBreaks'] ? $arguments['convertLineBreaks'] : $arguments['keepLineBreaks']);
+        
+        // log deprecated attribute
+        if ($arguments['keepLineBreaks']) {
+            GeneralUtility::logDeprecatedViewHelperAttribute(
+                'keepLineBreaks', 
+                $renderingContext,
+                'Argument "keepLineBreaks" on rkwMailer:plaintextLineBreaks is deprecated - use "convertLineBreaks" instead'
+            );
         }
-
-        if (! is_string($value)) {
-            return $value;
-        }
-
-        if ($keepLineBreaks) {
+        
+        // convert line breaks to manual line breaks
+        if ($convertLineBreaks) {
             $value = preg_replace( '/\r|\n/', '\n',  $value);
+        }
 
-        } else {
+        // replace real line breaks and indents
+        $value = preg_replace("/\r|\n|\t|([ ]{2,})/", '', trim($value));
 
-            // replace real line breaks and indents
-            $value = preg_replace('/\r|\n|\t|([ ]{2,})/', '', $value);
-
-            // set manual line breaks
+        // convert manual line breaks - only if no convertLineBreaks-attribute given!
+        if (! $convertLineBreaks) {
             $value = str_replace('\n', "\n", $value);
-
         }
 
         return $value;
-
     }
-
-
 }

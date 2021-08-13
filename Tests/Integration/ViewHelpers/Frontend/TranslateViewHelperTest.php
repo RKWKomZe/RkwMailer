@@ -38,6 +38,12 @@ class TranslateViewHelperTest extends FunctionalTestCase
 {
 
     /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/TranslateViewHelperTest/Fixtures';
+
+
+    /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
@@ -55,21 +61,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
      * @var \TYPO3\CMS\Fluid\View\StandaloneView
      */
     private $standAloneViewHelper;
-
-    /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     */
-    private $queueMailRepository;
-
-    /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     */
-    private $queueRecipientRepository;
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
+    
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -84,34 +76,26 @@ class TranslateViewHelperTest extends FunctionalTestCase
     protected function setUp()
     {
 
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Frontend/TranslateViewHelperTest/Fixtures/RealUrlConfiguration.php');
-
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/TranslateViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/TranslateViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
-
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
-        $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
-
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/TranslateViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
 
@@ -136,7 +120,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
         */
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
-        $expected = file_get_contents(__DIR__ . '/TranslateViewHelperTest/Fixtures/Expected/Check10.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
         static::assertEquals($expected, $result);

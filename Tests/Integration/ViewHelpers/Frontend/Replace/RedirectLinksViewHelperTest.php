@@ -37,6 +37,12 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
 {
 
     /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/RedirectLinksViewHelperTest/Fixtures';
+
+
+    /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
@@ -66,11 +72,6 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
     private $queueRecipientRepository;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
-
-    /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     private $objectManager;
@@ -88,18 +89,17 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/Replace/RedirectLinksViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -110,11 +110,9 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
 
@@ -130,19 +128,19 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         * Scenario:
         *
         * Given the ViewHelper is used in a template
-        * Given a queueRecipient is defined
-        * Given there is no queueMail given
+        * Given a queueRecipient-object is defined
+        * Given there is no queueMail-object defined
         * When the ViewHelper is rendered
-        * Then no replacement takes place
+        * Then the links are returned unchanged
         */
-        $this->importDataSet(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Expected/Check10.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
         static::assertEquals($expected, $result);
@@ -160,22 +158,31 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueMail is defined
-         * Given there is no queueRecipient given
+         * Given a queueMail-object is defined
+         * Given there is no queueRecipient-object defined
          * When the ViewHelper is rendered
-         * Then the replacement takes place
+         * Then all normal links are replaced by a redirect link
+         * Then anchor- and e-mail-links are left unchanged
+         * Then a queueMail-parameter is set in the redirect-links
+         * Then no queueRecipient-parameter is set in the redirect-links
+         * Then no cHash-parameter is set
+         * Then a noCache-parameter is set 
          */
-        $this->importDataSet(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Database/Check20.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
 
-        $expected = file_get_contents(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Expected/Check20.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
         $result = $this->standAloneViewHelper->render();
 
         static::assertEquals($expected, $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        static::assertNotContains('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
+        static::assertNotContains('cHash=', $result);
+        static::assertContains('/nc/', $result);
     }
 
     /**
@@ -190,12 +197,17 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a queueMail is defined
-         * Given a queueRecipient is defined
+         * Given a queueMail-object is defined
+         * Given a queueRecipient-object is defined
          * When the ViewHelper is rendered
-         * Then the replacement takes place
+         * Then all normal links are replaced by a redirect link
+         * Then anchor- and e-mail-links are left unchanged 
+         * Then a queueMail-parameter is set in the redirect-links
+         * Then a queueRecipient-parameter is set in the redirect-links
+         * Then no cHash-parameter is set
+         * Then a noCache-parameter is set
          */
-        $this->importDataSet(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Database/Check30.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
@@ -204,10 +216,14 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RedirectLinksViewHelperTest/Fixtures/Expected/Check30.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
         $result = $this->standAloneViewHelper->render();
 
         static::assertEquals($expected, $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
+        static::assertNotContains('cHash=', $result);
+        static::assertContains('/nc/', $result);
     }
 
 

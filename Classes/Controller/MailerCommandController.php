@@ -15,8 +15,10 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Statistics\BounceMailAnalyser;
 use \RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * MailerCommandController
@@ -99,7 +101,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param int $settingsPid Pid to fetch TypoScript-settings from
      * @param int $linkPid Pid to link to
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\MailException
+     * @throws \RKW\RkwMailer\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
@@ -331,10 +333,10 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                 'deleteBefore' => $deleteBefore,
             ];
 
-            /** @var \RKW\RkwMailer\Utility\BounceMailUtility $bounceMailUtility */
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-            $bounceMailUtility = $objectManager->get('RKW\\RkwMailer\\Utility\\BounceMailUtility', $params);
-            $bounceMailUtility->analyseMails($maxEmails);
+            /** @var \RKW\RkwMailer\Statistics\BounceMailAnalyser $bounceMailAnalyser */
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
+            $bounceMailAnalyser = $objectManager->get(BounceMailAnalyser::class, $params);
+            $bounceMailAnalyser->analyseMails($maxEmails);
 
         } catch (\Exception $e) {
             $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));

@@ -17,16 +17,15 @@ namespace RKW\RkwMailer\Utility;
 
 /**
  * FrontendLocalization
- * We can not extend the basic class here, since the methods are used as static methods and this confuses translation-handling
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @see \TYPO3\CMS\Extbase\Utility\LocalizationUtility
  */
-class FrontendLocalizationUtility extends \RKW\RkwBasics\Helper\FrontendLocalization
+class FrontendLocalizationUtility extends \RKW\RkwBasics\Utility\FrontendLocalizationUtility
 {
+
 
 }

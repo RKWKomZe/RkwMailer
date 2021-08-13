@@ -16,8 +16,15 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  */
 
 use Psr\Log\LoggerInterface;
+use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
+use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use RKW\RkwMailer\UriBuilder\FrontendUriBuilder;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Class RedirectLinksViewHelper
@@ -30,199 +37,150 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
+    use CompileWithContentArgumentAndRenderStatic;
+
     /**
-     * The output must not be escaped.
-     *
      * @var bool
      */
     protected $escapeOutput = false;
 
-    /**
-     * @var integer
-     */
-    protected $redirectPid;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
-     */
-    protected $queueMail = null;
-
-    /**
-     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
-     */
-    protected $queueRecipient = null;
-
-    /**
-     * @var array $additionalParams
-     */
-    protected $additionalParams = array();
-
-
-    /**
-     * Replaces all set links with redirect links
+     * Initialize arguments.
      *
-     * @param string $value
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param boolean $isPlaintext
-     * @param array $additionalParams additional query parameters that won't be prefixed like $arguments (overrule $arguments)
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('value', 'string', 'String to work on');
+        $this->registerArgument('queueMail', '\RKW\RkwMailer\Domain\Model\QueueMail', 'QueueMail-object for redirecting links');
+        $this->registerArgument('queueRecipient', '\RKW\RkwMailer\Domain\Model\QueueRecipient', 'QueueRecipient-object of email');
+        $this->registerArgument('isPlaintext', 'boolean', 'QueueRecipient-object of email');
+        $this->registerArgument('additionalParams', 'array', 'Additional params for links');
+    }
+  
+
+    /**
+     * Render typolinks
+     **
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
-    public function render($value = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, $isPlaintext = false, $additionalParams = array())
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
+        $value = $renderChildrenClosure();
+        $queueMail = $arguments['queueMail'];
+        $queueRecipient = $arguments['queueRecipient'];
+        $isPlaintext  = (bool) $arguments['isPlaintext'];
+        $additionalParams = $arguments['additionalParams'] ? $arguments['additionalParams'] : [] ;
 
         try {
 
-            if ($value === null) {
-                $value = $this->renderChildren();
-            }
+            if ($queueMail) {
 
-            if (!is_string($value)) {
-                return $value;
-            }
-
-            $this->queueMail = $queueMail;
-            $this->queueRecipient = $queueRecipient;
-            $this->additionalParams = $additionalParams;
-
-            if ($this->queueMail) {
-
+                // plaintext replacement
                 if ($isPlaintext == true) {
 
-                    return preg_replace_callback('/(http[s]?:\/\/[^\s]+)/', array($this, 'replacePlaintext'), $value);
+                    return preg_replace_callback(
+                        '/(http[s]?:\/\/[^\s]+)/',
+                        function ($matches) use ($queueMail, $queueRecipient, $additionalParams) {
 
+                            // do replacement but not for anchors and mailto's
+                            if (
+                                (count($matches) == 2)
+                                && (strpos($matches[1], '#') !== 0)
+                                && (strpos($matches[1], 'mailto:') !== 0)
+                            ) {
+                                return self::replace(
+                                    $matches[1],
+                                    $queueMail,
+                                    $queueRecipient,
+                                    $additionalParams
+                                );
+                            }
+                            return $matches[0];
+                        }
+                        , $value
+                    );
+
+                // HTML- replacement
                 } else {
-                    // U for non-greedy behavior: take as less signs as possible
-                    return preg_replace_callback('/(<a.+href=")([^"]+)(")/U', array($this, 'replaceHtml'), $value);
-                }
 
+                    // U for non-greedy behavior: take as less signs as possible
+                    return preg_replace_callback(
+                        '/(<a.+href=")([^"]+)(")/U',
+                        function ($matches) use ($queueMail, $queueRecipient, $additionalParams) {
+
+                            // do replacement - but not for anchors and mailto's
+                            if (
+                                (count($matches) == 4)
+                                && (strpos($matches[2], '#') !== 0)
+                                && (strpos($matches[2], 'mailto:') !== 0)
+                            ) {
+                                return $matches[1] .
+                                    self::replace(
+                                        $matches[2],
+                                        $queueMail,
+                                        $queueRecipient,
+                                        $additionalParams
+                                    ) . $matches[3];
+                            }
+
+                            return $matches[0];
+                        },
+                        $value
+                    );
+                }
             }
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
+
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
         }
 
         return $value;
     }
-
-
-    /**
-     * Replaces the matches
-     *
-     * @param array $matches
-     * @return string
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     *
-     */
-    protected function replaceHtml($matches)
-    {
-
-        // do replacement but not for anchors and mailto's
-        if (
-            (count($matches) == 4)
-            && (strpos($matches[2], '#') !== 0)
-            && (strpos($matches[2], 'mailto:') !== 0)
-        ) {
-            return $matches[1] . $this->replace($matches[2]) . $matches[3];
-        }
-
-        return $matches[0];
-    }
-
-
-    /**
-     * Replaces the matches
-     *
-     * @param array $matches
-     * @return string
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     */
-    protected function replacePlaintext($matches)
-    {
-
-        // do replacement but not for anchors and mailto's
-        if (
-            (count($matches) == 2)
-            && (strpos($matches[1], '#') !== 0)
-            && (strpos($matches[1], 'mailto:') !== 0)
-        ) {
-
-            return $this->replace($matches[1]);
-        }
-
-        return $matches[0];
-    }
-
+    
 
     /**
      * Replaces the link
      *
      * @param string $link
+     * @param QueueMail $queueMail
+     * @param QueueRecipient $queueRecipient
+     * @param array $additionalParams
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
-    protected function replace($link)
-    {
+    static protected function replace(
+        string $link, 
+        QueueMail $queueMail,
+        QueueRecipient $queueRecipient = null, 
+        array $additionalParams = []
+    ): string {
+        
+        // load FrontendUriBuilder
+        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        if ($this->queueMail) {
+        /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
+        $uriBuilder = $objectManager->get(FrontendUriBuilder::class);
+        $uriBuilder->reset();
 
-            // load FrontendUriBuilder
-            /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $uriBuilder->setUseRedirectLink(true)
+            ->setQueueMail($queueMail)
+            ->setRedirectLink($link)
+            ->setArguments($additionalParams);
 
-            /** @var \RKW\RkwMailer\UriBuilder\FrontendUriBuilder $uriBuilder */
-            $uriBuilder = $objectManager->get(\RKW\RkwMailer\UriBuilder\FrontendUriBuilder::class);
-            $uriBuilder->reset();
-
-            $uriBuilder->setUseRedirectLink(true)
-                ->setRedirectPid($this->getRedirectPid())
-                ->setQueueMail($this->queueMail)
-                ->setQueueRecipient($this->queueRecipient)
-                ->setRedirectLink($link)
-                ->setArguments($this->additionalParams);
-
-            return $uriBuilder->build();
+        if ($queueRecipient) {
+            $uriBuilder->setQueueRecipient($queueRecipient);
         }
-
-        return $link;
-    }
-
-
-    /**
-     * Gets $redirectLPid
-     *
-     * @return integer
-     */
-    protected function getRedirectPid()
-    {
-
-        if (!$this->redirectPid) {
-
-            /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-
-            // get rewrite link from TypoScript
-            /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-            $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(
-                \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-                'RkwMailer', 'user'
-            );
-            $this->redirectPid = $extbaseFrameworkConfiguration['redirectPid'];
-        }
-
-        return $this->redirectPid;
-    }
-
-
-    /**
-     * @return LoggerInterface
-     */
-    protected function getLogger()
-    {
-        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        
+        return $uriBuilder->build();
+       
     }
 }
