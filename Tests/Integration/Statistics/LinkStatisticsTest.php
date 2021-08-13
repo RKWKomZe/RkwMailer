@@ -1,18 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\Statistics;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use RKW\RkwMailer\Statistics\LinkStatistics;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Domain\Repository\LinkRepository;
-use RKW\RkwMailer\Domain\Repository\StatisticOpeningRepository;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -26,6 +14,15 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use RKW\RkwMailer\Statistics\LinkStatistics;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use RKW\RkwMailer\Domain\Repository\LinkRepository;
+use RKW\RkwMailer\Domain\Repository\StatisticOpeningRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * LinkStatisticsTest
