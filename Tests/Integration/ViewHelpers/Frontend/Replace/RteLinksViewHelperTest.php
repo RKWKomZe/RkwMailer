@@ -1,17 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\ViewHelpers\Frontend\Replace;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -25,6 +14,11 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+
 
 /**
  * RteLinksViewHelperTest
@@ -36,6 +30,12 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class RteLinksViewHelperTest extends FunctionalTestCase
 {
+
+    /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/RteLinksViewHelperTest/Fixtures';
+
 
     /**
      * @var string[]
@@ -57,21 +57,6 @@ class RteLinksViewHelperTest extends FunctionalTestCase
     private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     */
-    private $queueMailRepository;
-
-    /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     */
-    private $queueRecipientRepository;
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
-
-    /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     private $objectManager;
@@ -89,33 +74,26 @@ class RteLinksViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/RteLinksViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:realurl/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/Replace/RteLinksViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
-
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
-        $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
-
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/RteLinksViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
 
@@ -127,16 +105,29 @@ class RteLinksViewHelperTest extends FunctionalTestCase
     {
 
         /**
-        * Scenario:
-        *
-        * Given the ViewHelper is used in a template
-        * When the ViewHelper is rendered
-        * Then the links are rendered like in frontend context
-        */
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given we have a plaintext section
+         * Given we have a html-section
+         * Given each section has a part with the old link-tag for typolink
+         * Given each section has a part with the new a-tag for typolink
+         * Given each section has an additional style-attribute given
+         * Given each section contains links to existing internal pages
+         * Given each section contains links to external pages
+         * Given each section contains links to existing files
+         * When the ViewHelper is rendered
+         * Then all links are rendered with absolute urls
+         * Then the plaintext-links are rendered without settings from the additional parameters
+         * Then the plaintext-links are enclosed by brackets and the link text is placed before the link
+         * Then the html-links include all additional parameters given as attributes
+         * Then the existing style-attribute of the html-links using the old link-tag for typolink is replaced by the styles given via viewHelper-attribute
+         * Then the existing style-attribute of the html-links using the new a-tag for typolink is extended by the styles given via viewHelper-attribute
+         */
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
 
-        $expected = file_get_contents(__DIR__ . '/RteLinksViewHelperTest/Fixtures/Expected/Check10.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
         static::assertEquals($expected, $result);

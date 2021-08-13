@@ -1,16 +1,18 @@
 
 
 
-    Testen Sie hier: http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=ef7480e626514baf9c682c8172f08befcaa6c8ad&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link
-    Testen Sie da: [http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=5d40be1983f95cac6eeefaca9903bf000a01dbbb&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link
+    Testen Sie hier: http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=ef7480e626514baf9c682c8172f08befcaa6c8ad&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link
+    Testen Sie da: [http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=5d40be1983f95cac6eeefaca9903bf000a01dbbb&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link
     Testen Sie dort: mail@rkw.de
     Testen Sie überall: #anchor-2
 
 
 
     <p>
-        <a href="http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=ef7480e626514baf9c682c8172f08befcaa6c8ad&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link">Testen Sie hier</a>
-        <a href="http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=1cb8408db408692ad6412e5d126ed5b90838aa27&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link">Testen Sie da</a>
+        <a href="http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=ef7480e626514baf9c682c8172f08befcaa6c8ad&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link">Testen Sie hier</a>
+        <a href="http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Bhash%5D=1cb8408db408692ad6412e5d126ed5b90838aa27&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Buid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link">Testen Sie da</a>
         <a href="mailto:mail@rkw.de">Testen Sie dort</a>
         <a href="#anchor-2">Testen Sie überall</a>
     </p>
+
+

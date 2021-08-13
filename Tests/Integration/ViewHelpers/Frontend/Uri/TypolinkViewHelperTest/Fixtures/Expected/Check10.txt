@@ -1,0 +1,10 @@
+
+http://www.google.de
+http://www.yahoo.de/#anchor-1
+mailto:mail@rkw.de
+mailto:mail@rkw.de
+http://www.rkw-kompetenzzentrum.rkw.local/testseite/
+http://www.rkw-kompetenzzentrum.rkw.local/testseite/
+http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1
+http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1
+http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf

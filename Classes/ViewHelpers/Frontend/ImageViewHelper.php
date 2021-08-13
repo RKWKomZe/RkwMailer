@@ -19,7 +19,6 @@ use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 /**
  * Class ImageViewHelper
  *
@@ -38,7 +37,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
      * @return string Rendered tag
      */
-    public function render()
+    public function render(): string
     {
 
         $return = '';
@@ -48,6 +47,9 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
         try {
 
+            // force non-absolute path!
+            $this->arguments['absolute'] = 0;
+            
             $result = parent::render();
             $return = $this->replacePath($result);
 
@@ -55,6 +57,10 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
             // try fallback without rendering!
             try {
+                
+                // force non-absolute path!
+                $this->arguments['absolute'] = 0;
+                
                 $image = $this->imageService->getImage($this->arguments['src'], $this->arguments['image'], $this->arguments['treatIdAsReference']);
                 $imageUri = $this->imageService->getImageUri($image, $this->arguments['absolute']);
 
@@ -102,6 +108,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
         return $return;
     }
 
+    
     /**
      * Replaces relative paths and absolute paths to server-root
      *

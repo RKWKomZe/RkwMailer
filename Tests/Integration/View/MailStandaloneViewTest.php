@@ -36,7 +36,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class MailStandaloneViewTest extends FunctionalTestCase
 {
 
+    /**
+     * @const
+     */
     const FIXTURE_PATH = __DIR__ . '/MailStandaloneViewTest/Fixtures';
+
 
     /**
      * @var string[]
@@ -85,7 +89,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 

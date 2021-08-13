@@ -15,11 +15,12 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Psr\Log\LoggerInterface;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
+use RKW\RkwMailer\ViewHelpers\Frontend\Uri\TypolinkViewHelper;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Class RteLinks
@@ -29,248 +30,116 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RteLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+class RteLinksViewHelper extends TypolinkViewHelper
 {
 
+    use CompileWithContentArgumentAndRenderStatic;
+    
     /**
-     * The output must not be escaped.
-     *
      * @var bool
      */
     protected $escapeOutput = false;
 
+    
     /**
-     * @var string
-     */
-    protected $style;
-
-    /**
-     * @var bool
-     */
-    protected $plaintextFormat = false;
-
-    /**
-     * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
-     */
-    protected $contentObject;
-
-
-
-    /**
-     * Replaces all links of WYSIWYG- editor
+     * Initialize arguments.
      *
-     * @param string $value
-     * @param boolean $plaintextFormat
-     * @param string $style Add CSS-style-attribute
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('value', 'string', 'String to work on');
+        $this->registerArgument('plaintextFormat', 'boolean', 'Use plaintext-format for links. DEPRECATED.');
+        $this->registerArgument('isPlaintext', 'boolean', 'Use plaintext-format for links.');
+        $this->registerArgument('style', 'string', 'Style-attribute for links');
+    }
+
+
+    /**
+     * Render typolinks
+     **
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
-    public function render($value = null, $plaintextFormat = false, $style = '')
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-
+        $value = $renderChildrenClosure();
+        $plaintextFormat = $arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat'];
+        $style = $arguments['style'];
         try {
 
-            $this->contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $this->style = $style;
-            $this->plaintextFormat = (bool) $plaintextFormat;
-            if ($value === null) {
-                $value = $this->renderChildren();
+            // log deprecated attribute
+            if ($arguments['isPlaintext']) {
+                \RKW\RkwAjax\Utilities\GeneralUtility::logDeprecatedViewHelperAttribute(
+                    'plaintextFormat',
+                    $renderingContext,
+                    'Argument "plaintextFormat" on rkwMailer:frontend.replace.rteLinks is deprecated - use "isPlaintext" instead'
+                );
             }
-
-            if (!is_string($value)) {
-                return $value;
-            }
-
+            
             // new version for TKE
-            $callbackFunction = 'replaceTypolink';
-            $value = preg_replace_callback('/(<a([^>]+)href="([^"]+)"([^>]+)>([^<]+)<\/a>)/', array($this, $callbackFunction), $value);
+            $value = preg_replace_callback(
+                '/(<a([^>]+)href="([^"]+)"([^>]+)>([^<]+)<\/a>)/',
+                function ($matches) use ($style, $plaintextFormat) {
 
-            // Old version for RTE
-            $callbackFunction = 'replaceHtml';
-            if ($this->plaintextFormat) {
-                $callbackFunction = 'replacePlaintext';
+                    if (count($matches) == 6) {
+                        $attributes = trim($matches[2]) . ' ' . trim($matches[4]);
+                        $parameter = $matches[3];
+                        $linkText = $matches[5];
+                        $url = FrontendTypolinkUtility::getTypolinkUrl($parameter);
+                        if ($plaintextFormat) {
+                            return $linkText . ' [' . $url . ']';
+                        } else {
+                            $attributes = FrontendTypolinkUtility::addStyleAttribute($attributes, $style);
+                            return '<a href="' . $url . '" ' . trim($attributes) . '>' . $linkText . '</a>';
+                        }
+                    }
+                    return $matches[0];
+                },
+                $value
+            );
+
+            // Old version for RTE 
+            // Plaintext replacement
+            if ($plaintextFormat) {
+                $value = preg_replace_callback(
+                    '/(<link ([^>]+)>([^<]+)<\/link>)/',
+                    function ($matches)  {
+                        if (count($matches) == 4) {
+                            $parameter = $matches[2];
+                            $linkText = $matches[3];
+                            $url = FrontendTypolinkUtility::getTypolinkUrl($parameter);
+                            return $linkText . ' [' . $url . ']';
+                        }
+                        return $matches[0];
+                    },
+                    $value
+                );
+
+            // HTML replacement
+            } else {
+                $value = preg_replace_callback(
+                    '/(<link ([^>]+)>([^<]+)<\/link>)/',
+                    function ($matches) use ($style) {
+                        if (count($matches) == 4) {
+                            $parameter = $matches[2];
+                            $linkText = $matches[3];
+                            return FrontendTypolinkUtility::getTypolink($linkText, $parameter, '', $style);
+                        }
+                        return $matches[0];
+                    },
+                    $value
+                );
             }
-            $value = preg_replace_callback('/(<link ([^>]+)>([^<]+)<\/link>)/', array($this, $callbackFunction), $value);
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
+            
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
         }
 
         return $value;
-
     }
-
-
-
-    /**
-     * Replaces the matches
-     *
-     * @param array $matches
-     * @return string
-     */
-    protected function replaceHtml($matches)
-    {
-
-        if (count($matches) == 4) {
-
-            $parameters = $matches[2];
-            $linkText = $matches[3];
-
-            $pid = 1;
-            if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameters, $matchesSub)) {
-                if ($matchesSub[3] > 0) {
-                    $pid = $matchesSub[3];
-                }
-            }
-
-            // init frontend
-            FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
-
-            // get url
-            $conf = [
-                'parameter' => $parameters,
-                'forceAbsoluteUrl' => 1,
-                'target' => '_blank',
-                'extTarget' => '_blank',
-                'fileTarget' => '_blank',
-                'ATagParams' => ($this->style ? 'style="' . $this->style . '"' : '')
-            ];
-
-            $url = $this->contentObject->typoLink($linkText, $conf);
-
-            // reset frontend
-            FrontendSimulatorUtility::resetFrontendEnvironment();
-
-            return $url;
-        }
-
-        return $matches[0];
-    }
-
-
-
-    /**
-     * Replaces the matches
-     *
-     * @param array $matches
-     * @return string
-     */
-    protected function replacePlaintext($matches)
-    {
-
-        if (count($matches) == 4) {
-
-            $parameters = $matches[2];
-            $linkText = $matches[3];
-
-            $pid = 1;
-            if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameters, $matchesSub)) {
-                if ($matchesSub[3] > 0) {
-                    $pid = $matchesSub[3];
-                }
-            }
-
-            // init frontend
-            FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
-
-            // get url
-            $url = $this->contentObject->typoLink_URL(
-                [
-                    'parameter'        => $parameters,
-                    'forceAbsoluteUrl' => 1,
-                ]
-            );
-
-            // reset frontend
-            FrontendSimulatorUtility::resetFrontendEnvironment();
-
-            return $linkText . ' [' . $url . ']';
-        }
-
-        return $matches[0];
-    }
-
-
-    /**
-     * Replaces the matches
-     *
-     * @param array $matches
-     * @return string
-     */
-    protected function replaceTypolink($matches)
-    {
-
-        if (count($matches) == 6) {
-
-            $attributes = trim($matches[2]) . ' ' . trim($matches[4]);
-            $typoLink = $matches[3];
-            $linkText = $matches[5];
-
-            // check for pid in parameters for getting correct domain
-            $pid = 1;
-            if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $typoLink , $matchesSub)) {
-                if ($matchesSub[3] > 0) {
-                    $pid = $matchesSub[3];
-                }
-            }
-
-            $url = '';
-            if ($typoLink) {
-
-                // init frontend
-                FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pid));
-
-                $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-                $url = $contentObject->typoLink_URL(
-                    [
-                        'parameter'        => $typoLink,
-                        'forceAbsoluteUrl' => 1,
-                    ]
-                );
-
-                // reset frontend
-                FrontendSimulatorUtility::resetFrontendEnvironment();
-            }
-
-            // add styles if needed
-            $this->setStyles($attributes);
-
-            if ($this->plaintextFormat) {
-                return $linkText . ' [' . $url . ']';
-            } else {
-                return '<a href="' . $url . '" ' . trim($attributes) . '>' . $linkText . '</a>';
-            }
-        }
-
-        return $matches[0];
-    }
-
-
-
-    /**
-     * Sets styles of links
-     *
-     * @param string $string
-     * @return void
-     */
-    protected function setStyles(&$string)
-    {
-        if ($this->style) {
-            if (strpos($string, 'style="') !== false) {
-                $string = preg_replace('/style="([^"]+)"/', "style=\"$1 $this->style\"", $string);
-
-            } else {
-                $string .= ' style="' . $this->style . '"';
-            }
-        }
-    }
-
-
-    /**
-     * @return LoggerInterface
-     */
-    protected function getLogger()
-    {
-        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-    }
-
 }

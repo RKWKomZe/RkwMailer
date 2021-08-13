@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwMailer\Database\MarkerReducer;
+use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -186,7 +186,7 @@ class MailService
     /**
      * MarkerReducer
      *
-     * @var \RKW\RkwMailer\Database\MarkerReducer
+     * @var \RKW\RkwMailer\Persistence\MarkerReducer
      */
     protected $markerReducer;
 

@@ -1,4 +1,6 @@
-{namespace rkwMailer=RKW\RkwMailer\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
+    data-namespace-typo3-fluid="true">
 
 <rkwMailer:frontend.replace.redirectLinks queueMail="{queueMail}" queueRecipient="{queueRecipient}" isPlaintext="true">
     Testen Sie hier: http://www.google.de
@@ -15,3 +17,5 @@
         <a href="#anchor-2">Testen Sie überall</a>
     </p>
 </rkwMailer:frontend.replace.redirectLinks>
+
+</html>

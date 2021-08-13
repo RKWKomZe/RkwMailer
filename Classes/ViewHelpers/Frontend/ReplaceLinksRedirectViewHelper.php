@@ -22,24 +22,17 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated 
  */
 class ReplaceLinksRedirectViewHelper extends Replace\RedirectLinksViewHelper
 {
 
     /**
-     * Replaces all set links with redirect links
-     *
-     * @param string $value
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param boolean $isPlaintext
-     * @param array $additionalParams additional query parameters that won't be prefixed like $arguments (overrule $arguments)
-     * @return string
+     * Constructor
      */
-    public function render($value = null, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient = null, $isPlaintext = false, $additionalParams = array())
+    public function __construct()
     {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use \RKW\RkwMailer\ViewHelpers\Frontend\Replace\RedirectLinksViewHelper instead.');
-        return parent::render($value, $queueMail, $queueRecipient, $isPlaintext, $additionalParams);
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.replace.redirectLinks instead.');
     }
 
 }

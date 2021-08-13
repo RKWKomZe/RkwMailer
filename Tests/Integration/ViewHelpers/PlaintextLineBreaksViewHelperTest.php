@@ -1,16 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\ViewHelpers;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -24,17 +14,27 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * PlaintextLineBreaksViewHelperTest
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
 {
+
+    /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures';
 
     /**
      * @var string[]
@@ -54,10 +54,6 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
      */
     private $standAloneViewHelper;
 
-    /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     */
-    private $queueRecipientRepository;
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -74,13 +70,13 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/PlaintextLineBreaksViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
@@ -90,7 +86,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
 
@@ -102,25 +98,22 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itRendersTextWithoutLineBreakDefault ()
+    public function itRemovesIdents()
     {
         /**
          * Scenario:
          *
          * Given the ViewHelper is used in a template
          * Given a text without line break
+         * Given the text is indented
          * When the ViewHelper is rendered
-         * Then the text is rendered without line breaks
+         * Then the text is returned without line breaks
+         * Then the intends are removed
          */
-        $text = "Without line break, remove line breaks.";
-
         $this->standAloneViewHelper->setTemplate('Check10.html');
-        $this->standAloneViewHelper->assign('text', $text);
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
 
-        $expected = file_get_contents(__DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures/Expected/Check10.txt');
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEquals($expected, $result);
+        static::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
 
@@ -129,30 +122,50 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
      */
-    public function itRendersTextWithLineBreakDefault ()
+    public function itRendersRemovesLineBreaksAndIndents ()
     {
         /**
          * Scenario:
          *
          * Given the ViewHelper is used in a template
          * Given a text with line break
+         * Given the text is indented
          * When the ViewHelper is rendered
-         * Then the text is rendered with line break
-         * Then the whitespace at the end of the first line is keept
+         * Then the text is returned without line breaks
+         * Then the intends are removed
          */
-        // @toDo: currently also the whitespace after the comma is removed by the VH. Is this expected?
-        $text = "With line break, \nremove line breaks.";
-
         $this->standAloneViewHelper->setTemplate('Check20.html');
-        $this->standAloneViewHelper->assign('text', $text);
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
 
-        $expected = file_get_contents(__DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures/Expected/Check20.txt');
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEquals($expected, $result);
+        static::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function itRendersAddsCustomLineBreaks ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given a text with line break
+         * Given the text is indented
+         * Given the text has a manual line break set 
+         * When the ViewHelper is rendered
+         * Then the text is returned without normal line breaks
+         * Then the intends are removed
+         * Then the manual line break is replaced by a real line break
+         */
+        $this->standAloneViewHelper->setTemplate('Check30.html');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
 
+        static::assertEquals($expected, $this->standAloneViewHelper->render());
+    }
+
+    
     /**
      * @test
      * @throws \Exception
@@ -164,19 +177,19 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the ViewHelper is used in a template
-         * Given a text without line break
+         * Given a text with a line break
+         * Given the text is indented
+         * Given the attribute convertLineBreaks is set to true
          * When the ViewHelper is rendered
-         * Then the text break is rendered with manual line breaks
+         * Then the text is returned without normal line breaks
+         * Then the intends are removed
+         * Then the normal line break is replaced by \n
          */
-        $text = "With line break, \nkeep line breaks.";
 
-        $this->standAloneViewHelper->setTemplate('Check30.html');
-        $this->standAloneViewHelper->assign('text', $text);
+        $this->standAloneViewHelper->setTemplate('Check40.html');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check40.txt');
 
-        $expected = file_get_contents(__DIR__ . '/PlaintextLineBreaksViewHelperTest/Fixtures/Expected/Check30.txt');
-        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
-
-        static::assertEquals($expected, $result);
+        static::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
 

@@ -17,9 +17,7 @@ namespace RKW\RkwMailer\Utility;
 
 /**
  * FrontendLocalization
- * We can not extend the basic class here, since the methods are used as static methods and this confuses translation-handling
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer

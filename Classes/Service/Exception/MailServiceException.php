@@ -23,7 +23,7 @@ namespace RKW\RkwMailer\Service\Exception;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class MailServiceException extends \RKW\RkwMailer\Service\MailException
+class MailServiceException extends \RKW\RkwMailer\Exception
 {
 
 }

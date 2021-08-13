@@ -34,3 +34,5 @@
         Testen Sie hüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/#anchor-1" class="internal-link" title="Titel ist Titel" style="color:red; color:green;">mit Klick</a>!<br />
         Testen Sie drüben <a href="http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf" class="download" target="_blank" title="Titel ist Titel" style="color:red; color:green;">mit Klick</a>!
     </p>
+
+
