@@ -1,16 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\View;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use RKW\RkwAjax\Helper\AjaxHelper;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\View\MailStandaloneView;
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -25,6 +15,13 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\View\MailStandaloneView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+
+
 /**
  * MailStandaloneViewTest
  *
@@ -36,7 +33,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class MailStandaloneViewTest extends FunctionalTestCase
 {
 
+    /**
+     * @const
+     */
     const FIXTURE_PATH = __DIR__ . '/MailStandaloneViewTest/Fixtures';
+
 
     /**
      * @var string[]
@@ -85,7 +86,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
@@ -120,7 +121,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check10.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
 
@@ -213,7 +214,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check10.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
 
@@ -247,7 +248,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check10.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
 
@@ -396,7 +397,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check20.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
 
@@ -431,7 +432,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check20.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
 
@@ -466,7 +467,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check20.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
 
@@ -543,7 +544,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check30.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
 
@@ -634,7 +635,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check30.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
 
@@ -725,7 +726,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Configuration/Check30.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
 
@@ -796,7 +797,6 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Then the default file extension is used
          */
 
-        $expected = $this->subject->getTemplateRootPaths();
         $this->subject->setTemplate('EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
@@ -822,7 +822,6 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Then the file extension specified is used
          */
 
-        $expected = $this->subject->getTemplateRootPaths();
         $this->subject->setTemplate('EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();

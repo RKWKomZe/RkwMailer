@@ -393,6 +393,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @toDo Wrong exception checked here
      */
     public function renderSingleTemplate_UsingQueueMailWithout_ThrowsException()
     {
@@ -566,6 +567,7 @@ class MailServiceTest extends FunctionalTestCase
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @toDo Wrong exception checked here
      */
     public function renderTemplates_UsingNoTemplates_DoesNoUpdates()
     {

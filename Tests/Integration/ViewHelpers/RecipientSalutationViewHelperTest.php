@@ -1,16 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\ViewHelpers;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -24,6 +14,11 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * RecipientSalutationViewHelperTest
@@ -86,7 +81,6 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
 
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);

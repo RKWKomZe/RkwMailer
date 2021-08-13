@@ -15,84 +15,25 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-
-
-
 /**
  * Class TypolinkViewHelper
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated 
  */
-class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
+class TypolinkViewHelper extends \RKW\RkwMailer\ViewHelpers\Frontend\Uri\TypolinkViewHelper
 {
-
+    
     /**
-     * Initialize arguments
+     * Constructor
      */
-    public function initializeArguments()
+    public function __construct()
     {
-        parent::initializeArguments();
-        $this->registerArgument('pageUid', 'int', 'pageUid for FE-configuration (optional)', false, null);
-
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.uri.typolink instead.');
     }
-
-    /**
-     * Except for "forceAbsoluteUrl" this is an exact copy of the parent-class
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext)
-    {
-        $parameter = $arguments['parameter'];
-        $additionalParams = $arguments['additionalParams'];
-        $pageUid = $arguments['pageUid'];
-
-        // Start: Added content from old render() function
-        if (!$pageUid) {
-            $pageUid = 1;
-        }
-
-        // check for pid in parameters for getting correct domain
-        //$pageUid = 1;
-        if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {
-            if ($matches[3] > 0) {
-                $pageUid = $matches[3];
-            }
-        }
-
-        $content = '';
-        if ($parameter) {
-
-            // init frontend
-            FrontendSimulatorUtility::simulateFrontendEnvironment(intval($pageUid));
-
-            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $content = $contentObject->typoLink_URL(
-                [
-                    'parameter'        => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
-                    'forceAbsoluteUrl' => 1,
-                    'target'           => '_blank',
-                    'extTarget'        => '_blank',
-                ]
-            );
-
-            // reset frontend
-            FrontendSimulatorUtility::resetFrontendEnvironment();
-        }
-
-        return $content;
-    }
-
 }
 
 

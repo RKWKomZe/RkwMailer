@@ -61,12 +61,12 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
 
     /**
-     * StatisticsUtility
+     * LinkStatistics
      *
-     * @var \RKW\RkwMailer\Utility\StatisticsUtility
+     * @var \RKW\RkwMailer\Statistics\LinkStatistics
      * @inject
      */
-    protected $statisticsUtility;
+    protected $linkStatistics;
 
     /**
      * Persistence Manager
@@ -101,7 +101,7 @@ class LinkController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $queueMailRecipientId = intval($request['uid']);
 
 
-        if ($url = $this->statisticsUtility->getRedirectLink($hash, $queueMailId, $queueMailRecipientId)) {
+        if ($url = $this->linkStatistics->getRedirectLink($hash, $queueMailId, $queueMailRecipientId)) {
 
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {

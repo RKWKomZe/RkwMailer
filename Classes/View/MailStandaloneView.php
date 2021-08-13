@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\View;
  */
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
-use RKW\RkwMailer\Database\MarkerReducer;
+use RKW\RkwMailer\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
