@@ -109,11 +109,7 @@ class LinkStatisticsTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $this->importDataSet(self::FIXTURE_PATH . '/Database/Pages.xml');
-        $this->importDataSet(self::FIXTURE_PATH . '/Database/QueueMail.xml');
-        $this->importDataSet(self::FIXTURE_PATH . '/Database/QueueRecipient.xml');
-        $this->importDataSet(self::FIXTURE_PATH . '//Database/Link.xml');
-        $this->importDataSet(self::FIXTURE_PATH . '/Database/StatisticOpening.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
 
         $this->setUpFrontendRootPage(
             1,
@@ -141,220 +137,269 @@ class LinkStatisticsTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLink_GivenValidMailAndGivenInvalidHash_ReturnsFalse()
+    public function getRedirectLinkReturnsEmptyOnInvalidLinkHashButValidQueueMail()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given an invalid link-hash
+         * When the method is called
+         * Then an empty string is returned
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+        static::assertEmpty($this->subject->getRedirectLink('abc', 100));
+    }
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsLinkOnInValidQueueMailButValidLinkHash ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an invalid queueMail-uid
+         * Given a valid link-hash
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then no queueMail-parameter is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then no entry is created in the statistic table
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 99999);
+        static::assertEquals('http://aprodi-projekt.de', $result);
+        static::assertNotContains('tx_rkwmailer[mid]=', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        static::assertCount(0,$this->statisticOpeningRepository->findAll());
+    }
+
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsLinkOnNonMatchingQueueMailLinkHashCombination()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid link-hash
+         * Given the link-hash does not belong to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then no queueMail-parameter is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then no entry is created in the statistic table
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100);
+        static::assertEquals('http://aprodi-projekt.de', $result);
+        static::assertNotContains('tx_rkwmailer[mid]=', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        static::assertEquals(0, $this->statisticOpeningRepository->findAll()->count());
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsAnchorLinkOnNonMatchingQueueMailLinkHashCombination()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid link-hash
+         * Given the link-hash does not belong to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link with an anchor attached is returned
+         * Then no queueMail-parameter is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then no entry is created in the statistic table
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check40.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100);
+        static::assertEquals('http://aprodi-projekt.de#anchor-1', $result);
+        static::assertNotContains('tx_rkwmailer[mid]=', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        static::assertEquals(0, $this->statisticOpeningRepository->findAll()->count());
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsLinkAndCreatesTracking ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid link-hash
+         * Given the link-hash belongs to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then a queueMail-parameter with the given queueMail-uid is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then a new entry is created in the statistic table
+         * Then the counter of the entry in the statistic table is set to one
+         * Then the entry in the statistic table is referenced to the queueMail given
+         * Then the entry in the statistic table is not referenced to any queueRecipient
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check50.xml');
+
+        $result =  $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100);
+        static::assertEquals('http://aprodi-projekt.de?tx_rkwmailer[mid]=100', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+
+        static::assertEquals(1,$this->statisticOpeningRepository->countAll());
+        
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(1);
+        
+        static::assertEquals(1, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEmpty($statisticOpening->getQueueRecipient());
+
+
+    }
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsAnchorLinkAndCreatesTracking ()
     {
         
-        
-        static::assertFalse($this->subject->getRedirectLink('abc', 1));
-    }
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid link-hash
+         * Given the link-hash belongs to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link with an anchor is returned
+         * Then a queueMail-parameter with the given queueMail-uid is added to the link
+         * Then the anchor is placed after the queueMail-parameter
+         * Then no queueRecipient-parameter is added to the link
+         * Then a new entry is created in the statistic table
+         * Then the counter of the entry in the statistic table is set to one
+         * Then the entry in the statistic table is referenced to the queueMail given
+         * Then the entry in the statistic table is not referenced to any queueRecipient
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check60.xml');
 
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenInValidMailAndGivenValidHash_ReturnsLinkAndCreatesNoStatistic()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de',
-            $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 99999)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-    }
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100);
+        static::assertEquals('http://aprodi-projekt.de?tx_rkwmailer[mid]=100#anchor-1', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
 
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidNonMatchingHash_ReturnsLinkAndCreatesNoStatistic()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de',
-            $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-
-    }
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidNonMatchingHash_ReturnsLinkWithAnchorAndCreatesNoStatistic()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de/#Anker-Link',
-            $this->subject->getRedirectLink('bd18b69edccbc3a02b92e341e4cb72fc80ebf0c5', 1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkAndCreatesStatisticWithCountOneForQueueMailGiven()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de?tx_rkwmailer[mid]=2',
-            $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 2)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS + 1,
-            $this->statisticOpeningRepository->countAll()
-        );
+        static::assertEquals(1,$this->statisticOpeningRepository->countAll());
 
         /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
-        static::assertEquals(
-            1,
-            $statisticOpening->getClickCount()
-        );
-        static::assertEquals(
-            2,
-            $statisticOpening->getQueueMail()->getUid()
-        );
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(1);
+
+        static::assertEquals(1, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEmpty($statisticOpening->getQueueRecipient());
 
     }
+
 
     /**
      * @test
      */
-    public function getRedirectLink_GivenValidMailAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
+    public function getRedirectLinkReturnsLinkAndUpdatesExistingTracking ()
     {
-        static::assertEquals(
-            'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2#Anker-Link',
-            $this->subject->getRedirectLink('bd18b69edccbc3a02b92e341e4cb72fc80ebf0c5', 2)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS + 1,
-            $this->statisticOpeningRepository->countAll()
-        );
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid link-hash
+         * Given the link-hash belongs to the given queueMail-uid
+         * Given this combination of queueMail-uid and link-hash has already been tracked one time
+         * Given this combination of queueMail-uid and link-hash has already been tracked one time together with a queueRecipient-uid
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then a queueMail-parameter with the given queueMail-uid is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then no new entry is created in the statistic table
+         * Then the counter of the existing entry in the statistic table for the queueMail-uid and link-hash-combination is updated to two
+         * Then the updated entry in the statistic table is referenced to the queueMail given
+         * Then the updated entry in the statistic table is not referenced to any queueRecipient
+         * Then the counter of the existing entry in the statistic table for the queueMail-uid, queueRecipient-uid and link-hash-combination is not updated
+         * Then the non-updated entry in the statistic table is referenced to the queueMail given
+         * Then the non-updated entry in the statistic table is referenced to a queueRecipient
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check70.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100);
+        static::assertEquals('http://aprodi-projekt.de?tx_rkwmailer[mid]=100', $result);
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+
+        static::assertEquals(2, $this->statisticOpeningRepository->countAll());
 
         /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
-        static::assertEquals(
-            1,
-            $statisticOpening->getClickCount()
-        );
-        static::assertEquals(
-            2,
-            $statisticOpening->getQueueMail()->getUid()
-        );
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(100);
 
-    }
-
-
-    /**
-     * @test
-     */
-    public function getRedirect_GivenLinkWithValidMailAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoForQueueMailGiven()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2',
-            $this->subject->getRedirectLink('cc217a5c99c6bade038ca01bbeb21aa62c65477f', 2)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->countAll()
-        );
-        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-        $statisticOpening = $this->statisticOpeningRepository->findByUid(2);
-        static::assertEquals(
-            2,
-            $statisticOpening->getClickCount()
-        );
-        static::assertEquals(
-            2,
-            $statisticOpening->getQueueMail()->getUid()
-        );
-    }
-
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidNonMatchingHash_ReturnsLinkAndCreatesNoStatistic()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de',
-            $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 1, 1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-
-    }
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidNonMatchingHash_ReturnsLinkWithAnchorAndCreatesNoStatistic()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de/#Anker-Link',
-            $this->subject->getRedirectLink('bd18b69edccbc3a02b92e341e4cb72fc80ebf0c5', 1, 1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkAndCreatesStatisticWithCountOne()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1',
-            $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 2, 1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS + 1,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-        static::assertEquals(
-            1,
-            $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1)->getClickCount()
-        );
-
-    }
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForUntrackedLink_ReturnsLinkWithAnchorAndCreatesStatisticWithCountOneForQueueMailGiven()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de/?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1#Anker-Link',
-            $this->subject->getRedirectLink('bd18b69edccbc3a02b92e341e4cb72fc80ebf0c5', 2,1)
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS +1,
-            $this->statisticOpeningRepository->countAll()
-        );
+        static::assertEquals(2, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEmpty($statisticOpening->getQueueRecipient());
 
         /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-        $statisticOpening = $this->statisticOpeningRepository->findByUid(self::NUMBER_OF_STATISTIC_OPENINGS + 1);
-        static::assertEquals(
-            1,
-            $statisticOpening->getClickCount()
-        );
-        static::assertEquals(
-            2,
-            $statisticOpening->getQueueMail()->getUid()
-        );
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(110);
+
+        static::assertEquals(1, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEquals(100, $statisticOpening->getQueueRecipient()->getUid());
+
+    }
+
+    /**
+     * @test
+     */
+    public function getRedirectLinkReturnsLinkAndIgnoresNonMatchingQueueRecipient ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid queueRecipient-uid
+         * Given a valid link-hash
+         * Given the link-hash belongs to the given queueMail-uid
+         * Given the queueRecipient-uid does not belong to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then a queueMail-parameter with the given queueMail-uid is added to the link
+         * Then no queueRecipient-parameter is added to the link
+         * Then a new entry is created in the statistic table
+         * Then the counter of the entry in the statistic table is set to one
+         * Then the entry in the statistic table is referenced to the queueMail given
+         * Then the entry in the statistic table is not referenced to any queueRecipient
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check80.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100, 100);
+        static::assertEquals('http://aprodi-projekt.de?tx_rkwmailer[mid]=100', $result );
+        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+
+        static::assertEquals(1,$this->statisticOpeningRepository->countAll());
+
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(1);
+
+        static::assertEquals(1, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEmpty($statisticOpening->getQueueRecipient());
 
     }
 
@@ -362,51 +407,41 @@ class LinkStatisticsTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getRedirectLink_GivenValidMailAndGivenValidRecipientAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesMailStatisticUnchanged()
+    public function getRedirectLinkReturnsLinkAddsMatchingQueueRecipientAsParameter ()
     {
-        static::assertEquals(
-            'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2&tx_rkwmailer[uid]=1',
-            $this->subject->getRedirectLink('cc217a5c99c6bade038ca01bbeb21aa62c65477f', 2,1 )
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-        static::assertEquals(
-            2,
-            $this->statisticOpeningRepository->findByUid(3)->getClickCount()
-        );
-        static::assertEquals(
-            1,
-            $this->statisticOpeningRepository->findByUid(2)->getClickCount()
-        );
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-uid
+         * Given a valid queueRecipient-uid
+         * Given a valid link-hash
+         * Given the link-hash belongs to the given queueMail-uid
+         * Given the queueRecipient-uid belongs to the given queueMail-uid
+         * When the method is called
+         * Then the corresponding link is returned
+         * Then a queueMail-parameter with the given queueMail-uid is added to the link
+         * Then a queueRecipient-parameter with the given queueRecipient-uid is added to the link
+         * Then a new entry is created in the statistic table
+         * Then the counter of the entry in the statistic table is set to one
+         * Then the entry in the statistic table is referenced to the queueMail given
+         * Then the entry in the statistic table is not referenced to any queueRecipient
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check90.xml');
+
+        $result = $this->subject->getRedirectLink('48723b1aa49952c291e71078d6690caabd1370ae', 100, 100);
+        static::assertEquals('http://aprodi-projekt.de?tx_rkwmailer[mid]=100&tx_rkwmailer[uid]=100', $result );
+
+        static::assertEquals(1,$this->statisticOpeningRepository->countAll());
+
+        /** @var  \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
+        $statisticOpening = $this->statisticOpeningRepository->findByUid(1);
+
+        static::assertEquals(1, $statisticOpening->getClickCount());
+        static::assertEquals(100, $statisticOpening->getQueueMail()->getUid());
+        static::assertEmpty($statisticOpening->getQueueRecipient());
 
     }
-
-
-    /**
-     * @test
-     */
-    public function getRedirectLink_GivenValidMailAndGivenInValidRecipientAndGivenValidMatchingHashForTrackedLink_ReturnsLinkAndUpdatesStatisticWithCountTwoAndLeavesRecipientStatisticUnchanged()
-    {
-        static::assertEquals(
-            'http://aprodi-projekt.de/test?tx_rkwmailer[mid]=2',
-            $this->subject->getRedirectLink('cc217a5c99c6bade038ca01bbeb21aa62c65477f', 2,2 )
-        );
-        static::assertEquals(
-            self::NUMBER_OF_STATISTIC_OPENINGS,
-            $this->statisticOpeningRepository->findAll()->count()
-        );
-        static::assertEquals(
-            1,
-            $this->statisticOpeningRepository->findByUid(3)->getClickCount()
-        );
-        static::assertEquals(
-            2,
-            $this->statisticOpeningRepository->findByUid(2)->getClickCount()
-        );
-
-    }
+    
     //=============================================
 
 

@@ -15,6 +15,12 @@ namespace RKW\RkwMailer\Statistics;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\StatisticOpening;
+use TYPO3\CMS\Core\Log\Logger;
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * LinkStatistics
  *
@@ -81,11 +87,11 @@ class LinkStatistics
      * @param string $hash
      * @param int $queueMailId
      * @param int $queueMailRecipientId
-     * @return false|string
+     * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
-    public function getRedirectLink($hash, $queueMailId, $queueMailRecipientId = 0)
+    public function getRedirectLink(string $hash, int $queueMailId, int $queueMailRecipientId = 0): string
     {
 
         /** @var \RKW\RkwMailer\Domain\Model\Link $link */
@@ -102,41 +108,51 @@ class LinkStatistics
                 && ($link->getQueueMail()->getUid() == $queueMail->getUid())
             ) {
 
-                // set additional params
+                // set queueMail as additional param
                 $additionalParams[] = 'tx_rkwmailer[mid]=' . $queueMail->getUid();
 
-                // check additionally for queueRecipient
+                // check additionally for corresponding queueRecipient
                 /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueMailRecipient */
                 if (
                     ($queueMailRecipientId)
                     && ($queueMailRecipient = $this->queueRecipientRepository->findOneByUidAndQueueMail($queueMailRecipientId, $queueMail))
                 ) {
-
-                    // set additional params
                     $additionalParams[] = 'tx_rkwmailer[uid]=' . $queueMailRecipient->getUid();
                 }
 
-                // get statistics if already created
+                // get statistics if already existing
                 /** @var \RKW\RkwMailer\Domain\Model\StatisticOpening $statisticOpening */
-                $statisticOpening = $this->statisticOpeningRepository->findOneByLinkAndQueueRecipient($link, $queueMailRecipient);
-                if (!$statisticOpening) {
-
-                    // create new statisticOpening for mailId/recipientId-combination
-                    $statisticOpening = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\StatisticOpening');
+                if ($statisticOpening = $this->statisticOpeningRepository->findOneByLink($link)) {
+                    
                     $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
+                    $this->statisticOpeningRepository->update($statisticOpening);
+                    $this->getLogger()->log(
+                        LogLevel::INFO, 
+                        sprintf(
+                            'Updating statisticOpening uid=%s for redirect (queueMail uid=%s).', 
+                            $statisticOpening->getUid(), 
+                            $queueMail->getUid()
+                        )
+                    );
+                    
+                } else {
+
+                    // create new statisticOpening for link
+                    $statisticOpening = GeneralUtility::makeInstance(StatisticOpening::class);
+                    $statisticOpening->setClickCount(1);
                     $statisticOpening->setQueueMail($queueMail);
                     $statisticOpening->setLink($link);
 
                     $this->statisticOpeningRepository->add($statisticOpening);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Adding new statisticOpening for redirect (queueMail uid=%s).', $queueMail->getUid()));
-
-                // update existing
-                } else {
-                    $statisticOpening->setClickCount($statisticOpening->getClickCount() + 1);
-                    $this->statisticOpeningRepository->update($statisticOpening);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Updating statisticOpening uid=%s for redirect (queueMail uid=%s).', $statisticOpening->getUid(), $queueMail->getUid()));
+                    $this->getLogger()->log(
+                        LogLevel::INFO, 
+                        sprintf(
+                            'Adding new statisticOpening for redirect (queueMail uid=%s).', 
+                            $queueMail->getUid()
+                        )
+                    );
                 }
-
+                
                 $this->persistenceManager->persistAll();
             }
 
@@ -154,13 +170,9 @@ class LinkStatistics
             }
 
             return $finalLink;
-            //===
-
         }
 
-        return false;
-        //===
-
+        return '';
     }
 
 
@@ -173,8 +185,8 @@ class LinkStatistics
     protected function getLogger()
     {
 
-        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+        if (!$this->logger instanceof Logger) {
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

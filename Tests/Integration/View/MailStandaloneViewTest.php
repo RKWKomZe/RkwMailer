@@ -113,7 +113,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         * Given this subpage as parameter
         * When the object is instanced
         * Then a configuration array is loaded
-        * Then a three configuration types of the rootpage of the given subpage are loaded
+        * Then the three configuration types of the rootpage of the given subpage are loaded
         */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
         $this->setUpFrontendRootPage(

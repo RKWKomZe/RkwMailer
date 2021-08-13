@@ -32,6 +32,12 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
 {
 
     /**
+     * @const
+     */
+    const FIXTURE_PATH = __DIR__ . '/RecipientSalutationViewHelperTest/Fixtures';
+
+
+    /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
@@ -69,13 +75,13 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
 
         parent::setUp();
 
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Global.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Tests/Integration/ViewHelpers/Frontend/RecipientSalutationViewHelperTest/Fixtures/Frontend/Configuration/Rootpage.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
@@ -86,7 +92,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper = $this->objectManager->get(StandaloneView::class);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
-                0 => __DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Frontend/Templates'
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
 
@@ -108,14 +114,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check10.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -137,14 +143,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a female salutation is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check20.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(2);
 
-        $this->standAloneViewHelper->setTemplate('Check10.html');
+        $this->standAloneViewHelper->setTemplate('Check20.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check20.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -167,14 +173,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with firstName is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check30.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check30.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -196,14 +202,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with prependText is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check40.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check40.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check40.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check40.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -225,14 +231,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with appendText is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check50.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check50.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check50.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check50.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -254,14 +260,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with fallbackText is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check60.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check60.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(3);
 
         $this->standAloneViewHelper->setTemplate('Check60.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check60.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check60.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
@@ -284,14 +290,14 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a male salutation with fallbackText is returned
          */
-        $this->importDataSet(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Database/Check10.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check70.xml');
 
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
 
         $this->standAloneViewHelper->setTemplate('Check70.html');
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
-        $expected = file_get_contents(__DIR__ . '/RecipientSalutationViewHelperTest/Fixtures/Expected/Check70.txt');
+        $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check70.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
         static::assertEquals($expected, $result);
