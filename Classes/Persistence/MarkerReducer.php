@@ -111,9 +111,13 @@ class MarkerReducer
                 // ObjectStorage or QueryResult
                 } else {
 
-                    if (
-                        ($value instanceof \Iterator)
-                        && (
+                    if ($value instanceof \Iterator) {
+                        
+                        // rewind is crucial in live-context!
+                        $value->rewind();
+                        
+                        if (
+                            
                             (
                                 ($value instanceof QueryResultInterface)
                                 && ($firstObject = $value->getFirst())
@@ -122,53 +126,53 @@ class MarkerReducer
                                 ($value instanceof ObjectStorage)
                                 && ($firstObject = $value->current())
                             )
-                        )
-                        && ($firstObject instanceof AbstractEntity)
-                    ) {
-
-                        $newValues = array();
-                        $namespace = filter_var($dataMapper->getDataMap(get_class($firstObject))->getClassName(), FILTER_SANITIZE_STRING);
-                        $replaceObjectStorage = true;
-                        foreach ($value as $object) {
-                            if ($object instanceof AbstractEntity) {
-
-                                if ($object->_isNew()) {
-
-                                    $replaceObjectStorage = false;
-                                    $this->getLogger()->log(
-                                        LogLevel::WARNING, sprintf(
-                                            'Object with namespace %s in marker-array is not persisted. The object storage it belongs to will be stored as serialized object in the database. This may cause performance issues!',
-                                            $namespace
-                                        )
-                                    );
-                                    break;
-
-                                } else {
-
-                                    $newValues[] = $namespace . ":" . $object->getUid();
-                                    $this->getLogger()->log(
-                                        LogLevel::DEBUG,
-                                        sprintf(
-                                            'Replacing object with namespace %s and uid %s in marker-array.',
-                                            $namespace,
-                                            $object->getUid()
-                                        )
-                                    );
+                            && ($firstObject instanceof AbstractEntity)
+                        ) {
+    
+                            $newValues = array();
+                            $namespace = filter_var($dataMapper->getDataMap(get_class($firstObject))->getClassName(), FILTER_SANITIZE_STRING);
+                            $replaceObjectStorage = true;
+                            foreach ($value as $object) {
+                                if ($object instanceof AbstractEntity) {
+    
+                                    if ($object->_isNew()) {
+    
+                                        $replaceObjectStorage = false;
+                                        $this->getLogger()->log(
+                                            LogLevel::WARNING, sprintf(
+                                                'Object with namespace %s in marker-array is not persisted. The object storage it belongs to will be stored as serialized object in the database. This may cause performance issues!',
+                                                $namespace
+                                            )
+                                        );
+                                        break;
+    
+                                    } else {
+    
+                                        $newValues[] = $namespace . ":" . $object->getUid();
+                                        $this->getLogger()->log(
+                                            LogLevel::DEBUG,
+                                            sprintf(
+                                                'Replacing object with namespace %s and uid %s in marker-array.',
+                                                $namespace,
+                                                $object->getUid()
+                                            )
+                                        );
+                                    }
                                 }
                             }
+                            if ($replaceObjectStorage) {
+                                $marker[$key] = self::NAMESPACE_ARRAY_KEYWORD . ' ' . implode(',', $newValues);
+                            }
+    
+                        } else {
+                            $this->getLogger()->log(
+                                LogLevel::WARNING,
+                                sprintf(
+                                    'Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!',
+                                    get_class($value)
+                                )
+                            );
                         }
-                        if ($replaceObjectStorage) {
-                            $marker[$key] = self::NAMESPACE_ARRAY_KEYWORD . ' ' . implode(',', $newValues);
-                        }
-
-                    } else {
-                        $this->getLogger()->log(
-                            LogLevel::WARNING,
-                            sprintf(
-                                'Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!',
-                                get_class($value)
-                            )
-                        );
                     }
                 }
             }
