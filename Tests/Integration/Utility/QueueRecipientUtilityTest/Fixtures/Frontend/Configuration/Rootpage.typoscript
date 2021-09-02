@@ -3,19 +3,19 @@ module.tx_rkwmailer {
 
         layoutRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Layouts/
-            1 = EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Layouts/
+            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Layouts/
         }
 
         # cat=module.tx_rkwmailer/file; type=string; label=Path to template root (BE)
         templateRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Templates/
-            1 = EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/
+            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Templates/
         }
 
         # cat=module.tx_rkwmailer/file; type=string; label=Path to template layouts (BE)
         partialRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Partials/
-            1 = EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Partials/
+            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Partials/
         }
     }
     persistence {
@@ -43,11 +43,6 @@ module.tx_rkwmailer {
 
         # cat=module.tx_rkwmailer; type=integer; label=URL for logo in templates
         basePathLogo = EXT:rkw_mailer/Resources/Public/Images/logo.png
-        
-        # For testing
-        arraySettings {
-            test = Wonderful!
-        }
     }
 }
 

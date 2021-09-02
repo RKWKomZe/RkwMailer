@@ -61,7 +61,7 @@ class PlaintextLineBreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         $value = $renderChildrenClosure();
-        $convertLineBreaks = ($arguments['convertLineBreaks'] ? $arguments['convertLineBreaks'] : $arguments['keepLineBreaks']);
+        $convertLineBreaks = (bool) ($arguments['convertLineBreaks'] ? $arguments['convertLineBreaks'] : $arguments['keepLineBreaks']);
         
         // log deprecated attribute
         if ($arguments['keepLineBreaks']) {
