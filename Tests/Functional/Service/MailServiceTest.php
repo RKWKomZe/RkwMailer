@@ -3,6 +3,7 @@ namespace RKW\RkwMailer\Tests\Functional\Service;
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 
+use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Service\MailService;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
@@ -90,6 +91,10 @@ class MailServiceTest extends FunctionalTestCase
      */
     private $objectManager = null;
 
+    /**
+     * @var \RKW\RkwMailer\Persistence\MarkerReducer
+     */
+    private $markerReducer = null;
 
     /**
      * Setup
@@ -134,7 +139,7 @@ class MailServiceTest extends FunctionalTestCase
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
         $this->frontendUserRepository = $this->objectManager->get(FrontendUserRepository::class);
         $this->backendUserRepository = $this->objectManager->get(BackendUserRepository::class);
-
+        $this->markerReducer = $this->objectManager->get(MarkerReducer::class);
 
         $this->subject = $this->objectManager->get(MailService::class);
 
@@ -342,33 +347,6 @@ class MailServiceTest extends FunctionalTestCase
         static::assertFalse($this->subject->hasQueueRecipient($queueRecipient));
     }
 
-    //=============================================
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function getImageUrl_ReturnsExpectedValueBasedOnConfiguration()
-    {
-        static::assertEquals('http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $this->subject->getImageUrl());
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function getLogoUrl_ReturnsExpectedValueBasedOnConfiguration()
-    {
-        static::assertEquals('http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $this->subject->getLogoUrl());
-    }
 
     //=============================================
     /**
@@ -620,7 +598,7 @@ class MailServiceTest extends FunctionalTestCase
             'test2' => $objectStorage,
         ];
 
-        $queueRecipient->setMarker($this->subject->implodeMarker($marker));
+        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
 
         // render template
         $this->subject->renderTemplates($queueRecipient);
@@ -681,7 +659,7 @@ class MailServiceTest extends FunctionalTestCase
             'test2' => $objectStorage,
         ];
 
-        $queueRecipient->setMarker($this->subject->implodeMarker($marker));
+        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
 
         // render template
         $this->subject->renderTemplates($queueRecipient);
@@ -735,7 +713,7 @@ class MailServiceTest extends FunctionalTestCase
             'test2' => $objectStorage,
         ];
 
-        $queueRecipient->setMarker($this->subject->implodeMarker($marker));
+        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
         $queueRecipient->setPlaintextBody('NON-RENDER');
 
         // render template
@@ -792,7 +770,7 @@ class MailServiceTest extends FunctionalTestCase
             'test2' => $objectStorage,
         ];
 
-        $queueRecipient->setMarker($this->subject->implodeMarker($marker));
+        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
 
         // render template
         $this->subject->renderTemplates($queueRecipient);

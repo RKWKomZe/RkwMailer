@@ -59,7 +59,7 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $arguments['queueRecipient'];

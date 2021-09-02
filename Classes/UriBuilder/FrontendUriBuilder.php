@@ -355,9 +355,10 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         }
 
         // never use cHash here - this is a bad thing when sending from BE!
-        // and force absolute link!
+        // force absolute link and link to access-restricted pages
         $this->setUseCacheHash(false)
-            ->setCreateAbsoluteUri(true);
+            ->setCreateAbsoluteUri(true)
+            ->setLinkAccessRestrictedPages(true);
 
         $url = $this->buildFrontendUri();
 

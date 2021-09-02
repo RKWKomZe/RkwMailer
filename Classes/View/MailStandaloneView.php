@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\View;
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Persistence\MarkerReducer;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
@@ -24,9 +25,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-
 use TYPO3\CMS\Fluid\View\AbstractTemplateView;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+
 /**
  * A standalone template view.
  * Should be used as view if you want to use Fluid without Extbase extensions
@@ -103,30 +104,33 @@ class MailStandaloneView extends StandaloneView
         AbstractTemplateView::__construct($renderingContext);
 
         // get template configuration based on loaded frontend
+        /** @var \TYPO3\CMS\Core\TypoScript\TypoScriptService $typoscriptService */
+        $typoscriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+        
         /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $GLOBALS ['TSFE'] */
-        $this->settings = $GLOBALS['TSFE']->tmpl->setup['module.']['tx_rkwmailer.'];
+        $this->settings = $typoscriptService->convertTypoScriptArrayToPlainArray($GLOBALS['TSFE']->tmpl->setup['module.']['tx_rkwmailer.']);
         $this->settingsPid = $pid;
 
         // set root-paths according to configuration
         if (
-            isset($this->settings['view.']['layoutRootPaths.'])
-            && (is_array($this->settings['view.']['layoutRootPaths.']))
+            isset($this->settings['view']['layoutRootPaths'])
+            && (is_array($this->settings['view']['layoutRootPaths']))
         ){
-            $this->setLayoutRootPaths($this->settings['view.']['layoutRootPaths.']);
+            $this->setLayoutRootPaths($this->settings['view']['layoutRootPaths']);
         }
 
         if (
-            isset($this->settings['view.']['partialRootPaths.'])
-            && (is_array($this->settings['view.']['partialRootPaths.']))
+            isset($this->settings['view']['partialRootPaths'])
+            && (is_array($this->settings['view']['partialRootPaths']))
         ){
-            $this->setPartialRootPaths($this->settings['view.']['partialRootPaths.']);
+            $this->setPartialRootPaths($this->settings['view']['partialRootPaths']);
         }
 
         if (
-            isset($this->settings['view.']['templateRootPaths.'])
-            && (is_array($this->settings['view.']['templateRootPaths.']))
+            isset($this->settings['view']['templateRootPaths'])
+            & (is_array($this->settings['view']['templateRootPaths']))
         ){
-            $this->setTemplateRootPaths($this->settings['view.']['templateRootPaths.']);
+            $this->setTemplateRootPaths($this->settings['view']['templateRootPaths']);
         }
 
         // reset frontend
@@ -143,7 +147,7 @@ class MailStandaloneView extends StandaloneView
      */
     public function getBaseUrl(): string
     {
-        if ($baseUrl = $this->settings['settings.']['baseUrl']) {
+        if ($baseUrl = $this->settings['settings']['baseUrl']) {
             return rtrim($baseUrl, '/');
         }
         return '';
@@ -159,8 +163,8 @@ class MailStandaloneView extends StandaloneView
     public function getBaseUrlImages(): string
     {
         if (
-            ($baseUrl = rtrim($this->settings['settings.']['baseUrl'], '/'))
-            && ($basePath = rtrim($this->settings['settings.']['basePathImages'], '/'))
+            ($baseUrl = rtrim($this->settings['settings']['baseUrl'], '/'))
+            && ($basePath = rtrim($this->settings['settings']['basePathImages'], '/'))
         ) {
             return $baseUrl . '/' . $this->getRelativePath($basePath);
         }
@@ -178,8 +182,8 @@ class MailStandaloneView extends StandaloneView
     {
 
         if (
-            ($baseUrl = rtrim($this->settings['settings.']['baseUrl'], '/'))
-            && ($basePath = rtrim($this->settings['settings.']['basePathLogo'], '/'))
+            ($baseUrl = rtrim($this->settings['settings']['baseUrl'], '/'))
+            && ($basePath = rtrim($this->settings['settings']['basePathLogo'], '/'))
         ) {
             return $baseUrl . '/' . $this->getRelativePath($basePath);
         }
@@ -225,6 +229,12 @@ class MailStandaloneView extends StandaloneView
      */
     public function assignMultiple($values): MailStandaloneView
     {
+        // always add current settings
+        if (! isset($values['settings'])) {
+            $settings = $this->getSettings();
+            $values['settings'] = $settings['settings']; 
+        } 
+        
         /** @var MarkerReducer $markerReducer */
         $markerReducer = GeneralUtility::makeInstance(MarkerReducer::class);
         $values = $markerReducer->explodeMarker($values);
@@ -325,7 +335,9 @@ class MailStandaloneView extends StandaloneView
      */
     public function render($actionName = null): string
     {
-
+        // empty call for settings
+        $this->assignMultiple([]);
+        
         $renderedTemplate = parent::render($actionName);
 
         // replace baseURLs in final email  - replacement with asign only works in template-files, not on layout-files

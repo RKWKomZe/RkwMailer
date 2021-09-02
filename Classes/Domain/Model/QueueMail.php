@@ -714,8 +714,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getLayoutPaths()
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->layoutPaths, true);
+        return $paths;
 
-        return array_merge($paths, $this->getSettings('layoutRootPaths', 'view'));
+        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
+        // return array_merge($paths, $this->getSettings('layoutRootPaths', 'view'));
         //===
     }
 
@@ -783,8 +785,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getPartialPaths()
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
-
-        return array_merge($paths, $this->getSettings('partialRootPaths', 'view'));
+        return $paths;
+        
+        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
+        // return array_merge($paths, $this->getSettings('partialRootPaths', 'view'));
         //===
     }
 
@@ -852,8 +856,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getTemplatePaths()
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
-
-        return array_merge($paths, $this->getSettings('templateRootPaths', 'view'));
+        return $paths;
+        
+        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
+        //return array_merge($paths, $this->getSettings('templateRootPaths', 'view'));
         //===
     }
 
@@ -1186,6 +1192,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $type
      * @return mixed
      * @throws \Exception
+     * @deprecated Will be removed from here; is now done in EmailStandaloneView
      */
     public function getSettings($param = '', $type = 'settings')
     {
