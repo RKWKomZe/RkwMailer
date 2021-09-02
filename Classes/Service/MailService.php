@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Service;
  */
 
 use RKW\RkwMailer\Persistence\MarkerReducer;
+use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -344,27 +345,11 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\QueueRecipient');
-
-        // if a FrontendUser is given, take it's basic values
-        if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\FrontendUser) {
-
-           $this->setQueueRecipientPropertiesByFrontendUser($queueRecipient, $basicData, $additionalData);
-
-         // if a BackendUser is given, take it's basic values
-        } else if ($basicData instanceof \TYPO3\CMS\Extbase\Domain\Model\BackendUser) {
-
-            $this->setQueueRecipientPropertiesByBackendUser($queueRecipient, $basicData, $additionalData);
-
-        // fallback with array
-        } else if (is_array($basicData)) {
-
-            $this->setQueueRecipientPropertiesByArray($queueRecipient, array_merge($basicData, $additionalData));
-        }
+        $queueRecipient = QueueRecipientUtility::initQueueRecipient($basicData, $additionalData);
 
         // set marker
         if (isset($additionalData['marker'])) {
-            $queueRecipient->setMarker($this->implodeMarker($additionalData['marker']));
+            $queueRecipient->setMarker($this->markerReducer->implodeMarker($additionalData['marker']));
         }
 
         // Signal slot
@@ -402,162 +387,6 @@ class MailService
         return $this->queueRecipientRepository->findByQueueMail($this->getQueueMail());
         //===
     }
-
-
-
-    /**
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
-     * @param array $additionalData
-     * @return void
-     */
-    public function setQueueRecipientPropertiesByFrontendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser, $additionalData = array())
-    {
-
-         // expand mapping for \RKW\RkwRegistration\Domain\Model\FrontendUser
-        $additionalPropertyMapper = [];
-        if ($frontendUser instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
-            $additionalPropertyMapper['txRkwregistrationGender'] = 'salutation';
-            $additionalPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
-            $additionalPropertyMapper['titleText'] = 'title';
-        }
-
-        // set all relevant values according to given data
-        $this->setQueueRecipientPropertiesSub($queueRecipient, $frontendUser, $additionalData, $additionalPropertyMapper);
-
-        /* @toDo: Leeds to problems since this does an implicit update on the object
-         * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
-         */
-        if (!$frontendUser->_isNew()) {
-            $queueRecipient->setFrontendUser($frontendUser);
-        }
-    }
-
-
-    /**
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
-     * @param array $additionalData
-     * @return void
-     */
-    public function setQueueRecipientPropertiesByBackendUser (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser, $additionalData = array())
-    {
-
-        // expand mapping for \RKW\RkwRegistration\Domain\Model\BackendUser
-        $additionalPropertyMapper = [];
-        if ($backendUser instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
-            $additionalPropertyMapper ['lang'] = 'languageCode';
-        }
-
-        // split realName
-        $nameArray = [];
-        if ($backendUser->getRealName()) {
-            $nameArray = explode(' ', $backendUser->getRealName());
-
-        } else if (
-            (isset($additionalData['realName']))
-            && ($additionalData['realName'])
-        ){
-            $nameArray = explode(' ', $additionalData['realName']);
-        }
-
-        if (count($nameArray) == 2) {
-            if (isset($nameArray[0])) {
-                $queueRecipient->setFirstName($nameArray[0]);
-            }
-            if (isset($nameArray[1])) {
-                $queueRecipient->setLastName($nameArray[1]);
-            }
-
-        } else if (count($nameArray) == 3) {
-            if (isset($nameArray[0])) {
-                $queueRecipient->setTitle($nameArray[0]);
-            }
-            if (isset($nameArray[1])) {
-                $queueRecipient->setFirstName($nameArray[1]);
-            }
-            if (isset($nameArray[2])) {
-                $queueRecipient->setLastName($nameArray[2]);
-            }
-        } else if (count($nameArray) > 0) {
-            $queueRecipient->setLastName($backendUser->getRealName());
-        }
-
-
-        // set all relevant values according to given data
-        $this->setQueueRecipientPropertiesSub($queueRecipient, $backendUser, $additionalData, $additionalPropertyMapper);
-
-    }
-
-
-    /**
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
-     * @param array $data
-     * @return void
-     * @deprecated Do not use this method any more
-     */
-    public function setQueueRecipientPropertiesByArray (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, $data = array())
-    {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': Support for setting values for queueRecipient via array will be removed soon. Do not use it any more.');
-        $this->setQueueRecipientPropertiesSub($queueRecipient, null, $data);
-    }
-
-
-    /**
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user
-     * @param array $additionalPropertyMapper
-     * @param array $additionalData
-     */
-    private function setQueueRecipientPropertiesSub (\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null, $additionalData = array(), $additionalPropertyMapper = array())
-    {
-
-        // define property mapping - order is important!
-        $defaultPropertyMapper = [
-            'username' => 'email',
-            'email' => 'email',
-            'title' => 'title',
-            'salutation' => 'salutation',
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'subject' => 'subject',
-            'languageCode' => 'languageCode'
-        ];
-
-        // add additional mappings
-        $propertyMapper = array_merge($defaultPropertyMapper, $additionalPropertyMapper);
-
-        // set all relevant values according to given data
-        foreach ($propertyMapper as $propertySource => $propertyTarget) {
-            $getter = 'get' . ucFirst($propertySource);
-            $setter = 'set' . ucFirst($propertyTarget);
-
-            if (method_exists($queueRecipient, $setter)) {
-
-                // check for getter value
-                if (
-                    ($user instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity)
-                    && (method_exists($user, $getter))
-                    && (null !== $value = $user->$getter())
-                    && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
-                    && ($value !== 99)
-                ) {
-                    $queueRecipient->$setter($value);
-
-                // fallback: check for value in additional data
-                } else if (
-                    (isset($additionalData[$propertySource]))
-                    && (null !== $value = $additionalData[$propertySource])
-                    && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
-                    && ($value !== 99)
-                ){
-                    $queueRecipient->$setter($value);
-                }
-            }
-        }
-    }
-
 
 
     /**
@@ -675,7 +504,7 @@ class MailService
                     if (count($markerArray) < 1) {
 
                         // rebuild lightweight marker. Replace simple references to real extbase objects
-                        $queueRecipientMarker = $this->explodeMarker($queueRecipient->getMarker());
+                        $queueRecipientMarker = $queueRecipient->getMarker();
                         $markerArray = array_merge(
                             (is_array($queueRecipientMarker) ? $queueRecipientMarker : []),
                             [
@@ -734,9 +563,7 @@ class MailService
             //===
         }
 
-        // simulate frontend
-        // FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
-
+        // load EmailStandaloneView with configuration of queueMail
         /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
         $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
             MailStandaloneView::class,
@@ -763,15 +590,12 @@ class MailService
                 'queueMail'            => $queueMail,
                 'queueMailSettingsPid' => $queueMail->getSettingsPid(),
                 'bodyText'             => $queueMail->getBodyText(),
-                'settings'             => $queueMail->getSettings(),
+               // 'settings'             => $queueMail->getSettings(), // is inserted via EmailStandaloneView
                 'mailType'             => ucFirst($templateType),
             ]
         );
 
         $emailView->assignMultiple($finalMarkerArray);
-
-        // reset frontend
-        // FrontendSimulatorUtility::resetFrontendEnvironment();
 
         return $emailView->render();
         //===
@@ -1061,99 +885,6 @@ class MailService
 
     }
 
-
-
-    /**
-     * implodeMarker
-     * transform objects into simple references
-     *
-     * @param array $marker
-     * @return array
-     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
-     * @deprecated Please use $this->markerReducer->method() instead
-     * @toDo: remove
-     */
-    public function implodeMarker($marker)
-    {
-        self::debugTime(__LINE__, __METHOD__);
-        $marker = $this->markerReducer->implodeMarker($marker);
-        self::debugTime(__LINE__, __METHOD__);
-
-        return $marker;
-    }
-
-
-    /**
-     * explodeMarker
-     * transform simple references to objects
-     *
-     * @param array $marker
-     * @return array
-     * @deprecated Please use $this->markerReducer->method() instead
-     * @toDo: remove
-     */
-    public function explodeMarker($marker)
-    {
-        self::debugTime(__LINE__, __METHOD__);
-        $marker = $this->markerReducer->explodeMarker($marker);
-        self::debugTime(__LINE__, __METHOD__);
-
-        return $marker;
-    }
-
-    /**
-     * get url
-     *
-     * @return string
-     * @throws \Exception
-     * @deprecated Please use $this->view->method() instead
-     * @toDo: remove
-     */
-    public function getBaseUrl()
-    {
-        return $this->view->getBaseUrl();
-    }
-
-
-    /**
-     * get url for images
-     *
-     * @return string
-     * @throws \Exception
-     * @deprecated Please use $this->view->method() instead
-     * @toDo: remove
-     */
-    public function getImageUrl()
-    {
-        return $this->view->getBaseUrlImages();
-    }
-
-
-    /**
-     * get url for images
-     *
-     * @return string
-     * @throws \Exception
-     * @deprecated Please use $this->view->method() instead
-     * @toDo: remove
-     */
-    public function getLogoUrl()
-    {
-        return $this->view->getLogoUrl();
-    }
-
-    /**
-     * Returns the relative image path
-     *
-     * @param string $path
-     * @return string
-     * @deprecated Please use $this->view->method() instead
-     * @toDo: remove
-     */
-    public function getRelativePath($path)
-    {
-        return $this->view->getRelativePath($path);
-    }
 
     /**
      * unset several variables

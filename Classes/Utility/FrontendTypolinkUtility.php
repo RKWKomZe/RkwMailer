@@ -41,7 +41,7 @@ class FrontendTypolinkUtility
      * @param string $styles
      * @return string
      */
-    static public function getTypolink (
+    public static function getTypolink (
         string $linkText, 
         string $parameter, 
         string $additionalParams = '',
@@ -82,7 +82,7 @@ class FrontendTypolinkUtility
      * @param string $additionalParams
      * @return string
      */
-    static public function getTypolinkUrl (string $parameter, string $additionalParams = ''): string
+    public static function getTypolinkUrl (string $parameter, string $additionalParams = ''): string
     {
 
         // get pageUid for frontend simulation from parameter
@@ -118,7 +118,7 @@ class FrontendTypolinkUtility
      * @param string $style
      * @return string
      */
-    static public function addStyleAttribute(string $string, string $style = ''): string
+    public static function addStyleAttribute(string $string, string $style = ''): string
     {
         if ($style) {
             if (strpos($string, 'style="') !== false) {
@@ -145,7 +145,7 @@ class FrontendTypolinkUtility
      * @param string $parameter
      * @return int
      */
-    static public function getPageUidFromParameter (string $parameter): int
+    public static function getPageUidFromParameter (string $parameter): int
     {
         // check for pid in parameters for getting correct domain
         if (preg_match('/^((t3:\/\/page\?uid=)?([0-9]+))/', $parameter, $matches)) {

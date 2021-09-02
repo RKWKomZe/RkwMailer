@@ -50,14 +50,12 @@ class MarkerReducer
      */
     const NAMESPACE_ARRAY_KEYWORD = 'RKW_MAILER_NAMESPACES_ARRAY';
 
-
     /**
      * logger
      *
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
-
 
 
     /**
@@ -117,7 +115,6 @@ class MarkerReducer
                         $value->rewind();
                         
                         if (
-                            
                             (
                                 ($value instanceof QueryResultInterface)
                                 && ($firstObject = $value->getFirst())
@@ -165,13 +162,24 @@ class MarkerReducer
                             }
     
                         } else {
-                            $this->getLogger()->log(
-                                LogLevel::WARNING,
-                                sprintf(
-                                    'Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!',
-                                    get_class($value)
-                                )
-                            );
+                            
+                            if (! count($value)) {
+                                $this->getLogger()->log(
+                                    LogLevel::INFO,
+                                    sprintf(
+                                        'Object of class %s in marker-array is empty and will be stored as serialized object in the database.',
+                                        get_class($value)
+                                    )
+                                );
+                            } else {
+                                $this->getLogger()->log(
+                                    LogLevel::WARNING,
+                                    sprintf(
+                                        'Object of class %s in marker-array will be stored as serialized object in the database. This may cause performance issues!',
+                                        get_class($value)
+                                    )
+                                );
+                            }                            
                         }
                     }
                 }
