@@ -214,6 +214,43 @@ class ActionViewHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
+    public function itRendersAbsoluteLinkToGivenPageWithFeGroup ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given the pageUid-attribute is set to an existing site
+         * Given that existing site is access-restricted
+         * When the link is rendered
+         * Then an absolute link to this given pageUid is returned like in frontend context
+         * Then the controller- and action-attribute are converted in a speaking URL
+         * Then no cHash is used
+         */
+        $this->setUpFrontendRootPage(
+            1,
+            [
+                'EXT:realurl/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
+            ]
+        );
+
+        $this->importDataSet(self::FIXTURE_PATH  . '/Database/Check40.xml');
+
+        $this->standAloneViewHelper->setTemplate('Check40.html');
+        $result = $this->standAloneViewHelper->render();
+        static::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/test/tx-rkw-basics/media/list/', $result);
+        static::assertNotContains('cHash=', $result);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     */
     public function itRendersAbsoluteLinkWithQueueMailAndRedirect ()
     {
 

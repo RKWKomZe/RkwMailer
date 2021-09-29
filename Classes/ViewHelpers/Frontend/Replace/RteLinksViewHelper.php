@@ -66,8 +66,8 @@ class RteLinksViewHelper extends TypolinkViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         $value = $renderChildrenClosure();
-        $plaintextFormat = $arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat'];
-        $style = $arguments['style'];
+        $plaintextFormat = (bool) ($arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat']);
+        $style = ($arguments['style'] ? $arguments['style'] : '');
         try {
 
             // log deprecated attribute

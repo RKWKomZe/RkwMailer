@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Tests\Integration\View;
 
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use RKW\RkwBasics\Domain\Repository\PagesRepository;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -70,6 +71,10 @@ class MailStandaloneViewTest extends FunctionalTestCase
      */
     private $queueMailRepository;
 
+    /**
+     * @var \RKW\RkwBasics\Domain\Repository\PagesRepository
+     */
+    private $pagesRepository;
 
     /**
      * Setup
@@ -94,6 +99,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $this->objectManager->get(MailStandaloneView::class);
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
+        $this->pagesRepository = $this->objectManager->get(PagesRepository::class);
 
     }
 
@@ -135,17 +141,17 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
         static::assertEquals(
             'EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Check10/Layouts/',
-            $settings['view.']['layoutRootPaths.'][1]
+            $settings['view']['layoutRootPaths'][1]
         );
 
         static::assertEquals(
             1010,
-            $settings['persistence.']['storagePid']
+            $settings['persistence']['storagePid']
         );
 
         static::assertEquals(
             1010,
-            $settings['settings.']['redirectPid']
+            $settings['settings']['redirectPid']
         );
 
     }
@@ -177,17 +183,17 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
         static::assertEquals(
             'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Layouts/',
-            $settings['view.']['layoutRootPaths.'][1]
+            $settings['view']['layoutRootPaths'][1]
         );
 
         static::assertEquals(
             9999,
-            $settings['persistence.']['storagePid']
+            $settings['persistence']['storagePid']
         );
 
         static::assertEquals(
             9999,
-            $settings['settings.']['redirectPid']
+            $settings['settings']['redirectPid']
         );
 
     }
@@ -931,6 +937,107 @@ class MailStandaloneViewTest extends FunctionalTestCase
         static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
         static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/', $result);
 
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function renderHasAccessToSettings ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid configuration
+         * Given
+         * When the method is called
+         * Then the setting variables are available
+         */
+        $this->subject->setTemplate('Testing/Check70.html');
+        $result = $this->subject->render();
+
+        static::assertContains('Wonderful!', $result);
+
+    }
+
+    //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleExplodesValues()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a key with a string
+         * Given that array contains a second key with a Page-Object
+         * When the method is called
+         * Then the Page-Object in the values is exploded
+         */
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+
+        /** @var \RKW\RkwBasics\Domain\Model\Pages $entityOne */
+        $entityOne = $this->pagesRepository->findByIdentifier(1);
+        $expected = [
+            'hello' => 'string',
+            'page' => $entityOne
+        ];
+        
+        $values = [
+            'hello' => 'string',
+            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
+        ];
+         
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+        unset($variables['settings']);
+        
+        self::assertEquals($expected, $variables);
+        
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleAddsSettings()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains no settings key
+         * When the method is called
+         * Then a settings-key  is added to the values
+         * Then this settings-key contains an array
+         * Then this array equals the normal settings loaded for the view
+         */
+
+        $values = [
+            'hello' => 'string',
+            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
+        ];
+
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+        
+        $settings = $this->subject->getSettings();
+
+        self::assertArrayHasKey('settings', $variables);
+        self::assertInternalType('array', $variables['settings']);
+        self::assertEquals($settings['settings'], $variables['settings']);
+        
     }
 
     //=============================================
