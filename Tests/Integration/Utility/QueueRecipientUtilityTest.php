@@ -33,7 +33,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
+class QueueRecipientUtilityTest extends FunctionalTestCase
 {
 
 
@@ -67,7 +67,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
      */
     protected function setUp()
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
@@ -88,7 +88,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
 
     //=============================================
 
-    
+
 
     /**
      * @test
@@ -114,7 +114,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);        
+        static::assertEquals($expected, $result);
     }
 
     /**
@@ -254,7 +254,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
         $frontendUser->setTxRkwregistrationTitle($title);
         $frontendUser->setTxRkwregistrationGender(0);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
-        
+
         $expected->setEmail('lauterbach@spd.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Karl');
@@ -274,10 +274,10 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
     {
         /**
          * Scenario:
-         * 
+         *
          * Given an additionalData-Array
          * Given that additionalData-Array has an username-key set
-         * Given that username is a valid email-address 
+         * Given that username is a valid email-address
          * Given that additionalData-Array has an email-key set
          * Given that additionalData-Array has a title-key set
          * Given that additionalData-Array has a firstName-key set
@@ -330,7 +330,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
          * Given that additionalData-Array has a firstName-key set
          * Given that additionalData-Array has a lastName-key set
          * Given that additionalData-Array has the txRkwregistrationGender-key set
-         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set 
+         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set
          * Given an RkwRegistration-FrontendUser-Object
          * Given that FrontendUser-Object has the email-property set
          * Given that FrontendUser-Object has the lastName-property set
@@ -341,7 +341,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
          * Then the firstName-property of this object is set to the value of the firstName-key of the additionalData-Array
          * Then the lastName-property of this object is set to the value of the lastName-property of the FrontendUser-Object
          * Then the salutation-property of this object is set to the value of the txRkwregistrationGender-key of the additionalData-Array
-         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array 
+         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array
          */
         $expected = new QueueRecipient();
         $frontendUser = new FrontendUserRkw();
@@ -367,11 +367,11 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
         $expected->setSalutation(1);
         $expected->setLanguageCode('fr');
-        
+
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
         static::assertEquals($expected, $result);
     }
-    
+
     //=============================================
 
     /**
@@ -393,7 +393,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
 
         $additionalData = [];
         $backendUser->setEmail('lauterbach@spd.de');
-        
+
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
@@ -575,7 +575,7 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
         ];
         $backendUser->setRealName('Prof. Karl Lauterbach');
         $backendUser->setLang('ru');
-        
+
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Prof.');
         $expected->setFirstName('Karl');
@@ -595,46 +595,50 @@ class QueueRecipientUtilityUtilityTest extends FunctionalTestCase
         /**
          * Scenario:
          *
+         * Given a basicData-Array
+         * Given that basicData-Array has an email-key set
+         * Given that basicData-Array has a title-key set
+         * Given that basicData-Array has a salutation-key set
+         * Given that basicData-Array has a firstName-key set
          * Given an additionalData-Array
-         * Given that additionalData-Array has an email-key set
-         * Given that additionalData-Array has a title-key set
-         * Given that additionalData-Array has a salutation-key set
          * Given that additionalData-Array has a firstName-key set
          * Given that additionalData-Array has a lastName-key set
-         * Given that additionalData-Array has a subject-key set
          * Given that additionalData-Array has a languageCode-key set
          * When the method is called
          * Then the queueRecipient-object is returned
-         * Then the email-property of this object is set to the value of the email-key of the additionalData-Array
-         * Then the title-property of this object is set to the value of the title-key of the additionalData-Array
-         * Then the salutation-property of this object is set to the value of the salutation-key of the additionalData-Array
-         * Then the firstName-property of this object is set to the value of the firstName-key of the additionalData-Array
+         * Then the email-property of this object is set to the value of the email-key of the basicData-Array
+         * Then the title-property of this object is set to the value of the title-key of the basicData-Array
+         * Then the salutation-property of this object is set to the value of the salutation-key of the basicData-Array
+         * Then the firstName-property of this object is set to the value of the firstName-key of the basicData-Array
          * Then the lastName-property of this object is set to the value of the lastName-key of the additionalData-Array
-         * Then the subject-property of this object is set to the value of the subject-key of the additionalData-Array
          * Then the languageCode-property of this object is set to the value of the languageCode-key of the additionalData-Array
          */
         $expected = new QueueRecipient();
 
-        $additionalData = [
+        $basicData = [
             'email' => 'merkel@cdu.de',
             'title' => 'Dr.',
             'salutation' => 1,
             'firstName' => 'Angela',
-            'lastName' => 'Merkel',
+        ];
+
+        $additionalData = [
+            'firstName' => 'Dorothea',
+            'lastName' => 'Bär',
             'languageCode' => 'ru'
         ];
-        
+
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Angela');
-        $expected->setLastName('Merkel');
+        $expected->setLastName('Bär');
         $expected->setSalutation(1);
         $expected->setLanguageCode('ru');
 
-        $result = $this->subject::initQueueRecipient(null, $additionalData);
+        $result = $this->subject::initQueueRecipient($basicData, $additionalData);
         static::assertEquals($expected, $result);
     }
-    
+
     /**
      * TearDown
      */

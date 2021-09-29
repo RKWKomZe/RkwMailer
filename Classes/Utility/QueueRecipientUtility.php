@@ -34,40 +34,40 @@ class QueueRecipientUtility
 
     /**
      * Get a QueueRecipient-object based on properties of a given object
-     * 
-     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $object
+     *
+     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity|array $basicData
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     public static function initQueueRecipient (
-        AbstractEntity $object = null,
+        $basicData = null,
         array $additionalData = []
     ): QueueRecipient {
 
         // if a FrontendUser is given, take it's basic values
-        if ($object instanceof FrontendUser) {
-            return self::initQueueRecipientViaFrontendUser($object, $additionalData);
+        if ($basicData instanceof FrontendUser) {
+            return self::initQueueRecipientViaFrontendUser($basicData, $additionalData);
 
-        // if a BackendUser is given, take it's basic values
-        } else if ($object instanceof BackendUser) {
-            return self::initQueueRecipientViaBackendUser($object, $additionalData);
+            // if a BackendUser is given, take it's basic values
+        } else if ($basicData instanceof BackendUser) {
+            return self::initQueueRecipientViaBackendUser($basicData, $additionalData);
         }
 
         // fallback with array
-        return self::initQueueRecipientViaArray($additionalData);
+        return self::initQueueRecipientViaArray(array_merge($additionalData, $basicData));
     }
-  
-    
-    
+
+
+
     /**
      * Get a QueueRecipient-object with properties set via FrontendUser
-     * 
+     *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     public static function initQueueRecipientViaFrontendUser (
-        FrontendUser $frontendUser, 
+        FrontendUser $frontendUser,
         array $additionalData = []
     ): QueueRecipient {
 
@@ -75,7 +75,7 @@ class QueueRecipientUtility
         $additionalPropertyMapper = [
             'username' => 'email'
         ];
-        
+
         if ($frontendUser instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
             $additionalPropertyMapper['txRkwregistrationGender'] = 'salutation';
             $additionalPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
@@ -91,27 +91,27 @@ class QueueRecipientUtility
         if (!$frontendUser->_isNew()) {
             $queueRecipient->setFrontendUser($frontendUser);
         }
-        
+
         return $queueRecipient;
     }
 
 
     /**
      * Get a QueueRecipient-object with properties set via BackendUser
-     * 
+     *
      * @param \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     public static function initQueueRecipientViaBackendUser (
-        BackendUser $backendUser, 
+        BackendUser $backendUser,
         array $additionalData = []
     ): QueueRecipient {
-        
+
         // expand mapping for \RKW\RkwRegistration\Domain\Model\BackendUser
         $additionalPropertyMapper = [];
         if ($backendUser instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
-            $additionalPropertyMapper['lang'] = 'languageCode'; 
+            $additionalPropertyMapper['lang'] = 'languageCode';
         }
 
         // find realName
@@ -128,21 +128,21 @@ class QueueRecipientUtility
         self::explodeNameToAdditionalData($realName, $additionalData);
 
         // set all relevant values according to given data
-       return self::setProperties($backendUser, $additionalData, $additionalPropertyMapper);
+        return self::setProperties($backendUser, $additionalData, $additionalPropertyMapper);
     }
-    
-   
+
+
 
     /**
      * Get a QueueRecipient-object with properties set via array
-     * 
+     *
      * @param array $data
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     public static function initQueueRecipientViaArray (
         array $data = []
     ): QueueRecipient {
-        
+
         return self::setProperties(null, $data);
     }
 
@@ -154,8 +154,8 @@ class QueueRecipientUtility
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     protected static function setProperties (
-        \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null, 
-        array $additionalData = [], 
+        \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null,
+        array $additionalData = [],
         array $additionalPropertyMapper = []
     ): QueueRecipient {
 
@@ -194,7 +194,7 @@ class QueueRecipientUtility
                     && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
                     && ($value !== 99)
                 ) {
-                    
+
                     // only if value is valid email
                     if ($propertyTarget == 'email') {
                         if (GeneralUtility::validEmail($value)) {
@@ -204,7 +204,7 @@ class QueueRecipientUtility
                         $queueRecipient->$setter($value);
                     }
 
-                // fallback: check for value in additional data
+                    // fallback: check for value in additional data
                 } else if (
                     (isset($additionalData[$propertySource]))
                     && (null !== $value = $additionalData[$propertySource])
@@ -218,11 +218,11 @@ class QueueRecipientUtility
                         }
                     } else {
                         $queueRecipient->$setter($value);
-                    }              
+                    }
                 }
             }
         }
-        
+
         return $queueRecipient;
     }
 
