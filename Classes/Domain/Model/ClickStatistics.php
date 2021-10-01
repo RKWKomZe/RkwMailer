@@ -38,14 +38,14 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $hash;
+    protected $hash = '';
 
     /**
      * url
      *
      * @var string
      */
-    protected $url;
+    protected $url = '';
 
 
     /**
@@ -72,7 +72,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      */
-    public function setQueueMail($queueMail)
+    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
     }
@@ -82,7 +82,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $hash
      */
-    public function getHash()
+    public function getHash(): string
     {
         return $this->hash;
     }
@@ -93,7 +93,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $hash
      * @return void
      */
-    public function setHash($hash)
+    public function setHash(string $hash): void
     {
         $this->hash = $hash;
     }
@@ -103,7 +103,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $url
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -114,7 +114,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $url
      * @return void
      */
-    public function setUrl($url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
@@ -125,7 +125,7 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return int $counter
      */
-    public function getCounter()
+    public function getCounter(): int
     {
         return $this->counter;
     }
@@ -133,10 +133,10 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the counter
      *
-     * @param int $count
+     * @param int $counter
      * @return void
      */
-    public function setCounter($counter)
+    public function setCounter(int $counter): void
     {
         $this->counter = $counter;
     }

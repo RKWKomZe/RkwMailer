@@ -3,6 +3,7 @@ namespace RKW\RkwMailer\Tests\Functional\Service;
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 
+use RKW\RkwMailer\Cache\MailBodyCache;
 use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Service\MailService;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
@@ -97,6 +98,11 @@ class MailServiceTest extends FunctionalTestCase
     private $markerReducer = null;
 
     /**
+     * @var \RKW\RkwMailer\Cache\MailBodyCache
+     */
+    private $mailBodyCache;
+
+    /**
      * Setup
      * @throws \Exception
      */
@@ -140,6 +146,7 @@ class MailServiceTest extends FunctionalTestCase
         $this->frontendUserRepository = $this->objectManager->get(FrontendUserRepository::class);
         $this->backendUserRepository = $this->objectManager->get(BackendUserRepository::class);
         $this->markerReducer = $this->objectManager->get(MarkerReducer::class);
+        $this->mailBodyCache = $this->objectManager->get(MailBodyCache::class);
 
         $this->subject = $this->objectManager->get(MailService::class);
 
@@ -347,455 +354,7 @@ class MailServiceTest extends FunctionalTestCase
         static::assertFalse($this->subject->hasQueueRecipient($queueRecipient));
     }
 
-
-    //=============================================
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate_GivenWrongTemplateType_ThrowsException()
-    {
-        static::expectException(\RKW\RkwMailer\Service\Exception\MailServiceException::class);
-
-        $this->subject->renderSingleTemplate('test');
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @toDo Wrong exception checked here
-     */
-    public function renderSingleTemplate_UsingQueueMailWithout_ThrowsException()
-    {
-        static::expectException(\RKW\RkwMailer\Service\Exception\MailServiceException::class);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(1);
-        $this->subject->setQueueMail($queueMail);
-        $this->subject->renderSingleTemplate('test');
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate_GivenHtmlTemplateType_ReturnsExpectedString()
-    {
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(2);
-        $this->subject->setQueueMail($queueMail);
-
-        $result = $this->subject->renderSingleTemplate('html');
-        static::assertContains('TEST-TEMPLATE-HTML', $result);
-        static::assertContains('ROOTPAGE', $result);
-        static::assertContains('queueMail.uid: 2', $result);
-        static::assertContains('queueMail.settingsPid: 0', $result);
-        static::assertContains('mailType: Html', $result);
-        static::assertContains('settings.redirectPid: 9999', $result);
-
-        static::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
-        static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
-        static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/5/e/csm_image-placeholder_1eb4fdc08f.jpg" width="536" height="200" alt="" title="Platzhalter" />', $result);
-
-        static::assertContains('baseUrl: http://www.example.de', $result);
-        static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate_GivenPlaintextTemplateType_ReturnsExpectedString()
-    {
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(2);
-        $this->subject->setQueueMail($queueMail);
-
-        $result = $this->subject->renderSingleTemplate('plaintext');
-        static::assertContains('TEST-TEMPLATE-PLAINTEXT', $result);
-        static::assertContains('ROOTPAGE', $result);
-        static::assertContains('queueMail.uid: 2', $result);
-        static::assertContains('queueMail.settingsPid: 0', $result);
-        static::assertContains('mailType: Plaintext', $result);
-        static::assertContains('settings.redirectPid: 9999', $result);
-
-        static::assertContains('baseUrl: http://www.example.de', $result);
-        static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate_GivenHtmlTemplateTypeWithSubpageConfig_ReturnsExpectedString()
-    {
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(3);
-        $this->subject->setQueueMail($queueMail);
-
-        $result = $this->subject->renderSingleTemplate('html');
-        static::assertContains('TEST-TEMPLATE-HTML', $result);
-        static::assertContains('SUBPAGE', $result);
-        static::assertContains('queueMail.uid: 3', $result);
-        static::assertContains('queueMail.settingsPid: 2', $result);
-        static::assertContains('mailType: Html', $result);
-        static::assertContains('settings.redirectPid: 8888', $result);
-
-        static::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
-        static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
-        static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/5/e/csm_image-placeholder_1eb4fdc08f.jpg" width="536" height="200" alt="" title="Platzhalter" />', $result);
-
-        static::assertContains('baseUrl: http://www.example.de', $result);
-        static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate_GivenPlaintextTemplateWithSubpageConfigType_ReturnsExpectedString()
-    {
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(3);
-        $this->subject->setQueueMail($queueMail);
-
-        $result = $this->subject->renderSingleTemplate('plaintext');
-        static::assertContains('TEST-TEMPLATE-PLAINTEXT', $result);
-        static::assertContains('SUBPAGE', $result);
-        static::assertContains('queueMail.uid: 3', $result);
-        static::assertContains('queueMail.settingsPid: 2', $result);
-        static::assertContains('mailType: Plaintext', $result);
-        static::assertContains('settings.redirectPid: 8888', $result);
-
-        static::assertContains('baseUrl: http://www.example.de', $result);
-        static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
-
-    }
-
-
-    //=============================================
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderTemplates_GivenNonPersistentQueueRecipient_ThrowsException()
-    {
-
-        static::expectException(\RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException::class);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(3);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = GeneralUtility::makeInstance(\RKW\RkwMailer\Domain\Model\QueueRecipient::class);
-        $this->subject->renderTemplates($queueRecipient);
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @toDo Wrong exception checked here
-     */
-    public function renderTemplates_UsingNoTemplates_DoesNoUpdates()
-    {
-
-        static::expectException(\RKW\RkwMailer\Service\Exception\MailServiceException::class);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(1);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
-        $this->subject->renderTemplates($queueRecipient);
-
-        $queueRecipientAfter = $this->queueRecipientRepository->findByIdentifier(1);
-        static::assertEquals($queueRecipient, $queueRecipientAfter);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderTemplates_GivenPersistentQueueRecipient_RendersAndStoresTemplates()
-    {
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(2);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
-
-        // prepare marker
-        $abstractEntityOne = $this->queueMailRepository->findByIdentifier(1);
-        $abstractEntityTwo = $this->queueMailRepository->findByIdentifier(2);
-        $abstractEntityThree = $this->queueMailRepository->findByIdentifier(3);
-
-        /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-        $objectStorage = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-        $objectStorage->attach($abstractEntityTwo);
-        $objectStorage->attach($abstractEntityThree);
-
-        $marker = [
-            'test1' => $abstractEntityOne,
-            'test2' => $objectStorage,
-        ];
-
-        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
-
-        // render template
-        $this->subject->renderTemplates($queueRecipient);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientFinished */
-        $queueRecipientFinished = $this->queueRecipientRepository->findByIdentifier(1);
-        $htmlBody = $queueRecipientFinished->getHtmlBody();
-        $plaintextBody = $queueRecipientFinished->getPlaintextBody();
-        $calendarBody = $queueRecipientFinished->getCalendarBody();
-
-        static::assertContains('queueRecipient.uid: 1', $htmlBody);
-        static::assertContains('queueRecipient.firstName: Sebastian', $htmlBody);
-        static::assertContains('queueRecipient.lastName: Schmidt', $htmlBody);
-        static::assertContains('test1.uid: 1', $htmlBody);
-        static::assertContains('test2.0.uid: 2', $htmlBody);
-
-        static::assertContains('queueRecipient.uid: 1', $plaintextBody);
-        static::assertContains('queueRecipient.firstName: Sebastian', $plaintextBody);
-        static::assertContains('queueRecipient.lastName: Schmidt', $plaintextBody);
-        static::assertContains('test1.uid: 1', $plaintextBody);
-        static::assertContains('test2.0.uid: 2', $plaintextBody);
-
-        static::assertContains('BEGIN:VCALENDAR', $calendarBody);
-        static::assertContains('SUMMARY:Test Kalender', $calendarBody);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderTemplates_GivenPersistentQueueRecipientWithCacheFlush_KeepsRenderedTemplatesWithinSameProcess()
-    {
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(2);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
-
-        // prepare marker
-        $abstractEntityOne = $this->queueMailRepository->findByIdentifier(1);
-        $abstractEntityTwo = $this->queueMailRepository->findByIdentifier(2);
-        $abstractEntityThree = $this->queueMailRepository->findByIdentifier(3);
-
-        /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-        $objectStorage = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-        $objectStorage->attach($abstractEntityTwo);
-        $objectStorage->attach($abstractEntityThree);
-
-        $marker = [
-            'test1' => $abstractEntityOne,
-            'test2' => $objectStorage,
-        ];
-
-        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
-
-        // render template
-        $this->subject->renderTemplates($queueRecipient);
-
-        /** @var \RKW\RkwMailer\Cache\MailBodyCache $mailBodyCache */
-        $mailBodyCache = $this->objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');
-        $mailBodyCache->clearCache();
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientFinished */
-        $queueRecipientFinished = $this->queueRecipientRepository->findByIdentifier(1);
-        $htmlBody = $queueRecipientFinished->getHtmlBody();
-        $plaintextBody = $queueRecipientFinished->getPlaintextBody();
-        $calendarBody = $queueRecipientFinished->getCalendarBody();
-
-        static::assertNotEmpty($htmlBody);
-        static::assertNotEmpty($plaintextBody);
-        static::assertNotEmpty($calendarBody);
-
-    }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderTemplates_GivenPersistentQueueRecipientWithAlreadySetPlaintext_DoesNotRenderPlaintextTemplate()
-    {
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(2);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
-
-        // prepare marker
-        $abstractEntityOne = $this->queueMailRepository->findByIdentifier(1);
-        $abstractEntityTwo = $this->queueMailRepository->findByIdentifier(2);
-        $abstractEntityThree = $this->queueMailRepository->findByIdentifier(3);
-
-        /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-        $objectStorage = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-        $objectStorage->attach($abstractEntityTwo);
-        $objectStorage->attach($abstractEntityThree);
-
-        $marker = [
-            'test1' => $abstractEntityOne,
-            'test2' => $objectStorage,
-        ];
-
-        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
-        $queueRecipient->setPlaintextBody('NON-RENDER');
-
-        // render template
-        $this->subject->renderTemplates($queueRecipient);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientFinished */
-        $queueRecipientFinished = $this->queueRecipientRepository->findByIdentifier(1);
-        $htmlBody = $queueRecipientFinished->getHtmlBody();
-        $plaintextBody = $queueRecipientFinished->getPlaintextBody();
-        $calendarBody = $queueRecipientFinished->getCalendarBody();
-
-        static::assertContains('queueRecipient.uid: 1', $htmlBody);
-        static::assertContains('queueRecipient.firstName: Sebastian', $htmlBody);
-        static::assertContains('queueRecipient.lastName: Schmidt', $htmlBody);
-        static::assertContains('test1.uid: 1', $htmlBody);
-        static::assertContains('test2.0.uid: 2', $htmlBody);
-
-        static::assertContains('NON-RENDER', $plaintextBody);
-
-        static::assertContains('BEGIN:VCALENDAR', $calendarBody);
-        static::assertContains('SUMMARY:Test Kalender', $calendarBody);
-
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderTemplates_GivenPersistentQueueRecipientAndNoOtherTemplate_DoesRenderOnlyTemplate()
-    {
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->queueMailRepository->findByIdentifier(4);
-        $this->subject->setQueueMail($queueMail);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
-        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
-
-        // prepare marker
-        $abstractEntityOne = $this->queueMailRepository->findByIdentifier(1);
-        $abstractEntityTwo = $this->queueMailRepository->findByIdentifier(2);
-        $abstractEntityThree = $this->queueMailRepository->findByIdentifier(3);
-
-        /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage $objectStorage */
-        $objectStorage = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-        $objectStorage->attach($abstractEntityTwo);
-        $objectStorage->attach($abstractEntityThree);
-
-        $marker = [
-            'test1' => $abstractEntityOne,
-            'test2' => $objectStorage,
-        ];
-
-        $queueRecipient->setMarker($this->markerReducer->implodeMarker($marker));
-
-        // render template
-        $this->subject->renderTemplates($queueRecipient);
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientFinished */
-        $queueRecipientFinished = $this->queueRecipientRepository->findByIdentifier(1);
-        $htmlBody = $queueRecipientFinished->getHtmlBody();
-        $plaintextBody = $queueRecipientFinished->getPlaintextBody();
-        $calendarBody = $queueRecipientFinished->getCalendarBody();
-
-        static::assertEmpty($htmlBody);
-        static::assertEmpty($calendarBody);
-
-        static::assertContains('queueRecipient.uid: 1', $plaintextBody);
-        static::assertContains('queueRecipient.firstName: Sebastian', $plaintextBody);
-        static::assertContains('queueRecipient.lastName: Schmidt', $plaintextBody);
-        static::assertContains('test1.uid: 1', $plaintextBody);
-        static::assertContains('test2.0.uid: 2', $plaintextBody);
-
-    }
-
-
-
-
-
+    
     //=============================================
 
 
@@ -854,8 +413,8 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals($markerFixture, $queueRecipient->getMarker());
         static::assertEquals('Wir testen den Betreff', $queueRecipient->getSubject());
 
-        static::assertEmpty($queueRecipient->getHtmlBody());
-        static::assertEmpty($queueRecipient->getPlaintextBody());
+        static::assertEmpty($this->mailBodyCache->getHtmlBody($queueRecipient));
+        static::assertEmpty($this->mailBodyCache->getPlaintextBody($queueRecipient));
     }
 
 
@@ -919,8 +478,8 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals($markerFixture, $queueRecipient->getMarker());
         static::assertEquals('Wir testen den Betreff', $queueRecipient->getSubject());
 
-        static::assertNotEmpty($queueRecipient->getHtmlBody());
-        static::assertNotEmpty($queueRecipient->getPlaintextBody());
+        static::assertNotEmpty($this->mailBodyCache->getHtmlBody($queueRecipient));
+        static::assertNotEmpty($this->mailBodyCache->getPlaintextBody($queueRecipient));
     }
 
 
@@ -979,8 +538,8 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals($markerFixture, $queueRecipient->getMarker());
         static::assertEquals('Wir testen den Betreff', $queueRecipient->getSubject());
 
-        static::assertEmpty($queueRecipient->getHtmlBody());
-        static::assertEmpty($queueRecipient->getPlaintextBody());
+        static::assertEmpty($this->mailBodyCache->getHtmlBody($queueRecipient));
+        static::assertEmpty($this->mailBodyCache->getPlaintextBody($queueRecipient));
     }
 
     /**
@@ -1041,8 +600,8 @@ class MailServiceTest extends FunctionalTestCase
         static::assertEquals($markerFixture, $queueRecipient->getMarker());
         static::assertEquals('Wir testen den Betreff', $queueRecipient->getSubject());
 
-        static::assertNotEmpty($queueRecipient->getHtmlBody());
-        static::assertNotEmpty($queueRecipient->getPlaintextBody());
+        static::assertNotEmpty($this->mailBodyCache->getHtmlBody($queueRecipient));
+        static::assertNotEmpty($this->mailBodyCache->getPlaintextBody($queueRecipient));
     }
 
 

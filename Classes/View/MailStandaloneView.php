@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\View;
  */
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Exception;
 use RKW\RkwMailer\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -30,7 +32,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * A standalone template view.
- * Should be used as view if you want to use Fluid without Extbase extensions
+ * Should be used as view if you want to use FluidTemplates in emails
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
@@ -58,12 +60,36 @@ class MailStandaloneView extends StandaloneView
 
 
     /**
+     * templateType
+     *
+     * @var string
+     */
+    protected $templateType = '';
+
+    
+    /**
      * objectManager
      *
      * @var ObjectManager
      */
     protected $objectManager;
 
+    
+    /**
+     * queueMail
+     *
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     */
+    protected $queueMail;
+
+    
+    /**
+     * queueRecipient
+     *
+     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
+     */
+    protected $queueRecipient;
+    
 
     /**
      * Constructor
@@ -137,7 +163,7 @@ class MailStandaloneView extends StandaloneView
         FrontendSimulatorUtility::resetFrontendEnvironment();
     }
 
-
+    
 
     /**
      * get base url
@@ -216,31 +242,6 @@ class MailStandaloneView extends StandaloneView
         }
 
         return rtrim($path, '/');
-    }
-
-
-    /**
-     * Assigns multiple values to the JSON output.
-     * However, only the key "value" is accepted.
-     *
-     * @param array $values Keys and values - only a value with key "value" is considered
-     * @return $this
-     * @api
-     */
-    public function assignMultiple($values): MailStandaloneView
-    {
-        // always add current settings
-        if (! isset($values['settings'])) {
-            $settings = $this->getSettings();
-            $values['settings'] = $settings['settings']; 
-        } 
-        
-        /** @var MarkerReducer $markerReducer */
-        $markerReducer = GeneralUtility::makeInstance(MarkerReducer::class);
-        $values = $markerReducer->explodeMarker($values);
-
-        parent::assignMultiple($values);
-        return $this;
     }
 
 
@@ -326,6 +327,136 @@ class MailStandaloneView extends StandaloneView
     }
 
 
+
+    /**
+     * Sets the template
+     *
+     * @param string $templateName
+     * @api
+     */
+    public function setTemplate($templateName): void
+    {
+
+        // check for absolute paths!
+        if (strpos($templateName, 'EXT:') === 0) {
+
+            // check for file-extension
+            if (strpos($templateName, '.') === false) {
+                $templateName .=  '.' . $this->getFormat();
+            }
+
+            $templatePathFile = GeneralUtility::getFileAbsFileName($templateName);
+            $this->setTemplatePathAndFilename($templatePathFile);
+
+            // check if there is a template-path included
+            // Since TYPO3 8 templates are set via the given controller action.
+            // Thus using setTemplate with relative paths will result in using this path as controller action.
+        } else if (
+            ($subFolder = dirname($templateName))
+            && ($subFolder != '.')
+        ){
+            $newTemplatePaths = [];
+            foreach ($this->getTemplateRootPaths() as $path) {
+                if (is_dir($path . $subFolder)) {
+                    $newTemplatePaths[] = $path . $subFolder;
+                }
+            }
+            $this->addTemplateRootPaths($newTemplatePaths);
+
+            GeneralUtility::deprecationLog(
+                __CLASS__ . '::' . __METHOD__ . '(): Please do not use this method with relative paths included. ' .
+                'The paths should be added to the TemplateRootPaths instead. From TYPO3 8.7 on templates are set via the given controller action. ' .
+                'Thus using setTemplate with relative paths will in turn result in using this path as controller action.'
+            );
+        }
+
+        parent::setTemplate(basename($templateName));
+    }
+
+    
+    /**
+     * Gets the templateType
+     *
+     * @return string
+     */
+    public function getTemplateType(): string
+    {
+        return $this->templateType;
+    }
+    
+    
+    /**
+     * Sets the templateType
+     *
+     * @param string $type
+     * @return void
+     * @throws \RKW\RkwMailer\Exception
+     */
+    public function setTemplateType(string $type): void
+    {
+
+        // check for queueMail
+        if (! $this->getQueueMail()) {
+            throw new Exception(
+                'No queueMail-object set. Please set an queueMail-object before using setTemplateType().', 
+                1633088149
+            );
+        }
+
+        // build get-method
+        $templateGetter = 'get' . ucFirst($type) . 'Template';
+
+        // check for valid types
+        if (! method_exists(QueueMail::class, $templateGetter)) {
+            throw new Exception('Invalid template type given.', 1633088157);
+        }
+
+        $this->templateType = strtolower($type);
+        $this->setTemplate($this->getQueueMail()->$templateGetter());
+    }
+    
+
+    /**
+     * Assigns multiple values to the JSON output.
+     * However, only the key "value" is accepted.
+     *
+     * @param array $values Keys and values - only a value with key "value" is considered
+     * @return $this
+     * @api
+     */
+    public function assignMultiple($values): MailStandaloneView
+    {
+        // always add current settings
+        if (! isset($values['settings'])) {
+            $settings = $this->getSettings();
+            $values['settings'] = $settings['settings'];
+        }
+        
+        // add queueMail-object if set
+        if ($this->getQueueMail()) {
+            $values['queueMail'] = $this->getQueueMail();
+        }
+
+        // add queueRecipient-object if set
+        if ($this->getQueueRecipient()) {
+            $values['queueRecipient'] = $this->getQueueRecipient();
+        }
+        
+        // add templateType
+        if ($this->getTemplateType()) {
+            $values['templateType'] = $values['mailType'] = ucFirst($this->getTemplateType());
+        }
+
+        // explode marker if needed
+        /** @var MarkerReducer $markerReducer */
+        $markerReducer = GeneralUtility::makeInstance(MarkerReducer::class);
+        $values = $markerReducer->explodeMarker($values);
+
+        parent::assignMultiple($values);
+        return $this;
+    }
+
+
     /**
      * Loads the template source and renders the template.
      *
@@ -335,7 +466,7 @@ class MailStandaloneView extends StandaloneView
      */
     public function render($actionName = null): string
     {
-        // empty call for settings
+        // empty call to inject settings and other fix variables
         $this->assignMultiple([]);
         
         $renderedTemplate = parent::render($actionName);
@@ -371,92 +502,6 @@ class MailStandaloneView extends StandaloneView
 
 
     /**
-     * Sets the template
-     *
-     * @param string $templateName
-     * @api
-     */
-    public function setTemplate($templateName): void
-    {
-
-        // check for absolute paths!
-        if (strpos($templateName, 'EXT:') === 0) {
-
-            // check for file-extension
-            if (strpos($templateName, '.') === false) {
-                $templateName .=  '.' . $this->getFormat();
-            }
-
-            $templatePathFile = GeneralUtility::getFileAbsFileName($templateName);
-            $this->setTemplatePathAndFilename($templatePathFile);
-
-        // check if there is a template-path included
-        // Since TYPO3 8 templates are set via the given controller action.
-        // Thus using setTemplate with relative paths will result in using this path as controller action.
-        } else if (
-            ($subFolder = dirname($templateName))
-            && ($subFolder != '.')
-        ){
-            $newTemplatePaths = [];
-            foreach ($this->getTemplateRootPaths() as $path) {
-                if (is_dir($path . $subFolder)) {
-                    $newTemplatePaths[] = $path . $subFolder;
-                }
-            }
-            $this->addTemplateRootPaths($newTemplatePaths);
-
-            GeneralUtility::deprecationLog(
-                __CLASS__ . '::' . __METHOD__ . '(): Please do not use this method with relative paths included. ' .
-                'The paths should be added to the TemplateRootPaths instead. From TYPO3 8.7 on templates are set via the given controller action. ' .
-                'Thus using setTemplate with relative paths will in turn result in using this path as controller action.'
-            );
-        }
-
-        parent::setTemplate(basename($templateName));
-    }
-
-
-
-    /**
-     * Set the request object
-     *
-     * @param \TYPO3\CMS\Extbase\Mvc\Web\Request $webRequest
-     * @return void
-     * @see __construct()
-
-    public function setRequest(\TYPO3\CMS\Extbase\Mvc\Web\Request $webRequest)
-    {
-        // set basics
-        $webRequest->setRequestURI(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
-        $webRequest->setBaseURI(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
-
-        /** @var UriBuilder $uriBuilder  *
-        $uriBuilder = $this->objectManager->get(UriBuilder::class);
-        $uriBuilder->setRequest($webRequest);
-
-        $currentVersion = VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
-        if ($currentVersion < 8000000) {
-
-            /** @var ControllerContext $controllerContext *
-            $this->controllerContext->setRequest($webRequest);
-            $this->controllerContext->setUriBuilder($uriBuilder);
-
-        } else {
-
-            /** @var ControllerContext $controllerContext *
-            $controllerContext = $this->objectManager->get(ControllerContext::class);
-            $controllerContext->setRequest($webRequest);
-            $controllerContext->setUriBuilder($uriBuilder);
-
-            /** @var RenderingContext $renderingContext
-            $renderingContext = $this->objectManager->get(RenderingContext::class, $this);
-            $renderingContext->setControllerContext($controllerContext);
-            $this->setRenderingContext($renderingContext);
-        }
-    }*/
-
-
-    /**
      * Returns configuration array
      * @return array
      */
@@ -474,5 +519,63 @@ class MailStandaloneView extends StandaloneView
     {
         return $this->settingsPid;
     }
+
+
+    /**
+     * Returns the queueMail
+     *
+     * @return \RKW\RkwMailer\Domain\Model\QueueMail
+     */
+    public function getQueueMail()
+    {
+        return $this->queueMail;
+    }
+
+    /**
+     * Sets the queueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return void
+     */
+    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
+    {
+        $this->queueMail = $queueMail;
+
+        // set additional paths based on given queueMail
+        if (($queueMail->getLayoutPaths()) && (is_array($queueMail->getLayoutPaths()))){
+            $this->addLayoutRootPaths($queueMail->getLayoutPaths());
+        }
+
+        if (($queueMail->getPartialPaths())&& (is_array($queueMail->getPartialPaths()))){
+            $this->addPartialRootPaths($queueMail->getPartialPaths());
+        }
+
+        if (($queueMail->getTemplatePaths())&& (is_array($queueMail->getTemplatePaths()))){
+            $this->addTemplateRootPaths($queueMail->getTemplatePaths());
+        }
+    }
+
+
+    /**
+     * Returns the queueRecipient
+     *
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     */
+    public function getQueueRecipient()
+    {
+        return $this->queueRecipient;
+    }
+
+    /**
+     * Sets the queueRecipient
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+     * @return void
+     */
+    public function setQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): void
+    {
+        $this->queueRecipient = $queueRecipient;
+    }
+
 
 }

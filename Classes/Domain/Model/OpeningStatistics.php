@@ -45,7 +45,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var string
      */
-    protected $hash;
+    protected $hash = '';
 
     /**
      * counter
@@ -71,7 +71,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      */
-    public function setQueueMail($queueMail)
+    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
     }
@@ -93,7 +93,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return void
      */
-    public function setQueueRecipient($queueRecipient)
+    public function setQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): void
     {
         $this->queueRecipient = $queueRecipient;
     }
@@ -104,7 +104,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $hash
      */
-    public function getHash()
+    public function getHash(): string
     {
         return $this->hash;
     }
@@ -115,7 +115,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $hash
      * @return void
      */
-    public function setHash($hash)
+    public function setHash(string $hash): void
     {
         $this->hash = $hash;
     }
@@ -126,7 +126,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return int $counter
      */
-    public function getCounter()
+    public function getCounter(): int
     {
         return $this->counter;
     }
@@ -134,10 +134,10 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the counter
      *
-     * @param int $count
+     * @param int $counter
      * @return void
      */
-    public function setCounter($counter)
+    public function setCounter(int $counter): void
     {
         $this->counter = $counter;
     }
