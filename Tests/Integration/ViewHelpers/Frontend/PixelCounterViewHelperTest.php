@@ -201,7 +201,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        static::assertContains('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=confirmation&tx_rkwmailer_rkwmailer[controller]=Link" width="1" height="1" alt="" />', $result);
+        static::assertContains('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=opening&tx_rkwmailer_rkwmailer[controller]=tracking" width="1" height="1" alt="" />', $result);
 
     }
 

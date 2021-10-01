@@ -95,9 +95,9 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 
                 return '<img src="' . urldecode(
                     $uriBuilder->uriFor(
-                        'confirmation', 
+                        'opening', 
                         array(), 
-                        'Link', 
+                        'tracking', 
                         'rkwmailer', 
                         'Rkwmailer')
                     ) . '" width="1" height="1" alt="" />';

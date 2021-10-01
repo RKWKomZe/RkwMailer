@@ -190,37 +190,20 @@
                 <source>Calendar- Part</source>
             </trans-unit>
 
-
+            
             <!-- =================================================== -->
-            <!-- tx_rkwmailer_domain_model_statisticopening -->
+            <!-- tx_rkwmailer_domain_model_clickstatistics            -->
             <!-- =================================================== -->
-            <trans-unit id="tx_rkwmailer_domain_model_statisticopening">
-                <source>RKW Mailer: Statistic Opening</source>
+            <trans-unit id="tx_rkwmailer_domain_model_clickstatistics">
+                <source>RKW Mailer: Statistics for links</source>
             </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticopening.pixel">
-                <source>Pixel</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_statisticopening.click_count">
-                <source>Click Count</source>
-            </trans-unit>
-
-
+            
             <!-- =================================================== -->
-            <!-- tx_rkwmailer_domain_model_link                      -->
+            <!-- tx_rkwmailer_domain_model_openingstatistics            -->
             <!-- =================================================== -->
-            <trans-unit id="tx_rkwmailer_domain_model_link">
-                <source>RKW Mailer: Links in E-Mails</source>
+            <trans-unit id="tx_rkwmailer_domain_model_openingstatistics">
+                <source>RKW Mailer: Statistics for openings</source>
             </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_link.queue_mail">
-                <source>QueueMail</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_link.hash">
-                <source>Hash</source>
-            </trans-unit>
-            <trans-unit id="tx_rkwmailer_domain_model_link.url">
-                <source>Url</source>
-            </trans-unit>
-
 
             <!-- =================================================== -->
             <!-- tx_rkwmailer_domain_model_bouncemail                -->

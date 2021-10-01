@@ -94,6 +94,7 @@ CREATE TABLE tx_rkwmailer_domain_model_statisticopening (
 	link int(11) DEFAULT '0' NOT NULL,
 	pixel int(11) DEFAULT '0' NOT NULL,
 	click_count int(11) DEFAULT '0' NOT NULL,
+	migrated int(1) DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -125,6 +126,56 @@ CREATE TABLE tx_rkwmailer_domain_model_link (
     UNIQUE KEY `hash` (`hash`),
 	KEY parent (pid),
 	KEY queue_mail (queue_mail),
+);
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_clickstatistics'
+#
+CREATE TABLE tx_rkwmailer_domain_model_clickstatistics (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+	hash varchar(255) DEFAULT '' NOT NULL,
+	link_hash varchar(255) DEFAULT '' NOT NULL,
+	url text NOT NULL,
+	counter int(11) DEFAULT '1' NOT NULL,
+	comment text NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+    UNIQUE KEY `hash` (`hash`, `queue_mail`),
+	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+);
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_openingstatistics'
+#
+CREATE TABLE tx_rkwmailer_domain_model_openingstatistics (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_recipient int(11) DEFAULT '0' NOT NULL,	
+	hash varchar(255) DEFAULT '' NOT NULL,
+	counter int(11) DEFAULT '1' NOT NULL,
+	comment text NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+    UNIQUE KEY `hash` (`hash`, `queue_mail`),
+	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+    KEY queue_recipient (queue_recipient),
 );
 
 

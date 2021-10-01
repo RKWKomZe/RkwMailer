@@ -94,7 +94,7 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
                                 && (strpos($matches[1], 'mailto:') !== 0)
                             ) {
                                 return self::replace(
-                                    $matches[1],
+                                    trim($matches[1], '[](){}'),
                                     $queueMail,
                                     $queueRecipient,
                                     $additionalParams

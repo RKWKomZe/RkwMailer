@@ -101,8 +101,6 @@ class QueueMailRepositoryTest extends FunctionalTestCase
         self::assertEquals('1', $resultAsArray[1]->getFailed());
         self::assertEquals('1', $resultAsArray[1]->getDeferred());
         self::assertEquals('2', $resultAsArray[1]->getBounced());
-        self::assertEquals('2', $resultAsArray[1]->getOpened());
-        self::assertEquals('1', $resultAsArray[1]->getClicked());
 
     }
 

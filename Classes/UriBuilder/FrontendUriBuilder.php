@@ -288,47 +288,24 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         ) {
 
             if ($this->getRedirectPid()) {
-
-                // generate link object and save it
-                /** @var \RKW\RkwMailer\Domain\Model\Link $link */
-                $link = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Link::class);
-                if ($this->getRedirectLink()) {
-                    $link->setUrl($this->getRedirectLink());
-                } else {
-                    $link->setUrl($this->buildFrontendUri());
-                }
-
-                // set QueueMail
-                $link->setQueueMail($this->getQueueMail());
-
-                // unique is build via mail-id and link only - NOT with user-id included!!!
-                // this way a link used twice in a mail is only saved once
-                $link->setHash(sha1($this->getQueueMail()->getUid() . $link->getUrl()));
-
-                /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
-
-                /** @var \RKW\RkwMailer\Domain\Repository\LinkRepository $linkRepository */
-                $linkRepository = $objectManager->get(LinkRepository::class);
-
-                if (!$linkRepository->findOneByHash($link->getHash())) {
-                    $linkRepository->add($link);
-
-                    /** @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager */
-                    $persistenceManager = $objectManager->get(PersistenceManager::class);
-                    $persistenceManager->persistAll();
-                }
-
+                
                 // reset and unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
                 $this->reset();
                 $this->setUseRedirectLink(false);
+                
+                // get url
+                $url = $this->buildFrontendUri();
+                if ($this->getRedirectLink()) {
+                    $url = $this->getRedirectLink();
+                } 
 
                 // set params
                 $arguments = [
-                    'tx_rkwmailer_rkwmailer[hash]' => $link->getHash(),
+                    'tx_rkwmailer_rkwmailer[url]' => $url,
                     'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
                 ];
+                
                 if ($this->getQueueRecipient()) {
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
@@ -345,7 +322,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                $url = $this->uriFor('redirect', array(), 'Link', 'rkwmailer', 'Rkwmailer');
+                $url = $this->uriFor('redirect', array(), 'Tracking', 'rkwmailer', 'Rkwmailer');
 
                 // reset frontend
                 FrontendSimulatorUtility::resetFrontendEnvironment();

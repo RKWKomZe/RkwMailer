@@ -265,7 +265,7 @@ class ActionViewHelperTest extends FunctionalTestCase
          * Then an absolute link to the configured redirect page is returned like in frontend context
          * Then the redirect link calls the redirect plugin of rkw_mailer
          * Then the redirect link contains the queueMailUid
-         * Then the redirect link contains a link-hash-value
+         * Then the redirect link contains an url-attribute
          * Then no cHash is used
          * Then a noCache-parameter is set
          */
@@ -287,9 +287,9 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
         
         static::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
-        static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link', $result);
+        static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
         static::assertNotContains('cHash=', $result);
         static::assertContains('/nc/', $result);
 
@@ -316,7 +316,7 @@ class ActionViewHelperTest extends FunctionalTestCase
          * Then the redirect link calls the redirect plugin of rkw_mailer
          * Then the redirect link contains the queueMailUid
          * Then the redirect link contains the queueRecipientUid
-         * Then the redirect link contains a link-hash-value
+         * Then the redirect link contains an url-attribute
          * Then no cHash is used
          * Then a noCache-parameter is set
          */
@@ -341,10 +341,10 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         static::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
-        static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Link', $result);
+        static::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
         static::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bhash%5D=', $result);
+        static::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
         static::assertNotContains('cHash=', $result);
         static::assertContains('/nc/', $result);
        

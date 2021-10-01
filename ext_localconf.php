@@ -12,11 +12,13 @@ call_user_func(
             'RKW.' . $extKey,
             'Rkwmailer',
             array(
-                'Link' => 'redirect, confirmation',
+                'Link' => 'redirect, confirmation', // deprecated
+                'Tracking' => 'redirect, opening',
             ),
             // non-cacheable actions
             array(
-                'Link' => 'redirect, confirmation',
+                'Link' => 'redirect, confirmation', // deprecated
+                'Tracking' => 'redirect, opening',
             )
         );
 
@@ -60,6 +62,11 @@ call_user_func(
                 )
             ),
         );
+        
+        //=================================================================
+        // register update wizard
+        //=================================================================
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\RKW\RkwMailer\Updates\MigrateStatisticsWizard::class] = \RKW\RkwMailer\Updates\MigrateStatisticsWizard::class;
     },
     $_EXTKEY
 );

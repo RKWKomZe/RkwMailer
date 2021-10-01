@@ -26,16 +26,24 @@ namespace RKW\RkwMailer\Controller;
  */
 class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-
-
+    
     /**
-     * statisticOpeningRepository
+     * clickStatisticsRepository
      *
-     * @var \RKW\RkwMailer\Domain\Repository\StatisticOpeningRepository
+     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      * @inject
      */
-    protected $statisticOpeningRepository;
+    protected $clickStatisticsRepository;
 
+    /**
+     * openingStatisticsRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
+     * @inject
+     */
+    protected $openingStatisticsRepository;
+    
+    
     /**
      * queueMailRepository
      *
@@ -52,15 +60,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * @inject
      */
     protected $queueRecipientRepository;
-
-
-    /**
-     * LinkRepository
-     *
-     * @var \RKW\RkwMailer\Domain\Repository\LinkRepository
-     * @inject
-     */
-    protected $linkRepository;
+    
 
 
     /**
@@ -100,12 +100,11 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function clickStatisticsAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
 
-        $clickedLinks = $this->statisticOpeningRepository->findByQueueMailWithStatistics($queueMail);
+        $clickedLinks = $this->clickStatisticsRepository->findByQueueMail($queueMail);
         $this->view->assignMultiple(
             array(
                 'clickedLinks' => $clickedLinks,
@@ -165,8 +164,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
-        //===
-
     }
 
     /**
@@ -188,8 +185,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
-        //===
-
     }
 
     /**
@@ -218,13 +213,11 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $this->queueRecipientRepository->update($recipient);
         }
 
-
-        // reset statistics for openings
-        $this->statisticOpeningRepository->removeAllByQueueMail($queueMail);
-
+        // reset statistics by queueMail
+        $this->openingStatisticsRepository->removeAllByQueueMail($queueMail);
+        $this->clickStatisticsRepository->removeAllByQueueMail($queueMail);
+        
         $this->redirect('list');
-        //===
-
     }
 
     /**
@@ -243,7 +236,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         // dependent objects are deleted by cascade
         $this->queueMailRepository->remove($queueMail);
         $this->redirect('list');
-        //===
 
     }
 
