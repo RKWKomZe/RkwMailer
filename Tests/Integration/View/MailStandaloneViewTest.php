@@ -17,6 +17,8 @@ namespace RKW\RkwMailer\Tests\Integration\View;
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use RKW\RkwBasics\Domain\Repository\PagesRepository;
+use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -67,11 +69,6 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     */
-    private $queueMailRepository;
-
-    /**
      * @var \RKW\RkwBasics\Domain\Repository\PagesRepository
      */
     private $pagesRepository;
@@ -98,9 +95,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $this->objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $this->objectManager->get(MailStandaloneView::class);
-        $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->pagesRepository = $this->objectManager->get(PagesRepository::class);
-
     }
 
 
@@ -798,16 +793,21 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Given a full path to the template beginning with EXT-keyword
          * Given no file extension is specified for the template
          * When the method is called
-         * Then no paths as added to the templateRootPath
+         * Then no paths are added to the templateRootPath
          * Then the resolved path is set for the template
          * Then the default file extension is used
          */
 
-        $this->subject->setTemplate('EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test');
+        $this->subject->setTemplate(
+            'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test'
+        );
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
         static::assertCount(2, $resultingPaths);
-        static::assertStringEndsWith('typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.html', $this->subject->getTemplatePathAndFilename());
+        static::assertStringEndsWith(
+            'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.html',
+            $this->subject->getTemplatePathAndFilename()
+        );
     }
 
     /**
@@ -828,11 +828,16 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Then the file extension specified is used
          */
 
-        $this->subject->setTemplate('EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test');
+        $this->subject->setTemplate(
+            'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test'
+        );
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
         static::assertCount(2, $resultingPaths);
-        static::assertStringEndsWith('typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test', $this->subject->getTemplatePathAndFilename());
+        static::assertStringEndsWith(
+            'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test', 
+            $this->subject->getTemplatePathAndFilename()
+        );
     }
 
     /**
@@ -855,7 +860,10 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
         static::assertCount(3, $resultingPaths);
-        static::assertStringEndsWith('typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/', $resultingPaths[2]);
+        static::assertStringEndsWith(
+            'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/', 
+            $resultingPaths[2]
+        );
         static::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
     }
 
@@ -881,6 +889,296 @@ class MailStandaloneViewTest extends FunctionalTestCase
         static::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
     }
 
+    //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function setTemplateTypesThrowsExceptionIfNoQueueMailSet ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid type-string
+         * Given no queueMail is set
+         * When the method is called
+         * Then an exception is thrown
+         * Then the exception has the code 1633088149
+         */
+        static::expectException(\RKW\RkwMailer\Exception::class);
+        static::expectExceptionCode(1633088149);
+
+        $this->subject->setTemplateType('plaintext');
+    }
+
+    
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function setTemplateTypesThrowsExceptionIfInvalidType ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a queueMail-object has been set to subject  before
+         * Given an invalid type-string
+         * When the method is called
+         * Then an exception is thrown
+         * Then the exception has the code 1633088157
+         */
+        static::expectException(\RKW\RkwMailer\Exception::class);
+        static::expectExceptionCode(1633088157);
+        
+        $queueMail = new QueueMail();
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->setTemplateType('test');
+    }
+
+    
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function setTemplateTypesSetsTemplateAndTypeProperty ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a queueMail-object has been set to subject before
+         * Given the queueMail-object contains a full path to the template beginning with EXT-keyword in the plaintextTemplate-attribute
+         * Given in that full path no file-extension is specified for the template
+         * Given the valid type-string with value "plaintext"
+         * When the method is called
+         * Then no paths are added to the templateRootPath
+         * Then the resolved path is set as the template
+         * Then the default file-extension is used
+         * Then the templateType-property of subject is set to the given type-string
+         * Then the templateType-property is transformed to lower case letters only
+         */
+        $queueMail = new QueueMail();
+        $queueMail->setPlaintextTemplate(
+            'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test'
+        );
+        
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->setTemplateType('plaInTeXt');
+
+        $resultingPaths = $this->subject->getTemplateRootPaths();
+        static::assertCount(2, $resultingPaths);
+        static::assertStringEndsWith(
+            'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.html', 
+            $this->subject->getTemplatePathAndFilename()
+        );
+        static::assertEquals('plaintext', $this->subject->getTemplateType());
+
+    }
+    
+    //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleExplodesValues()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a key with a string
+         * Given that array contains a second key with a Page-Object
+         * When the method is called
+         * Then the Page-Object in the values is exploded
+         */
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+
+        /** @var \RKW\RkwBasics\Domain\Model\Pages $entityOne */
+        $entityOne = $this->pagesRepository->findByIdentifier(1);
+        $expected = [
+            'hello' => 'string',
+            'page' => $entityOne
+        ];
+        
+        $values = [
+            'hello' => 'string',
+            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
+        ];
+         
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+        unset($variables['settings']);
+        
+        self::assertEquals($expected, $variables);
+        
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleAddsSettings()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains no settings key
+         * When the method is called
+         * Then the existing keys are kept 
+         * Then a settings-key is added to the values
+         * Then this settings-key contains an array
+         * Then this array equals the normal settings loaded for the view
+         */
+
+        $values = [
+            'hello' => 'string',
+            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
+        ];
+
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+        
+        $settings = $this->subject->getSettings();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('page', $variables);
+        self::assertArrayHasKey('settings', $variables);
+        self::assertInternalType('array', $variables['settings']);
+        self::assertEquals($settings['settings'], $variables['settings']);
+        
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleAddsQueueMail()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains no queueMail-key
+         * Given a queueMail-object has been set to the subject via setQueueMail() before
+         * When the method is called
+         * Then the existing keys are kept 
+         * Then a queueMail-key is added to the values
+         * Then this queueMail-key contains an queueMail-object
+         */
+
+        $values = [
+            'hello' => 'string',
+        ];
+        
+        $queueMail = new QueueMail();
+        $this->subject->setQueueMail($queueMail);
+        
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('queueMail', $variables);
+        self::assertInstanceOf(QueueMail::class , $variables['queueMail']);
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleAddsQueueRecipient()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains no queueRecipient-key
+         * Given a queueRecipient-object has been set to the subject via setQueueRecipient() before
+         * When the method is called
+         * Then the existing keys are kept
+         * Then a queueRecipient-key is added to the values
+         * Then this queueRecipient-key contains an queueMail-object
+         */
+
+        $values = [
+            'hello' => 'string',
+        ];
+
+        $queueRecipient = new QueueRecipient();
+        $this->subject->setQueueRecipient($queueRecipient);
+
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('queueRecipient', $variables);
+        self::assertInstanceOf(QueueRecipient::class , $variables['queueRecipient']);
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleAddsMailTypeAndTemplateType()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains no mailType-key
+         * Given that array contains no templateType-key
+         * Given a queueMail-object has been set to the subject via setQueueMail() before
+         * Given setTemplateType() of the subject has been called before successfully
+         * When the method is called
+         * Then the existing keys are kept
+         * Then a mailType-key is added to the values
+         * Then this mailType-key contains the type that was given to setTemplateType()
+         * Then the first letter of the mailType-key is uppercase
+         * Then a templateType-key is added to the values
+         * Then this templateType-key contains the type that was given to setTemplateType()
+         * Then the first letter of the templateType-key is uppercase
+         */
+        $values = [
+            'hello' => 'string',
+        ];
+
+        $queueMail = new QueueMail();
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->setTemplateType('plaintext');
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('mailType', $variables);
+        self::assertEquals('Plaintext', $variables['mailType']);
+        self::assertArrayHasKey('templateType', $variables);
+        self::assertEquals('Plaintext', $variables['templateType']);
+
+
+    }
+    
     //=============================================
 
     /**
@@ -950,7 +1248,6 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Scenario:
          *
          * Given a valid configuration
-         * Given
          * When the method is called
          * Then the setting variables are available
          */
@@ -962,86 +1259,126 @@ class MailStandaloneViewTest extends FunctionalTestCase
     }
 
     //=============================================
-
     /**
      * @test
      * @throws \Exception
      */
-    public function assignMultipleExplodesValues()
+    public function setQueueMailAddsLayoutRootPaths()
     {
 
         /**
          * Scenario:
          *
-         * Given an array of values
-         * Given that array contains a key with a string
-         * Given that array contains a second key with a Page-Object
+         * Given a queueMailObject with a layoutPath-property set
          * When the method is called
-         * Then the Page-Object in the values is exploded
+         * Then the value of the layoutPath-property of the queueMailObject is added to the layoutPaths of the subject
          */
+        $queueMail = new QueueMail();
+        $queueMail->setLayoutPaths(
+            [
+                0 => 'EXT:rkw_mailer/Tests/Funky/New100/Layouts/',
+                1 => 'EXT:rkw_mailer/Tests/Funky/New200/Layouts/'
+            ]
+        );
 
-        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
-
-        /** @var \RKW\RkwBasics\Domain\Model\Pages $entityOne */
-        $entityOne = $this->pagesRepository->findByIdentifier(1);
         $expected = [
-            'hello' => 'string',
-            'page' => $entityOne
+            0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Layouts/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Layouts/',
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New100/Layouts/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New200/Layouts/'
         ];
         
-        $values = [
-            'hello' => 'string',
-            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
-        ];
-         
-        $this->subject->assignMultiple($values);
-
-        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
-        $variables = $variableProvider->getAll();
-        unset($variables['settings']);
+        $this->subject->setQueueMail($queueMail);
+        $result = $this->subject->getLayoutRootPaths();
         
-        self::assertEquals($expected, $variables);
-        
+        static::assertCount(4, $result);
+        static::assertStringEndsWith($expected[0], $result[0]);
+        static::assertStringEndsWith($expected[1], $result[1]);
+        static::assertStringEndsWith($expected[2], $result[2]);
+        static::assertStringEndsWith($expected[3], $result[3]);        
     }
 
     /**
      * @test
      * @throws \Exception
      */
-    public function assignMultipleAddsSettings()
+    public function setQueueMailAddsTemplateRootPaths()
     {
 
         /**
          * Scenario:
          *
-         * Given an array of values
-         * Given that array contains no settings key
+         * Given a queueMailObject with a templatePath-property set
          * When the method is called
-         * Then a settings-key  is added to the values
-         * Then this settings-key contains an array
-         * Then this array equals the normal settings loaded for the view
+         * Then the value of the templatePath-property of the queueMailObject is added to the layoutPaths of the subject
          */
+        $queueMail = new QueueMail();
+        $queueMail->setTemplatePaths(
+            [
+                0 => 'EXT:rkw_mailer/Tests/Funky/New100/Templates/',
+                1 => 'EXT:rkw_mailer/Tests/Funky/New200/Templates/'
+            ]
+        );
 
-        $values = [
-            'hello' => 'string',
-            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1'
+        $expected = [
+            0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Templates/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/',
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New100/Templates/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New200/Templates/'
         ];
 
-        $this->subject->assignMultiple($values);
+        $this->subject->setQueueMail($queueMail);
+        $result = $this->subject->getTemplateRootPaths();
 
-        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
-        $variables = $variableProvider->getAll();
-        
-        $settings = $this->subject->getSettings();
-
-        self::assertArrayHasKey('settings', $variables);
-        self::assertInternalType('array', $variables['settings']);
-        self::assertEquals($settings['settings'], $variables['settings']);
-        
+        static::assertCount(4, $result);
+        static::assertStringEndsWith($expected[0], $result[0]);
+        static::assertStringEndsWith($expected[1], $result[1]);
+        static::assertStringEndsWith($expected[2], $result[2]);
+        static::assertStringEndsWith($expected[3], $result[3]);
     }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function setQueueMailAddsPartialRootPaths()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a queueMailObject with a partialPath-property set
+         * When the method is called
+         * Then the value of the partialPath-property of the queueMailObject is added to the partialsRootPaths of the subject
+         */
+        $queueMail = new QueueMail();
+        $queueMail->setPartialPaths(
+            [
+                0 => 'EXT:rkw_mailer/Tests/Funky/New100/Partials/',
+                1 => 'EXT:rkw_mailer/Tests/Funky/New200/Partials/'
+            ]
+        );
+
+        $expected = [
+            0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Partials/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Partials/',
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New100/Partials/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Funky/New200/Partials/'
+        ];
+
+        $this->subject->setQueueMail($queueMail);
+        $result = $this->subject->getPartialRootPaths();
+
+        static::assertCount(4, $result);
+        static::assertStringEndsWith($expected[0], $result[0]);
+        static::assertStringEndsWith($expected[1], $result[1]);
+        static::assertStringEndsWith($expected[2], $result[2]);
+        static::assertStringEndsWith($expected[3], $result[3]);
+    }
+
 
     //=============================================
-
 
     /**
      * TearDown
