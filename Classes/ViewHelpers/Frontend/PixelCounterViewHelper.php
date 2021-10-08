@@ -97,7 +97,7 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
                     $uriBuilder->uriFor(
                         'opening', 
                         array(), 
-                        'tracking', 
+                        'Tracking', 
                         'rkwmailer', 
                         'Rkwmailer')
                     ) . '" width="1" height="1" alt="" />';

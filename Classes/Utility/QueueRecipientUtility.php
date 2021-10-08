@@ -40,7 +40,7 @@ class QueueRecipientUtility
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     public static function initQueueRecipient (
-        $basicData = null,
+        $basicData = [],
         array $additionalData = []
     ): QueueRecipient {
 
@@ -54,7 +54,10 @@ class QueueRecipientUtility
         }
 
         // fallback with array
-        return self::initQueueRecipientViaArray(array_merge($additionalData, $basicData));
+        if (is_array($basicData)) {
+            return self::initQueueRecipientViaArray(array_merge($additionalData, $basicData));
+        }
+        return self::initQueueRecipientViaArray($additionalData);
     }
   
     

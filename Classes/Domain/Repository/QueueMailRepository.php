@@ -34,11 +34,6 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     }
 
 
-    protected $defaultOrderings = array(
-        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-    );
-
-
     /**
      * findByStatusWaitingOrSending
      * ordered by tstampRealSending and sorting and then priority
@@ -52,28 +47,24 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         $query = $this->createQuery();
         $query->matching(
-            $query->logicalAnd(
-                $query->logicalOr(
-                    $query->equals('status', '2'),
-                    $query->equals('status', '3')
-                ),
-                $query->lessThanOrEqual('tstampRealSending', time()))
+            $query->logicalOr(
+                $query->equals('status', '2'),
+                $query->equals('status', '3')
+            )
         )
-            ->setOrderings(
-                array(
-                    'pipeline'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                    'tstampRealSending' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                    'sorting'           => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                    'priority'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING,
-                )
-            );
+        ->setOrderings(
+            array(
+                'priority'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+                'pipeline'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+                'mailingStatistics.tstampRealSending' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+            )
+        );
 
         if ($limit > 0) {
             $query->setLimit(intval($limit));
         }
 
         return $query->execute();
-        //====
     }
 
 

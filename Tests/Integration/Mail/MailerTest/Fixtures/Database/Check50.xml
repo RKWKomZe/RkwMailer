@@ -10,8 +10,8 @@
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
         
-        <layout_paths>EXT:rkw_mailer/Tests/Integration/Service/MailServiceTest/Fixtures/Frontend/Layouts/</layout_paths>
-        <template_paths>EXT:rkw_mailer/Tests/Integration/Service/MailServiceTest/Fixtures/Frontend/Templates/</template_paths>
+        <layout_paths>EXT:rkw_mailer/Tests/Integration/Mailer/MailerTest/Fixtures/Frontend/Layouts/</layout_paths>
+        <template_paths>EXT:rkw_mailer/Tests/Integration/Mail/MailerTest/Fixtures/Frontend/Templates/</template_paths>
         <partial_paths />
 
         <plaintext_template />

@@ -88,7 +88,22 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
     //=============================================
 
-    
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientReturnsQueueRecipientObject()
+    {
+        /**
+         * Scenario:
+         *
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         */
+
+        $result = $this->subject->initQueueRecipient();
+        self::assertInstanceOf(QueueRecipient::class, $result);
+    }
 
     /**
      * @test

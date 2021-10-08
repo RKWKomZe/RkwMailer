@@ -208,10 +208,28 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $settingsPid = 0;
 
+      /**
+     * settings
+     *
+     * @var array
+     */
+    protected $settings = array();
+
+
+    /**
+     * queueMail
+     *
+     * @var \RKW\RkwMailer\Domain\Model\MailingStatistics
+     */
+    protected $mailingStatistics;
+
+
+
     /**
      * tstampFavSending
      *
      * @var integer
+     * @deprecated
      */
     protected $tstampFavSending = 0;
 
@@ -219,24 +237,19 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * tstampRealSending
      *
      * @var integer
+     * @deprecated
      */
     protected $tstampRealSending = 0;
 
+    
     /**
      * tstampSendFinish
      *
      * @var integer
+     * @deprecated
      */
     protected $tstampSendFinish = 0;
-
-
-    /**
-     * settings
-     *
-     * @var array
-     */
-    protected $settings = array();
-
+    
 
     /**
      * total
@@ -308,51 +321,6 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $clicked;
     
     
-    /**
-     * Constructor
-     *
-     * @throws \Exception
-     */
-    public function __construct()
-    {
-        $this->initializeObject();
-    }
-
-    /**
-     * Initialize object with default values from configuration
-     *
-     * @throws \Exception
-     */
-    public function initializeObject()
-    {
-
-        // set defaults
-        if (!$this->getFromAddress()) {
-            $this->setFromAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
-
-        if (!$this->getReplyAddress()) {
-            $this->setReplyAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
-
-        if (!$this->getReturnPath()) {
-            $this->setReturnPath($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
-
-        if (!$this->getFromName()) {
-            $this->setFromName($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']);
-        }
-
-        // set configuration root-page
-        if (
-            (!$this->getSettingsPid())
-            && ($GLOBALS['TSFE']->id)
-        ) {
-            $this->setSettingsPid(intval($GLOBALS['TSFE']->id));
-
-        }
-
-    }
 
     /**
      * Returns the crdate
@@ -1043,9 +1011,32 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
+     * Returns the mailingStatistics
+     *
+     * @return \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics
+     */
+    public function getMailingStatistics()
+    {
+        return $this->mailingStatistics;
+    }
+
+    /**
+     * Sets the mailingStatistics
+     *
+     * @param \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics
+     * @return void
+     */
+    public function setMailingStatistics(\RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics): void
+    {
+        $this->mailingStatistics = $mailingStatistics;
+    }
+
+
+    /**
      * Returns the tstampFavSending
      *
      * @return integer $tstampFavSending
+     * @deprecated
      */
     public function getTstampFavSending()
     {
@@ -1057,6 +1048,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampFavSending
      * @return void
+     * @deprecated
      */
     public function setTstampFavSending($tstampFavSending)
     {
@@ -1067,6 +1059,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the tstampRealSending
      *
      * @return integer $tstampRealSending
+     * @deprecated
      */
     public function getTstampRealSending()
     {
@@ -1078,6 +1071,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampRealSending
      * @return void
+     * @deprecated
      */
     public function setTstampRealSending($tstampRealSending)
     {
@@ -1088,6 +1082,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the tstampSendFinish
      *
      * @return integer $tstampSendFinish
+     * @deprecated
      */
     public function getTstampSendFinish()
     {
@@ -1099,6 +1094,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampSendFinish
      * @return void
+     * @deprecated
      */
     public function setTstampSendFinish($tstampSendFinish)
     {

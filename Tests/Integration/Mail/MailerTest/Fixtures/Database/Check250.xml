@@ -2,36 +2,35 @@
 <dataset>
     
     <tx_rkwmailer_domain_model_queuemail>
-        <uid>40</uid>
+        <uid>250</uid>
         <pid>0</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        
-        <layout_paths>EXT:rkw_mailer/Tests/Integration/Service/MailServiceTest/Fixtures/Frontend/Layouts/</layout_paths>
-        <template_paths>EXT:rkw_mailer/Tests/Integration/Service/MailServiceTest/Fixtures/Frontend/Templates/</template_paths>
+        <status>2</status>
+
+        <layout_paths>EXT:rkw_mailer/Tests/Integration/Mailer/MailerTest/Fixtures/Frontend/Layouts/</layout_paths>
+        <template_paths>EXT:rkw_mailer/Tests/Integration/Mail/MailerTest/Fixtures/Frontend/Templates/</template_paths>
         <partial_paths />
 
         <plaintext_template>Email/Test</plaintext_template>
-        <html_template/>
-        <calendar_template />
+        <html_template>Email/Test</html_template>
+        <calendar_template>Email/Test</calendar_template>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_queuerecipient>
-        <uid>40</uid>
+        <uid>250</uid>
         <pid>0</pid>
-        <queue_mail>40</queue_mail>
+        <queue_mail>250</queue_mail>
         <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>
         <subject>Betreff</subject>
-        <status>1</status>
-        <salutation>0</salutation>
-        <title>Dr.</title>
+        <status>2</status>
         <language_code>de</language_code>
-        <marker>a:2:{s:5:"test1";s:61:"RKW_MAILER_NAMESPACES RKW\RkwMailer\Domain\Model\QueueMail:40";s:5:"test2";s:6:"Hello!";}</marker>
+        <marker />
     </tx_rkwmailer_domain_model_queuerecipient>
 </dataset>

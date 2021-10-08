@@ -190,6 +190,13 @@
                 <source>Calendar- Part</source>
             </trans-unit>
 
+
+            <!-- =================================================== -->
+            <!-- tx_rkwmailer_domain_model_mailingstatistics            -->
+            <!-- =================================================== -->
+            <trans-unit id="tx_rkwmailer_domain_model_mailingstatistics">
+                <source>RKW Mailer: Statistics for mailings</source>
+            </trans-unit>
             
             <!-- =================================================== -->
             <!-- tx_rkwmailer_domain_model_clickstatistics            -->

@@ -26,6 +26,24 @@ namespace RKW\RkwMailer\Controller;
  */
 class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
+
+    /**
+     * mailingStatisticsRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
+     * @inject
+     */
+    protected $mailingStatisticsRepository;
+
+    
+    /**
+     * openingStatisticsRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
+     * @inject
+     */
+    protected $openingStatisticsRepository; 
+    
     
     /**
      * clickStatisticsRepository
@@ -35,13 +53,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      */
     protected $clickStatisticsRepository;
 
-    /**
-     * openingStatisticsRepository
-     *
-     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
-     * @inject
-     */
-    protected $openingStatisticsRepository;
     
     
     /**
@@ -159,8 +170,11 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     {
 
         $queueMail->setStatus(1);
-        $queueMail->setTstampRealSending(0);
-        $queueMail->setTstampSendFinish(0);
+        if ($mailingStatistics = $queueMail->getMailingStatistics()) {
+            $mailingStatistics->setTstampRealSending(0);
+            $mailingStatistics->setTstampSendFinish(0);
+            $this->mailingStatisticsRepository->update($mailingStatistics);
+        }
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
@@ -180,8 +194,11 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     {
 
         $queueMail->setStatus(2);
-        $queueMail->setTstampRealSending(0);
-        $queueMail->setTstampSendFinish(0);
+        if ($mailingStatistics = $queueMail->getMailingStatistics()) {
+            $mailingStatistics->setTstampRealSending(0);
+            $mailingStatistics->setTstampSendFinish(0);
+            $this->mailingStatisticsRepository->update($mailingStatistics);
+        }
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
@@ -202,9 +219,13 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // set mail-values
         $queueMail->setStatus(2);
-        $queueMail->setTstampRealSending(0);
-        $queueMail->setTstampSendFinish(0);
+        if ($mailingStatistics = $queueMail->getMailingStatistics()) {
+            $mailingStatistics->setTstampRealSending(0);
+            $mailingStatistics->setTstampSendFinish(0);
+            $this->mailingStatisticsRepository->update($mailingStatistics);
+        }
         $this->queueMailRepository->update($queueMail);
+        
 
         // reset all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */

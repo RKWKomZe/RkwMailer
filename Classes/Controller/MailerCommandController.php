@@ -15,9 +15,8 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Statistics\BounceMailAnalyser;
-use \RKW\RkwMailer\Validation\QueueMailValidator;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -93,62 +92,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     protected $settings = array();
 
 
-    /**
-     * Creates test-emails
-     *
-     * @param int $numberOfTestMails Number of test-mails to generate
-     * @param string $emails Comma-separated list of email-addresses to write to
-     * @param int $settingsPid Pid to fetch TypoScript-settings from
-     * @param int $linkPid Pid to link to
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Exception
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function createTestEmailsCommand($numberOfTestMails = 1, $emails = '', $settingsPid = 0, $linkPid = 1)
-    {
-
-        // simulate frontend
-        FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
-
-        /** @var \RKW\RkwMailer\Service\MailService $mailService */
-        $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
-
-        $emailArray = explode(',', str_replace(' ', '', $emails));
-
-        if (count($emailArray)) {
-            foreach (range(1, $numberOfTestMails) as $mailCounter) {
-
-                foreach ($emailArray as $email) {
-                    $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Eins', 'lastName' => 'Mustermann'),
-                        array(
-                            'marker' => array(
-                                'pageUid' => intval($linkPid),
-                            ),
-                        )
-                    );
-                    $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Zwei', 'lastName' => 'Mustermann'),
-                        array(
-                            'marker' => array(
-                                'pageUid' => intval($linkPid),
-                            ),
-                        )
-                    );
-                }
-
-                $mailService->getQueueMail()->setSettingsPid(intval($settingsPid));
-                $mailService->getQueueMail()->setSubject('Test ' . $mailCounter);
-                $mailService->getQueueMail()->setPlaintextTemplate('Email/Example');
-                $mailService->getQueueMail()->setHtmlTemplate('Email/Example');
-                $mailService->send();
-            }
-        }
-
-        // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
-    }
-
 
     /**
      * Processes queued mails and sends them
@@ -159,9 +102,12 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param float $sleep how many seconds the script should sleep after each e-mail sent
      * @return void
      */
-    public function sendEmailsCommand($emailsPerJob = 5, $emailsPerInterval = 10, $settingsPid = 0, $sleep = 0.0)
+    public function sendEmailsCommand(
+        int $emailsPerJob = 5, 
+        int $emailsPerInterval = 10, 
+        int $settingsPid = 0, 
+        float $sleep = 0.0): void 
     {
-
         try {
 
             // security check
@@ -169,104 +115,19 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                 throw new \RKW\RkwMailer\Exception('Cache directory is not secure. Please fix this first');
             }
 
-            /** @var \RKW\RkwMailer\Validation\QueueMailValidator $sendMailHelper */
-            $queueMailValidator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueueMailValidator::class);
-
-            /** @var \RKW\RkwMailer\Service\MailService $mailService */
-            $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
-
-            // ====================================================
-            // Get QueueMail and send mails to associated recipients
-            // send mails so long until the input requirement is reached
-            $queueMailCount = 0;
-
-            // get mails with status "waiting" (2) or "sending" (3)
-            /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-            $queueMails = $this->queueMailRepository->findByStatusWaitingOrSending($emailsPerJob);
-            foreach ($queueMails as $queueMail) {
-
-                try {
-
-                    // if there is no configuration set, we use the one given as param
-                    if (!$queueMail->getSettingsPid()) {
-                        $queueMail->setSettingsPid(intval($settingsPid));
-                    }
-
-                    // simulate frontend - based on PID set in queueMail
-                    FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
-
-                    // set status to sending and set sending time (if not already set)
-                    $queueMail->setStatus(3);
-                    if (!$queueMail->getTstampRealSending()) {
-                        $queueMail->setTstampRealSending(time());
-                    }
-
-                    // validate queueMail
-                    if (!$queueMailValidator->validate($queueMail)) {
-
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Mail sending aborted because of invalid data in queueMail (queueMail uid "%s").', $queueMail->getUid()));
-                        $queueMail->setStatus(99);
-                        $this->queueMailRepository->update($queueMail);
-                        continue;
-                        //===
-                    }
-
-                    // get recipients of mail with status waiting
-                    $queueRecipients = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, $emailsPerInterval);
-                    if (count($queueRecipients) > 0) {
-
-                        // send mails
-                        $mailService->setQueueMail($queueMail);
-                        foreach ($queueRecipients as $recipient) {
-
-                            try {
-                                $mailService->sendToRecipient($recipient);
-                                usleep(intval($sleep * 1000000));
-                            }catch (\Exception $e) {
-                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to queueRecipient with uid = %s. Error: %s.', $recipient->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
-                            }
-                        }
-
-                    // ====================================================
-                    // Set QueueMail status as "sent" (4), if there are no more recipients
-                    // except for the queueMail is used as pipeline
-                    } else {
-
-                        if (!$queueMail->getPipeline()) {
-                            $queueMail->setStatus(4);
-                            $queueMail->setTstampSendFinish(time());
-                            $this->getLogger()->log(\TYPO3\CMS\Core \Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
-                        } else {
-                            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Currently no recipients for queueMail with uid = %s, but marked for pipeline-usage.', $queueMail->getUid()));
-                        }
-                    }
-
-                    // set counter
-                    $queueMailCount++;
-                    $this->queueMailRepository->update($queueMail);
-                    $this->persistenceManager->persistAll();
-
-                    // reset frontend
-                    FrontendSimulatorUtility::resetFrontendEnvironment();
-
-                // try to catch error and set status to 99
-                } catch (\Exception $e) {
-
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to send e-mails. Mail with id %s has been canceled. Error: %s.', $queueMail->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
-
-                    $queueMail->setStatus(99);
-                    $this->queueMailRepository->update($queueMail);
-                    $this->persistenceManager->persistAll();
-                    continue;
-                }
-            }
+            /** @var \RKW\RkwMailer\Mail\Mailer $mailer */
+            $mailer = $this->objectManager->get(Mailer::class);
+            $mailer->processQueueMails($emailsPerJob, $emailsPerInterval, $settingsPid, $sleep);
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to send e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(
+                \TYPO3\CMS\Core\Log\LogLevel::ERROR, 
+                sprintf('An unexpected error occurred while trying to send e-mails: %s.', 
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
             $this->persistenceManager->persistAll();
         }
-
-
     }
 
 

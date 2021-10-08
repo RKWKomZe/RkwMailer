@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>240</uid>
+        <pid>0</pid>
+        <from_name>Testen Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <status>2</status>
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>240</uid>
+        <pid>1</pid>
+        <queue_mail>240</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>testen@rkw.de</email>
+        <status>2</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+    
+</dataset>

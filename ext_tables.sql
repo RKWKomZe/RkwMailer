@@ -8,10 +8,11 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
-	sorting int(11) unsigned DEFAULT '0' NOT NULL,
     status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '0',
     pipeline tinyint(1) unsigned DEFAULT '0',
+    
+    sorting int(11) unsigned DEFAULT '0' NOT NULL,
 
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
@@ -40,6 +41,7 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
 	tstamp_send_finish int(11) unsigned DEFAULT '0' NOT NULL,
 
+	mailing_statistics int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
@@ -78,6 +80,39 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
     KEY queue_mail (queue_mail),
     KEY queue_mail_status (queue_mail,status),
 
+);
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_mailingstatistics'
+#
+CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+	subject varchar(255) DEFAULT '' NOT NULL,
+	status tinyint(2) unsigned DEFAULT '1',
+	type tinyint(2) unsigned DEFAULT '1',
+
+	total_recipients int(11) DEFAULT '1' NOT NULL,
+	total_sent int(11) DEFAULT '1' NOT NULL,
+	delivered int(11) DEFAULT '1' NOT NULL,
+	failed int(11) DEFAULT '1' NOT NULL,
+	deferred int(11) DEFAULT '1' NOT NULL,
+	bounced int(11) DEFAULT '1' NOT NULL,
+	
+    tstamp_fav_sending int(11) unsigned DEFAULT '0' NOT NULL,
+    tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
+    tstamp_finished_sending int(11) unsigned DEFAULT '0' NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+    UNIQUE KEY `queue_mail` (`queue_mail`),
+	KEY parent (pid)
 );
 
 #

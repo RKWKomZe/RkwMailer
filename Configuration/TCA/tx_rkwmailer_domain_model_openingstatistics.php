@@ -34,14 +34,16 @@ return [
         ],
         'queue_mail' => [
             'config' => [
-                'type' => 'passthrough',
+                'type' => 'inline',
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuemail',
+                'maxitems' => 1
             ],
         ],
         'queue_recipient' => [
             'config' => [
-                'type' => 'passthrough',
+                'type' => 'inline',
                 'foreign_table' => 'tx_rkwmailer_domain_model_queuerecipient',
+                'maxitems' => 1
             ],
         ]        
 	],

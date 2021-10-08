@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>360</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>mailto:test@testen.de</from_address>
+        <reply_address>mailto:reply@testen.de</reply_address>
+        <return_path>mailto:return@testen.de</return_path>
+        <subject>Test</subject>
+        <body_text>Test the best</body_text>
+        <status>2</status>
+        <priority>1</priority>
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>360</uid>
+        <pid>0</pid>
+        <queue_mail>360</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debug@rkw.de</email>
+        <first_name>Sebastian</first_name>
+        <last_name>Schmidt</last_name>
+        <title />
+        <subject>Betreff</subject>
+        <status>1</status>
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>361</uid>
+        <pid>0</pid>
+        <queue_mail>360</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debug@rkw.de</email>
+        <first_name>Sebastian</first_name>
+        <last_name>Schmidt</last_name>
+        <title />
+        <subject>Betreff</subject>
+        <status>2</status>
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>362</uid>
+        <pid>0</pid>
+        <queue_mail>360</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debug@rkw.de</email>
+        <first_name>Sebastian</first_name>
+        <last_name>Schmidt</last_name>
+        <title />
+        <subject>Betreff</subject>
+        <status>3</status>
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>363</uid>
+        <pid>0</pid>
+        <queue_mail>360</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debug@rkw.de</email>
+        <first_name>Sebastian</first_name>
+        <last_name>Schmidt</last_name>
+        <title />
+        <subject>Betreff</subject>
+        <status>4</status>
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>364</uid>
+        <pid>0</pid>
+        <queue_mail>360</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>debug@rkw.de</email>
+        <first_name>Sebastian</first_name>
+        <last_name>Schmidt</last_name>
+        <title />
+        <subject>Betreff</subject>
+        <status>99</status>
+    </tx_rkwmailer_domain_model_queuerecipient>
+</dataset>
