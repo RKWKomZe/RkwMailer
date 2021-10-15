@@ -4,8 +4,7 @@
         <uid>1</uid>
         <pid>2</pid>
         <queue_mail>0</queue_mail>
-        <frontend_user>0</frontend_user>
-        <email>debug@rkw.de</email>
+                <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>
         <subject>Betreff</subject>
@@ -20,7 +19,6 @@
         <uid>2</uid>
         <pid>2</pid>
         <queue_mail>0</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -37,7 +35,6 @@
         <uid>3</uid>
         <pid>2</pid>
         <queue_mail>6</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -54,7 +51,6 @@
         <uid>4</uid>
         <pid>2</pid>
         <queue_mail>8</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -70,7 +66,6 @@
         <uid>5</uid>
         <pid>2</pid>
         <queue_mail>8</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debüger1@rkw.de</email>
         <first_name>Sabine</first_name>
         <last_name>Hannebambel</last_name>
@@ -87,7 +82,6 @@
         <uid>6</uid>
         <pid>2</pid>
         <queue_mail>0</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger1@rkw.de</email>
         <first_name>Sabine</first_name>
         <last_name>Hannebambel</last_name>
@@ -104,7 +98,6 @@
         <uid>7</uid>
         <pid>2</pid>
         <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger1@rkw.de</email>
         <first_name>Sabine</first_name>
         <last_name>Hannebambel</last_name>
@@ -120,7 +113,6 @@
         <uid>8</uid>
         <pid>2</pid>
         <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger1@rkw.de</email>
         <first_name>Sabine</first_name>
         <last_name>Hannebambel</last_name>
@@ -136,7 +128,6 @@
         <uid>9</uid>
         <pid>2</pid>
         <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger1@rkw.de</email>
         <first_name />
         <last_name />
@@ -152,7 +143,6 @@
         <uid>10</uid>
         <pid>2</pid>
         <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debuger1@rkw.de</email>
         <first_name />
         <last_name>Hannebambel</last_name>
@@ -169,7 +159,6 @@
         <uid>11</uid>
         <pid>2</pid>
         <queue_mail>9</queue_mail>
-        <frontend_user>0</frontend_user>
         <email />
         <first_name />
         <last_name>Hannebambel</last_name>
@@ -186,7 +175,6 @@
         <uid>12</uid>
         <pid>2</pid>
         <queue_mail>10</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>bouncedMail@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -203,7 +191,6 @@
         <uid>13</uid>
         <pid>2</pid>
         <queue_mail>11</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>bouncedMail1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -220,7 +207,6 @@
         <uid>14</uid>
         <pid>2</pid>
         <queue_mail>12</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>bouncedMail2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -237,7 +223,6 @@
         <uid>20</uid>
         <pid>2</pid>
         <queue_mail>13</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>bouncedMail3@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -254,7 +239,6 @@
         <uid>30</uid>
         <pid>2</pid>
         <queue_mail>15</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>mail@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>

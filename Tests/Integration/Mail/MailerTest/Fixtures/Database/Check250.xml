@@ -24,7 +24,6 @@
         <uid>250</uid>
         <pid>0</pid>
         <queue_mail>250</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>

@@ -20,7 +20,6 @@
         <uid>180</uid>
         <pid>1</pid>
         <queue_mail>180</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <status>2</status>
         <language_code>de</language_code>
@@ -31,7 +30,6 @@
         <uid>181</uid>
         <pid>1</pid>
         <queue_mail>180</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <status>2</status>
         <language_code>de</language_code>

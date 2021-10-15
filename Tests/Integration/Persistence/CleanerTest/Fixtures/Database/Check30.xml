@@ -27,7 +27,6 @@
         <uid>30</uid>
         <pid>0</pid>
         <queue_mail>30</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>
@@ -39,7 +38,6 @@
         <uid>31</uid>
         <pid>0</pid>
         <queue_mail>30</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>
@@ -51,7 +49,6 @@
         <uid>32</uid>
         <pid>0</pid>
         <queue_mail>31</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>
@@ -63,7 +60,6 @@
         <uid>33</uid>
         <pid>0</pid>
         <queue_mail>31</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>debug@rkw.de</email>
         <first_name>Sebastian</first_name>
         <last_name>Schmidt</last_name>

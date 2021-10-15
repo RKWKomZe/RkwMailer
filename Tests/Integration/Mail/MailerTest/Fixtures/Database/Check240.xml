@@ -16,7 +16,6 @@
         <uid>240</uid>
         <pid>1</pid>
         <queue_mail>240</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>testen@rkw.de</email>
         <status>2</status>
         <language_code>de</language_code>

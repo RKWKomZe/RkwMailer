@@ -17,7 +17,6 @@
         <uid>190</uid>
         <pid>1</pid>
         <queue_mail>190</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <status>2</status>
         <language_code>de</language_code>
@@ -28,7 +27,6 @@
         <uid>191</uid>
         <pid>1</pid>
         <queue_mail>190</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <status>2</status>
         <language_code>de</language_code>
