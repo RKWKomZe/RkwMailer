@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>10</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <status>1</status>
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>10</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>1</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>11</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>2</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>12</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>3</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>13</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>4</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>14</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>97</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>15</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>98</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+
+    <tx_rkwmailer_domain_model_queuerecipient>
+        <uid>16</uid>
+        <pid>1</pid>
+        <queue_mail>10</queue_mail>
+        <frontend_user>0</frontend_user>
+        <email>nothing@rkw.de</email>
+        <status>99</status>
+        <language_code>de</language_code>
+        <marker />
+    </tx_rkwmailer_domain_model_queuerecipient>
+    
+</dataset>

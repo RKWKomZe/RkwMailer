@@ -16,16 +16,9 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Utility\StatisticsUtility;
-use RKW\RkwRegistration\Domain\Model\Title;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use RKW\RkwRegistration\Domain\Model\FrontendUser as FrontendUserRkw;
-use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
-use RKW\RkwRegistration\Domain\Model\BackendUser as BackendUserRkw;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 

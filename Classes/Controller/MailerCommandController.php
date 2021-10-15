@@ -17,6 +17,8 @@ namespace RKW\RkwMailer\Controller;
 
 use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Statistics\BounceMailAnalyser;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -72,7 +74,34 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $bounceMailRepository;
 
+    
+    /**
+     * mailingStatisticsAnalyser
+     *
+     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser
+     * @inject
+     */
+    protected $mailingStatisticsAnalyser;
 
+
+    /**
+     * mailer
+     *
+     * @var \RKW\RkwMailer\Mail\Mailer
+     * @inject
+     */
+    protected $mailer;
+
+
+    /**
+     * cleaner
+     *
+     * @var \RKW\RkwMailer\Persistence\Cleaner
+     * @inject
+     */
+    protected $cleaner;
+
+    
     /**
      * configurationManager
      */
@@ -84,6 +113,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $logger;
 
+    
     /**
      * The settings.
      *
@@ -106,8 +136,8 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
         int $emailsPerJob = 5, 
         int $emailsPerInterval = 10, 
         int $settingsPid = 0, 
-        float $sleep = 0.0): void 
-    {
+        float $sleep = 0.0
+    ): void {
         try {
 
             // security check
@@ -115,50 +145,73 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                 throw new \RKW\RkwMailer\Exception('Cache directory is not secure. Please fix this first');
             }
 
-            /** @var \RKW\RkwMailer\Mail\Mailer $mailer */
-            $mailer = $this->objectManager->get(Mailer::class);
-            $mailer->processQueueMails($emailsPerJob, $emailsPerInterval, $settingsPid, $sleep);
+            $this->mailer->processQueueMails($emailsPerJob, $emailsPerInterval, $settingsPid, $sleep);
 
         } catch (\Exception $e) {
             $this->getLogger()->log(
                 \TYPO3\CMS\Core\Log\LogLevel::ERROR, 
-                sprintf('An unexpected error occurred while trying to send e-mails: %s.', 
+                sprintf('An unexpected error occurred while trying to send e-mails: %s', 
                     str_replace(array("\n", "\r"), '', $e->getMessage())
                 )
             );
-            $this->persistenceManager->persistAll();
+        }
+    }
+
+
+
+    /**
+     * Processes queued mails and analyses their statistics
+     *
+     * @param int $daysAfterSendingStarted Defines how many days after sending has been started the statistics should be updated (default: 30 days)
+     * @return void
+     */
+    public function analyseStatisticsCommand(
+        int $daysAfterSendingStarted = 30
+    ): void {
+        try {
+            
+            $this->mailingStatisticsAnalyser->analyse($daysAfterSendingStarted);
+            
+        } catch (\Exception $e) {
+            $this->getLogger()->log(
+                \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                sprintf('An unexpected error occurred while trying to update the statistics of e-mails: %s',
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
     }
 
 
     /**
-     * Clean up for mailings
+     * Clean up for mails and statistics
      *
-     * @param integer $daysFromNow Defines which old mails should be deleted (send date is reference)
-     * @param string $types Defines which types of mails the cleanup should look for (comma-separated). Default: only type "0"
+     * @param int $daysAfterSendingFinished  Defines how many days after its sending has been finished an queueMail and their corresponding data will be deleted (default: 30 days)
+     * @param string $types Defines which types of mails the cleanup should look for (comma-separated) (Default: only type "0")
+     * @param int $includingStatistics Defines whether the statistics should be deleted too (Default: 0)
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    public function cleanupCommand($daysFromNow = 8760, $types = '0')
-    {
+    public function cleanupCommand(
+        int $daysAfterSendingFinished = 30, 
+        string $types = '0',
+        int $includingStatistics = 0
+    ): void {
+        
+        try {
 
-        if ($cleanupTimestamp = time() - (intval($daysFromNow) * 24 * 60 * 60)) {
-            if (
-                ($queueMails = $this->queueMailRepository->findAllOldMails($cleanupTimestamp, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $types, true)))
-                && (count($queueMails))
-            ) {
+            $this->cleaner->cleanup(
+                $daysAfterSendingFinished,
+                GeneralUtility::trimExplode(',', $types, true),
+                boolval($includingStatistics)
+            );
 
-                // delete it. dependent objects are deleted by cascade
-                foreach ($queueMails as $queueMail) {
-                    $this->queueMailRepository->remove($queueMail);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Deleted queueMail with uid=%s.', $queueMail->getUid()));
-                }
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully cleaned up database.');
-            } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Nothing to cleanup in database.');
-            }
+        } catch (\Exception $e) {
+            $this->getLogger()->log(
+                \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                sprintf('An unexpected error occurred while trying to cleanup the database: %s',
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
     }
 
@@ -176,11 +229,11 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param string $deleteBefore If set, all mails before the given date will be deleted (format: yyyy-mm-dd)
      * @param int $maxEmails
      * @return void
+     * @toDo: rework
      */
     public function analyseBouncedMailsCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
     {
-
-
+        
         try {
 
             $params = [
@@ -212,6 +265,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @toDo: rework
      */
     public function processBouncedMailsCommand($maxMails = 100)
     {
@@ -248,31 +302,15 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
 
     /**
-     * Returns logger instance
-     *
-     * @return \TYPO3\CMS\Core\Log\Logger
-     */
-    protected function getLogger()
-    {
-
-        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
-        }
-
-        return $this->logger;
-    }
-
-
-    /**
      * .htaccess-based protection for SimpleFileBackend-Cache
      *
      * @return bool
      */
-    protected function securityCheck() {
-
+    protected function securityCheck() 
+    {
 
         /** @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend $cache */
-        $cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
+        $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('rkw_mailer');
         if (
             ($cacheBackend = $cache->getBackend())
             && ($cacheBackend instanceof \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend)
@@ -305,5 +343,22 @@ Require all denied
 
         return true;
     }
+    
+    
+    /**
+     * Returns logger instance
+     *
+     * @return \TYPO3\CMS\Core\Log\Logger
+     */
+    protected function getLogger()
+    {
+
+        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+        }
+
+        return $this->logger;
+    }
+
 
 }

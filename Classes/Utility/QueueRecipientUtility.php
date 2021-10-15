@@ -16,10 +16,12 @@ namespace RKW\RkwMailer\Utility;
  */
 
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
+use RKW\RkwMailer\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * QueueRecipientUtility
@@ -90,10 +92,9 @@ class QueueRecipientUtility
 
         /* @toDo: Leeds to problems since this does an implicit update on the object
          * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
-         */
         if (!$frontendUser->_isNew()) {
             $queueRecipient->setFrontendUser($frontendUser);
-        }
+        }*/
         
         return $queueRecipient;
     }
@@ -155,6 +156,7 @@ class QueueRecipientUtility
      * @param array $additionalPropertyMapper
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     protected static function setProperties (
         \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null, 
@@ -165,6 +167,12 @@ class QueueRecipientUtility
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
 
+        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        
+        /** @var \RKW\RkwMailer\Persistence\MarkerReducer $markerReducer */
+        $markerReducer = $objectManager->get(MarkerReducer::class);
+
         // define property mapping - ordering is important!
         $defaultPropertyMapper = [
             'email' => 'email',
@@ -173,7 +181,8 @@ class QueueRecipientUtility
             'firstName' => 'firstName',
             'lastName' => 'lastName',
             'subject' => 'subject',
-            'languageCode' => 'languageCode'
+            'languageCode' => 'languageCode',
+            'marker' => 'marker'
         ];
 
         // add additional mappings
@@ -203,6 +212,12 @@ class QueueRecipientUtility
                         if (GeneralUtility::validEmail($value)) {
                             $queueRecipient->$setter($value);
                         }
+                    } elseif ($propertyTarget == 'marker'){
+                        if (is_array($value)) {
+                            $queueRecipient->$setter(
+                                $markerReducer->implodeMarker($value)
+                            );
+                        }
                     } else {
                         $queueRecipient->$setter($value);
                     }
@@ -218,6 +233,12 @@ class QueueRecipientUtility
                     if ($propertyTarget == 'email') {
                         if (GeneralUtility::validEmail($value)) {
                             $queueRecipient->$setter($value);
+                        }
+                    } elseif ($propertyTarget == 'marker'){
+                        if (is_array($value)) {
+                            $queueRecipient->$setter(
+                                $markerReducer->implodeMarker($value)
+                            );
                         }
                     } else {
                         $queueRecipient->$setter($value);

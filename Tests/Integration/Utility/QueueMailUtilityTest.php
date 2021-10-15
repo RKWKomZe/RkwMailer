@@ -20,13 +20,6 @@ use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Utility\QueueMailUtility;
-use RKW\RkwMailer\Utility\QueueRecipientUtility;
-use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwRegistration\Domain\Model\Title;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use RKW\RkwRegistration\Domain\Model\FrontendUser as FrontendUserRkw;
-use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
-use RKW\RkwRegistration\Domain\Model\BackendUser as BackendUserRkw;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

@@ -12,7 +12,7 @@
         <body_text>Test the best</body_text>
         <status>2</status>
         <priority>1</priority>
-        <pipeline>1</pipeline>
+        <type>1</type>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_queuerecipient>

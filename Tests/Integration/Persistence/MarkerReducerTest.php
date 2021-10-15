@@ -17,7 +17,6 @@ namespace RKW\RkwMailer\Tests\Integration\Persistence;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use RKW\RkwBasics\Domain\Model\Pages;
 use RKW\RkwMailer\Persistence\MarkerReducer;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use \RKW\RkwBasics\Domain\Repository\PagesRepository;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -58,8 +57,7 @@ class MarkerReducerTest extends FunctionalTestCase
      * @var \RKW\RkwMailer\Persistence\MarkerReducer
      */
     private $subject;
-
-
+    
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */

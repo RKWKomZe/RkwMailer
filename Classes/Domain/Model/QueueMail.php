@@ -139,6 +139,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $plaintextTemplate = '';
 
+    
     /**
      * htmlTemplate
      *
@@ -146,6 +147,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $htmlTemplate = '';
 
+    
     /**
      * calendarTemplate
      *
@@ -222,8 +224,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var \RKW\RkwMailer\Domain\Model\MailingStatistics
      */
     protected $mailingStatistics;
-
-
+    
 
     /**
      * tstampFavSending

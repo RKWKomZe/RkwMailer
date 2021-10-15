@@ -32,7 +32,13 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var \RKW\RkwMailer\Domain\Model\QueueMail
      */
     protected $queueMail;
-
+    
+    /**
+     * queueMailUid
+     *
+     * @var int
+     */
+    protected $queueMailUid;
     
     /**
      * subject
@@ -145,12 +151,56 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      */
-    public function setQueueMail($queueMail): void
+    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
+        $this->setQueueMailUid($queueMail->getUid());
+    }
+
+    /**
+     * Returns the queueMailUid
+     *
+     * @return int
+     */
+    public function getQueueMailUid(): int
+    {
+        return $this->queueMailUid;
+    }
+
+    /**
+     * Sets the queueMail
+     *
+     * @param int $queueMailUid
+     * @return void
+     */
+    public function setQueueMailUid(int $queueMailUid): void
+    {
+        $this->queueMailUid = $queueMailUid;
     }
 
 
+    /**
+     * Returns the subject
+     *
+     * @return string $subject
+     */
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
+
+    /**
+     * Sets the subject
+     *
+     * @param string $subject
+     * @return void
+     */
+    public function setSubject(string $subject): void
+    {
+        $this->subject = $subject;
+    }
+    
+    
     /**
      * Returns the status
      *

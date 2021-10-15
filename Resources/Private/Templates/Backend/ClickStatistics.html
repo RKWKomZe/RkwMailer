@@ -9,7 +9,7 @@
 		<f:render partial="FlashMessages" arguments="{_all}" />
 	
 		<h1><f:translate key="templates_backend_clickstatistics.headline" /></h1>
-		<h2><f:format.crop maxCharacters="250" respectWordBoundaries="false">{queueMail.subject}</f:format.crop> (id={queueMail.uid})</h2>
+		<h2><f:format.crop maxCharacters="250" respectWordBoundaries="false">{queueMailStatistics.subject}</f:format.crop> (id={queueMailStatistics.queueMailUid})</h2>
 	
 		<f:link.action action="statistics" class="link">&lt;&lt; <f:translate key="templates_backend_clickstatistics.back" /></f:link.action>
 		<table class="tx_rkwmailer" border="1" >

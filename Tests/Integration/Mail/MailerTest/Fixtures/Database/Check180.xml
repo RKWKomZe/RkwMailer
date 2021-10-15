@@ -9,7 +9,7 @@
         <reply_address>reply@testen.de</reply_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
-        <status>2</status>
+        <status>3</status>
         <tstamp_fav_sending>777</tstamp_fav_sending>
         <tstamp_real_sending>888</tstamp_real_sending>
         <tstamp_send_finish>999</tstamp_send_finish>
@@ -41,6 +41,7 @@
         <uid>180</uid>
         <pid>0</pid>
         <queue_mail>180</queue_mail>
+        <queue_mail_uid>180</queue_mail_uid>
         <tstamp_fav_sending>111</tstamp_fav_sending>
         <tstamp_real_sending>222</tstamp_real_sending>
         <tstamp_finished_sending>333</tstamp_finished_sending>

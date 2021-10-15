@@ -15,10 +15,14 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+
 /**
  * QueueMailRepository
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
@@ -29,7 +33,7 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
     public function initializeObject()
     {
-        $this->defaultQuerySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
 
@@ -39,10 +43,10 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * ordered by tstampRealSending and sorting and then priority
      *
      * @param integer $limit
-     * @return \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @comment implicitly tested
      */
-    public function findByStatusWaitingOrSending($limit)
+    public function findByStatusWaitingOrSending(int $limit = 100)
     {
 
         $query = $this->createQuery();
@@ -54,9 +58,9 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         )
         ->setOrderings(
             array(
-                'priority'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                'pipeline'          => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                'mailingStatistics.tstampRealSending' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+                'priority' => QueryInterface::ORDER_ASCENDING,
+                'pipeline' => QueryInterface::ORDER_ASCENDING,
+                'mailingStatistics.tstampRealSending' => QueryInterface::ORDER_ASCENDING,
             )
         );
 
@@ -67,183 +71,167 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         return $query->execute();
     }
 
-
+    
     /**
-     * finds all queue mails that are older than $cleanupTimestamp
+     * findByMissingMailingStatistics
      *
-     * @param integer $cleanupTimestamp
-     * @param array $type
+     * @param int $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
      */
-    public function findAllOldMails($cleanupTimestamp, $type = array())
+    public function findByMissingMailingStatistics(int $limit = 100)
     {
 
         $query = $this->createQuery();
+        $query->matching(
+            $query->lessThanOrEqual('mailingStatistics', 0)
+        );
 
-        if (
-            (is_array($type))
-            && (!empty($type))
-        ) {
-
-            $query->matching(
-                $query->logicalAnd(
-                    $query->lessThanOrEqual('tstampSendFinish', $cleanupTimestamp),
-                    $query->logicalAnd(
-                        $query->greaterThanOrEqual('status', 4),
-                        $query->lessThan('status', 99),
-                        $query->equals('pipeline', 0)
-                    ),
-                    $query->in('type', array($type))
-                )
-            );
-
-        } else {
-
-            $query->matching(
-                $query->logicalAnd(
-                    $query->lessThanOrEqual('tstampSendFinish', $cleanupTimestamp),
-                    $query->logicalAnd(
-                        $query->greaterThanOrEqual('status', 4),
-                        $query->lessThan('status', 99),
-                        $query->equals('pipeline', 0)
-                    )
-                )
-            );
+        if ($limit > 0) {
+            $query->setLimit($limit);
         }
 
         return $query->execute();
-        //===
     }
 
+
     /**
-     * findAllByCreateDateAndType
+     * findByTstampRealSending
      *
-     * @param array $spaceOfTime
-     * @param integer $mailType
+     * @param int $daysAfterSendingStarted
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
      */
-    public function findAllByCreateDateAndType($spaceOfTime = null, $mailType = -1)
-    {
-
+    public function findByTstampRealSending(
+        int $daysAfterSendingStarted = 30
+    ) {
+        
+        $timestamp = time() - intval($daysAfterSendingStarted * 24 * 60 * 60);
         $query = $this->createQuery();
-        if (
-            ($mailType == -1)
-            && ($spaceOfTime)
-        ) {
-            $query->matching(
-                $query->logicalAnd(
-                    $query->greaterThanOrEqual('crdate', $spaceOfTime['from']),
-                    $query->lessThanOrEqual('crdate', $spaceOfTime['to'])
-                )
-            );
-
-
-        } elseif (
-            ($mailType > -1)
-            && ($spaceOfTime)
-        ) {
-
-            $query->matching(
-                $query->logicalAnd(
-                    $query->greaterThanOrEqual('crdate', $spaceOfTime['from']),
-                    $query->lessThanOrEqual('crdate', $spaceOfTime['to']),
-                    $query->equals('type', $mailType)
-                )
-            );
-
-
-        } elseif ($mailType > -1) {
-            $query->matching(
-                $query->equals('type', $mailType)
-            );
-        }
-
-        $query->setOrderings(
-            array(
-                'status'            => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
-                'tstampFavSending'  => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING,
-                'tstampRealSending' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING,
+        $query->matching(
+            $query->logicalAnd(
+                $query->greaterThanOrEqual('status', 3),
+                $query->greaterThanOrEqual( 'mailingStatistics.tstampRealSending', $timestamp)
             )
         );
 
         return $query->execute();
-        //===
     }
-
 
 
     /**
-     * findAllSentWithStatistics
+     * finds all queueMails by tstampFinishedSending and type
      *
-     * @param int $from
-     * @param int $to
-     * @param int $type
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     * @param int $daysAfterSendingFinished
+     * @param array $types
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
      */
-    public function findAllSentOrSendingWithStatistics($from = 0, $to = 0, $type = -1)
-    {
+    public function findByTstampFinishedSendingAndTypes(
+        int $daysAfterSendingFinished = 30, 
+        array $types = []
+    ) {
 
-        $whereClause = '';
-        if ($from) {
-            $whereClause .= ' AND tstamp_real_sending >= ' . intval($from);
-        }
-        if ($to) {
-            $whereClause .= ' AND tstamp_real_sending <= ' . intval($to);
-        }
-        if ($type >= 0) {
-            $whereClause .= ' AND type = ' . intval($type);
-        }
-
+        $timestamp = time() - intval($daysAfterSendingFinished * 24 * 60 * 60);
         $query = $this->createQuery();
-        $query->statement('
-            SELECT 
-                tx_rkwmailer_domain_model_queuemail.*, 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                ) as total, 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_queuerecipient.status >= 4 
-                    AND tx_rkwmailer_domain_model_queuerecipient.status != 97 
-                ) as sent, 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_queuerecipient.status = 4 
-                ) as successful, 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_queuerecipient.status = 99 
-                ) as failed, 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_queuerecipient.status = 97
-                ) as deferred,                 
-                (
-                    SELECT COUNT(uid) FROM tx_rkwmailer_domain_model_queuerecipient 
-                    WHERE tx_rkwmailer_domain_model_queuerecipient.queue_mail = tx_rkwmailer_domain_model_queuemail.uid
-                    AND tx_rkwmailer_domain_model_queuerecipient.status = 98
-                ) as bounced                      
-            FROM tx_rkwmailer_domain_model_queuemail
-            WHERE tx_rkwmailer_domain_model_queuemail.status >= 3
-            ' . $whereClause . '
-            ORDER BY tx_rkwmailer_domain_model_queuemail.tstamp_real_sending DESC
-        ');
 
+        if (! $types) {
+            $types[] = 0;
+        }
+        
+        $constraints = [
+            $query->greaterThanOrEqual('status', 4),
+            $query->logicalNot($query->equals('status', 99)),
+            $query->in('type', $types)
+        ];
+        
+        $query->matching(
+            $query->logicalAnd(
+                $query->lessThanOrEqual('mailingStatistics.tstampFinishedSending', $timestamp),
+                $query->logicalAnd(
+                    $constraints
+                )                    
+            )
+        );
 
         return $query->execute();
-        //====
-
-
     }
 
+    
+    /**
+     * findByTstampFavSendingAndType
+     *
+     * @param int $fromTime
+     * @param int $toTime
+     * @param int $type
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @toDo: write tests
+     */
+    public function findByTstampFavSendingAndType(
+        int $fromTime,
+        int $toTime,
+        int $type = -1
+    ) {
 
+        $query = $this->createQuery();
+        $constraints = [];
 
+        if ($type > -1) {
+            $constraints[] = $query->equals('type', $type);
+        }
+        
+        if ($fromTime) {
+            $constraints[] = $query->greaterThanOrEqual('mailingStatistics.tstampFavSending', $fromTime);
+        }
+        
+        if ($toTime) {
+            $constraints[] = $query->lessThanOrEqual('mailingStatistics.tstampFavSending', $toTime);
+        }
+        
+        $query->matching(
+            $query->logicalAnd($constraints)
+        );
+            
+        $query->setOrderings(
+            array(
+                'status' => QueryInterface::ORDER_ASCENDING,
+                'tstampFavSending' => QueryInterface::ORDER_DESCENDING,
+                'tstampRealSending' => QueryInterface::ORDER_DESCENDING,
+            )
+        );
 
+        return $query->execute();
+    }
+
+    
+    /**
+     * deleteByQueueMail
+     * We use a straight-forward approach here because it may be a lot of data to delete!
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @comment implicitly tested
+     * @return int
+     */
+    public function deleteByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+        
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_rkwmailer_domain_model_queuemail');
+
+        return $queryBuilder
+            ->delete('tx_rkwmailer_domain_model_queuemail')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($queueMail->getUid(), \PDO::PARAM_INT))
+            )
+            ->execute();
+
+    }
 }

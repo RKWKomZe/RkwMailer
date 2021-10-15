@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use RKW\RkwBasics\Domain\Repository\PagesRepository;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwRegistration\Domain\Model\Title;
@@ -24,6 +25,7 @@ use RKW\RkwRegistration\Domain\Model\FrontendUser as FrontendUserRkw;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use RKW\RkwRegistration\Domain\Model\BackendUser as BackendUserRkw;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * QueueRecipientUtilityTest
@@ -57,9 +59,20 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
     protected $coreExtensionsToLoad = [ ];
 
     /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    private $objectManager;
+
+    
+    /**
      * @var \RKW\RkwMailer\Utility\QueueRecipientUtility
      */
     private $subject;
+
+    /**
+     * @var \RKW\RkwBasics\Domain\Repository\PagesRepository
+     */
+    private $pagesRepository;
 
     /**
      * Setup
@@ -81,7 +94,10 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
             ]
         );
 
+        
         $this->subject = GeneralUtility::makeInstance(QueueRecipientUtility::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->pagesRepository = $this->objectManager->get(PagesRepository::class);
 
     }
 
@@ -104,6 +120,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $result = $this->subject->initQueueRecipient();
         self::assertInstanceOf(QueueRecipient::class, $result);
     }
+
 
     /**
      * @test
@@ -652,6 +669,72 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
         $result = $this->subject::initQueueRecipient($basicData, $additionalData);
         static::assertEquals($expected, $result);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientIgnoresMarkerIfNotAnArray()
+    {
+        /**
+         * Scenario:
+         *
+         * Given an additionalData-array with a marker-key as string
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         * Then the marker-property is not set
+         */
+
+        $result = $this->subject->initQueueRecipient([], ['marker' => 'test']);
+        self::assertInstanceOf(QueueRecipient::class, $result);
+        static::assertEmpty($result->getMarker());
+
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientAddsAndImplodesMarker()
+    {
+        /**
+         * Scenario:
+         *
+         * Given an additionalData-array with a marker-key as array
+         * Given this marker-key contains an array with two keys
+         * Given the value of first key of the marker-array is a persisted object in the database
+         * Given the value of second key of the marker-array is a string
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         * Then the marker-property contains two keys
+         * Then the value of the first key reduced to object-placeholders consisting of namespace and the uid
+         * Then the value of the second key is a string
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+
+        /** @var \RKW\RkwBasics\Domain\Model\Pages $entityOne */
+        $entityOne = $this->pagesRepository->findByIdentifier(1);
+
+        $initMarker = [
+            'test1' => $entityOne,
+            'test2' => 'A string is string'
+        ];
+
+        $expected = [
+            'test1' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
+            'test2' => 'A string is string',
+        ];
+        
+        $result = $this->subject->initQueueRecipient([], ['marker' => $initMarker]);
+        self::assertInstanceOf(QueueRecipient::class, $result);
+
+        $marker = $result->getMarker();
+        static::assertCount(2, $marker);
+        static::assertEquals($expected['test1'], $marker['test1']);
+        static::assertEquals($expected['test2'], $marker['test2']);
+
     }
     
     /**

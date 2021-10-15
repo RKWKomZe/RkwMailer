@@ -39,6 +39,11 @@ return [
                 'maxitems' => 1
             ],
         ],
+        'queue_mail_uid' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
         'queue_recipient' => [
             'config' => [
                 'type' => 'inline',

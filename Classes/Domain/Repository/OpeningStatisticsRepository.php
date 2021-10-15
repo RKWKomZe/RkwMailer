@@ -14,6 +14,8 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
@@ -51,6 +53,7 @@ class OpeningStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return \RKW\RkwMailer\Domain\Model\OpeningStatistics
+     * @comment implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,
@@ -70,29 +73,27 @@ class OpeningStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
 
 
     /**
-     * removeAllByQueueMail
+     * deleteByQueueMail
+     * We use a straight-forward approach here because it may be a lot of data to delete!
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @return int
+     * @comment implicitly tested
      */
-    public function removeAllByQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
-        
-        $query = $this->createQuery();
-        $query->matching(
-            $query->logicalAnd(
-                $query->equals('queueMail', $queueMail)
+    public function deleteByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_rkwmailer_domain_model_openingstatistics');
+
+        return $queryBuilder
+            ->delete('tx_rkwmailer_domain_model_openingstatistics')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'queue_mail',
+                    $queryBuilder->createNamedParameter($queueMail->getUid(), \PDO::PARAM_INT))
             )
-        );
-
-        if ($openingStatistics = $query->execute()) {
-            foreach ($openingStatistics as $openingStatistic) {
-                $this->remove($openingStatistic);
-            }
-        }
-     
+            ->execute();
     }
-
-
 }

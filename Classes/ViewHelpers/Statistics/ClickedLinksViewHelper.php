@@ -33,15 +33,15 @@ class ClickedLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
     /**
      * Returns the number of links that have been clicked in a given queueMail
      * 
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @param int $queueMailUid
      * @return int
      */
-    public function render(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function render(int $queueMailUid)
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $clickStatisticsRepository = $objectManager->get(ClickStatisticsRepository::class);
         
-        return $clickStatisticsRepository->findByQueueMail($queueMail)->count();
+        return $clickStatisticsRepository->findByQueueMailUid($queueMailUid)->count();
     }
 
 

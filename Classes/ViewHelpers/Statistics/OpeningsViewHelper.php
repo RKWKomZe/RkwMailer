@@ -33,16 +33,15 @@ class OpeningsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
     /**
      * Returns the number of links that have been clicked in a given queueMail
      * 
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @param int $queueMailUid
      * @return int
      */
-    public function render(
-        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function render (int $queueMailUid) 
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $openingStatisticsRepository = $objectManager->get(OpeningStatisticsRepository::class);
         
-        return $openingStatisticsRepository->findByQueueMail($queueMail)->count();
+        return $openingStatisticsRepository->findByQueueMailUid($queueMailUid)->count();
     }
 
 

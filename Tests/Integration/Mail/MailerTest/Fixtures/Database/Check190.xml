@@ -38,6 +38,7 @@
         <uid>190</uid>
         <pid>0</pid>
         <queue_mail>190</queue_mail>
+        <queue_mail_uid>190</queue_mail_uid>
         <tstamp_fav_sending>111</tstamp_fav_sending>
         <tstamp_real_sending>222</tstamp_real_sending>
         <tstamp_finished_sending>333</tstamp_finished_sending>

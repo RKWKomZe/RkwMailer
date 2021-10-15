@@ -69,6 +69,7 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	marker longtext NOT NULL,
 	status tinyint(2) unsigned DEFAULT '1',
 	language_code varchar(2) DEFAULT '' NOT NULL,
+    migrated int(1) DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -92,16 +93,17 @@ CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
 	pid int(11) DEFAULT '0' NOT NULL,
 	
 	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	subject varchar(255) DEFAULT '' NOT NULL,
 	status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '1',
 
-	total_recipients int(11) DEFAULT '1' NOT NULL,
-	total_sent int(11) DEFAULT '1' NOT NULL,
-	delivered int(11) DEFAULT '1' NOT NULL,
-	failed int(11) DEFAULT '1' NOT NULL,
-	deferred int(11) DEFAULT '1' NOT NULL,
-	bounced int(11) DEFAULT '1' NOT NULL,
+	total_recipients int(11) DEFAULT '0' NOT NULL,
+	total_sent int(11) DEFAULT '0' NOT NULL,
+	delivered int(11) DEFAULT '0' NOT NULL,
+	failed int(11) DEFAULT '0' NOT NULL,
+	deferred int(11) DEFAULT '0' NOT NULL,
+	bounced int(11) DEFAULT '0' NOT NULL,
 	
     tstamp_fav_sending int(11) unsigned DEFAULT '0' NOT NULL,
     tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
@@ -112,6 +114,7 @@ CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
 
 	PRIMARY KEY (uid),
     UNIQUE KEY `queue_mail` (`queue_mail`),
+    UNIQUE KEY `queue_mail_uid` (`queue_mail_uid`),
 	KEY parent (pid)
 );
 
@@ -124,6 +127,7 @@ CREATE TABLE tx_rkwmailer_domain_model_clickstatistics (
 	pid int(11) DEFAULT '0' NOT NULL,
 	
 	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	hash varchar(255) DEFAULT '' NOT NULL,
 	link_hash varchar(255) DEFAULT '' NOT NULL,
 	url text NOT NULL,
@@ -149,6 +153,7 @@ CREATE TABLE tx_rkwmailer_domain_model_openingstatistics (
 	pid int(11) DEFAULT '0' NOT NULL,
 	
 	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	queue_recipient int(11) DEFAULT '0' NOT NULL,	
 	hash varchar(255) DEFAULT '' NOT NULL,
 	counter int(11) DEFAULT '1' NOT NULL,

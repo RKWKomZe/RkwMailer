@@ -14,6 +14,8 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
@@ -52,6 +54,7 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return \RKW\RkwMailer\Domain\Model\ClickStatistics
+     * @comment implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,
@@ -72,27 +75,27 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
 
 
     /**
-     * removeAllByQueueMail
+     * deleteByQueueMail
+     * We use a straight-forward approach here because it may be a lot of data to delete!
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @return int
      */
-    public function removeAllByQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
+    public function deleteByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
 
-        $query = $this->createQuery();
-        $query->matching(
-            $query->logicalAnd(
-                $query->equals('queueMail', $queueMail)
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_rkwmailer_domain_model_clickstatistics');
+
+        return $queryBuilder
+            ->delete('tx_rkwmailer_domain_model_clickstatistics')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'queue_mail',
+                    $queryBuilder->createNamedParameter($queueMail->getUid(), \PDO::PARAM_INT))
             )
-        );
-
-        if ($clickStatistics = $query->execute()) {
-            foreach ($clickStatistics as $clickStatistic) {
-                $this->remove($clickStatistic);
-            }
-        }
+            ->execute();
 
     }
 }

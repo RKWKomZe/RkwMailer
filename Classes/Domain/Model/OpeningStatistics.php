@@ -34,6 +34,13 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $queueMail;
 
     /**
+     * queueMailUid
+     *
+     * @var int
+     */
+    protected $queueMailUid;
+
+    /**
      * queueRecipient
      *
      * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
@@ -74,7 +81,30 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
+        $this->setQueueMailUid($queueMail->getUid());
     }
+
+    /**
+     * Returns the queueMailUid
+     *
+     * @return int
+     */
+    public function getQueueMailUid(): int
+    {
+        return $this->queueMailUid;
+    }
+
+    /**
+     * Sets the queueMail
+     *
+     * @param int $queueMailUid
+     * @return void
+     */
+    public function setQueueMailUid(int $queueMailUid): void
+    {
+        $this->queueMailUid = $queueMailUid;
+    }
+
 
     
     /**

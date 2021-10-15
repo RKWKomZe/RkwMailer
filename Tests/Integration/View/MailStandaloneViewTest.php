@@ -14,12 +14,10 @@ namespace RKW\RkwMailer\Tests\Integration\View;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use RKW\RkwBasics\Domain\Repository\PagesRepository;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\View\MailStandaloneView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;

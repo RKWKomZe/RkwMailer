@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Utility\TimePeriodUtility;
+
 /**
  * BackendController
  *
@@ -37,22 +39,12 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
     
     /**
-     * openingStatisticsRepository
-     *
-     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
-     * @inject
-     */
-    protected $openingStatisticsRepository; 
-    
-    
-    /**
      * clickStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      * @inject
      */
     protected $clickStatisticsRepository;
-
     
     
     /**
@@ -71,21 +63,33 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * @inject
      */
     protected $queueRecipientRepository;
-    
 
 
     /**
+     * cleaner
+     *
+     * @var \RKW\RkwMailer\Persistence\Cleaner
+     * @inject
+     */
+    protected $cleaner;
+    
+    
+    /**
      * Shows statistics
      *
-     * @param integer $timeFrame
-     * @param integer $mailType
+     * @param int $timeFrame
+     * @param int $mailType
      * @return void
      */
     public function statisticsAction($timeFrame = 0, $mailType = -1)
     {
 
-        $period = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
-        $sentMails = $this->queueMailRepository->findAllSentOrSendingWithStatistics($period['from'], $period['to'], $mailType);
+        $period = TimePeriodUtility::getTimePeriod($timeFrame);
+        $mailingStatisticsList = $this->mailingStatisticsRepository->findByTstampFavSendingAndType(
+            $period['from'], 
+            $period['to'], 
+            $mailType
+        );
 
         $mailTypeList = [];
         if (is_array($this->settings['types'])) {
@@ -94,10 +98,10 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         }
         asort($mailTypeList);
 
+        
         $this->view->assignMultiple(
             array(
-                'sentMails' => $sentMails,
-                'sentMailListItem' => $sentMails,
+                'mailingStatisticsList' => $mailingStatisticsList,
                 'timeFrame' => $timeFrame,
                 'mailTypeList' => $mailTypeList,
                 'mailType' => $mailType,
@@ -109,17 +113,15 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     /**
      * Shows clickStatistics
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @param int $queueMailUid
      * @return void
      */
-    public function clickStatisticsAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function clickStatisticsAction(int $queueMailUid)
     {
-
-        $clickedLinks = $this->clickStatisticsRepository->findByQueueMail($queueMail);
         $this->view->assignMultiple(
             array(
-                'clickedLinks' => $clickedLinks,
-                'queueMail' => $queueMail,
+                'clickedLinks' => $this->clickStatisticsRepository->findByQueueMailUid($queueMailUid),
+                'queueMailStatistics' => $this->mailingStatisticsRepository->findOneByQueueMailUid($queueMailUid),
             )
         );
     }
@@ -129,16 +131,21 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     /**
      * Lists all e-mails in queue
      *
-     * @param integer $timeFrame
-     * @param integer $mailType
+     * @param int $timeFrame
+     * @param int $mailType
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function listAction($timeFrame = 0, $mailType = -1)
+    public function listAction(int $timeFrame = 0, int $mailType = -1)
     {
 
-        $spaceOfTime = \RKW\RkwMailer\Utility\TimePeriodUtility::getTimePeriod($timeFrame);
-
+        $period = TimePeriodUtility::getTimePeriod($timeFrame);
+        $queueMailList = $this->queueMailRepository->findByTstampFavSendingAndType(
+            $period['from'],
+            $period['to'],
+            $mailType
+        );
+        
         $mailTypeList = [];
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
@@ -148,7 +155,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->view->assignMultiple(
             array(
-                'mailList'     => $this->queueMailRepository->findAllByCreateDateAndType($spaceOfTime, $mailType),
+                'queueMailList'  => $queueMailList,
                 'timeFrame'    => $timeFrame,
                 'mailTypeList' => $mailTypeList,
                 'mailType'     => $mailType,
@@ -168,13 +175,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      */
     public function pauseAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
-
         $queueMail->setStatus(1);
-        if ($mailingStatistics = $queueMail->getMailingStatistics()) {
-            $mailingStatistics->setTstampRealSending(0);
-            $mailingStatistics->setTstampSendFinish(0);
-            $this->mailingStatisticsRepository->update($mailingStatistics);
-        }
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
@@ -192,13 +193,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      */
     public function continueAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
-
         $queueMail->setStatus(2);
-        if ($mailingStatistics = $queueMail->getMailingStatistics()) {
-            $mailingStatistics->setTstampRealSending(0);
-            $mailingStatistics->setTstampSendFinish(0);
-            $this->mailingStatisticsRepository->update($mailingStatistics);
-        }
         $this->queueMailRepository->update($queueMail);
 
         $this->redirect('list');
@@ -221,13 +216,12 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $queueMail->setStatus(2);
         if ($mailingStatistics = $queueMail->getMailingStatistics()) {
             $mailingStatistics->setTstampRealSending(0);
-            $mailingStatistics->setTstampSendFinish(0);
+            $mailingStatistics->setTstampFinishedSending(0);
             $this->mailingStatisticsRepository->update($mailingStatistics);
         }
         $this->queueMailRepository->update($queueMail);
         
-
-        // reset all recipients
+        // reset status of all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */
         foreach ($this->queueRecipientRepository->findByQueueMail($queueMail) as $recipient) {
             $recipient->setStatus(2);
@@ -235,29 +229,26 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         }
 
         // reset statistics by queueMail
-        $this->openingStatisticsRepository->removeAllByQueueMail($queueMail);
-        $this->clickStatisticsRepository->removeAllByQueueMail($queueMail);
+        $this->cleaner->deleteStatistics($queueMail);
         
         $this->redirect('list');
     }
 
     /**
-     * Deletes given queueMail and it's children
+     * Deletes given queueMail and it's corresponding data
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function deleteAction(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
+        $this->cleaner->deleteStatistics($queueMail);
+        $this->cleaner->deleteQueueRecipients($queueMail);
+        $this->cleaner->deleteQueueMail($queueMail);
 
-        // dependent objects are deleted by cascade
-        $this->queueMailRepository->remove($queueMail);
         $this->redirect('list');
-
     }
 
 

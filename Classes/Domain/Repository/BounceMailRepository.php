@@ -14,6 +14,8 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+
 /**
  * BounceMailRepository
  *
@@ -28,7 +30,7 @@ class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     public function initializeObject()
     {
 
-        $this->defaultQuerySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
 
@@ -38,9 +40,12 @@ class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param string $email
      * @param string $type
      * @return int
+     * @toDo: write tests
      */
-    public function countByEmailAndType ($email, $type = 'hard')
-    {
+    public function countByEmailAndType (
+        string $email, 
+        string $type = 'hard'
+    ) {
 
         $query = $this->createQuery();
         $query->matching(
@@ -51,7 +56,6 @@ class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         );
 
         return $query->execute()->count();
-        //====
     }
 
 }

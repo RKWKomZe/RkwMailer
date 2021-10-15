@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>40</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <status>1</status>
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <tx_rkwmailer_domain_model_queuemail>
+        <uid>41</uid>
+        <pid>0</pid>
+        <from_name>Test</from_name>
+        <from_address>test@testen.de</from_address>
+        <reply_address>reply@testen.de</reply_address>
+        <return_path>return@testen.de</return_path>
+        <subject>Test</subject>
+        <status>1</status>
+    </tx_rkwmailer_domain_model_queuemail>
+
+    <tx_rkwmailer_domain_model_mailingstatistics>
+        <uid>40</uid>
+        <pid>0</pid>
+        <queue_mail>40</queue_mail>
+        <queue_mail_uid>40</queue_mail_uid>
+    </tx_rkwmailer_domain_model_mailingstatistics>
+
+    <tx_rkwmailer_domain_model_openingstatistics>
+        <uid>40</uid>
+        <pid>0</pid>
+        <queue_mail>40</queue_mail>
+        <queue_mail_uid>40</queue_mail_uid>
+        <hash>40</hash>
+    </tx_rkwmailer_domain_model_openingstatistics>
+
+    <tx_rkwmailer_domain_model_openingstatistics>
+        <uid>41</uid>
+        <pid>0</pid>
+        <queue_mail>40</queue_mail>
+        <queue_mail_uid>40</queue_mail_uid>
+        <hash>41</hash>
+    </tx_rkwmailer_domain_model_openingstatistics>
+
+    <tx_rkwmailer_domain_model_clickstatistics>
+        <uid>40</uid>
+        <pid>0</pid>
+        <queue_mail>40</queue_mail>
+        <queue_mail_uid>40</queue_mail_uid>
+        <hash>40</hash>
+    </tx_rkwmailer_domain_model_clickstatistics>
+
+    <tx_rkwmailer_domain_model_clickstatistics>
+        <uid>41</uid>
+        <pid>0</pid>
+        <queue_mail>40</queue_mail>
+        <queue_mail_uid>40</queue_mail_uid>
+        <hash>41</hash>
+    </tx_rkwmailer_domain_model_clickstatistics>
+
+
+    <tx_rkwmailer_domain_model_mailingstatistics>
+        <uid>41</uid>
+        <pid>0</pid>
+        <queue_mail>41</queue_mail>
+        <queue_mail_uid>41</queue_mail_uid>
+    </tx_rkwmailer_domain_model_mailingstatistics>
+
+    <tx_rkwmailer_domain_model_openingstatistics>
+        <uid>42</uid>
+        <pid>0</pid>
+        <queue_mail>41</queue_mail>
+        <queue_mail_uid>41</queue_mail_uid>
+        <hash>42</hash>
+    </tx_rkwmailer_domain_model_openingstatistics>
+
+    <tx_rkwmailer_domain_model_openingstatistics>
+        <uid>43</uid>
+        <pid>0</pid>
+        <queue_mail>41</queue_mail>
+        <queue_mail_uid>41</queue_mail_uid>
+        <hash>43</hash>
+    </tx_rkwmailer_domain_model_openingstatistics>
+
+    <tx_rkwmailer_domain_model_clickstatistics>
+        <uid>42</uid>
+        <pid>0</pid>
+        <queue_mail>41</queue_mail>
+        <queue_mail_uid>410</queue_mail_uid>
+        <hash>42</hash>
+    </tx_rkwmailer_domain_model_clickstatistics>
+
+    <tx_rkwmailer_domain_model_clickstatistics>
+        <uid>43</uid>
+        <pid>0</pid>
+        <queue_mail>41</queue_mail>
+        <queue_mail_uid>41</queue_mail_uid>
+        <hash>43</hash>
+    </tx_rkwmailer_domain_model_clickstatistics>
+</dataset>

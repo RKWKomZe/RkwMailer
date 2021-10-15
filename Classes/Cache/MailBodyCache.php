@@ -17,6 +17,7 @@ namespace RKW\RkwMailer\Cache;
 
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * MailBodyCache
@@ -48,13 +49,11 @@ class MailBodyCache
 
     /**
      * Constructor
-     *
-     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
      */
     public function __construct()
     {
-        $this->cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(CacheManager::class)->getCache('rkw_mailer');
-        $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('rkw_mailer');
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
 
@@ -63,9 +62,11 @@ class MailBodyCache
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $plaintextBody
+     * @throws \RKW\RkwMailer\Exception
      */
-    public function getPlaintextBody(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): string
-    {
+    public function getPlaintextBody(
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+    ): string {
 
         $cacheIdentifier = $this->getCacheIdentifier($queueRecipient, 'plaintext');
         return $this->getCache($cacheIdentifier);
@@ -76,8 +77,9 @@ class MailBodyCache
      * Sets the plaintextBody
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param string $plaintextBody
+     * @param string                                     $plaintextBody
      * @return void
+     * @throws \RKW\RkwMailer\Exception
      */
     public function setPlaintextBody(
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
@@ -93,6 +95,7 @@ class MailBodyCache
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $htmlBody
+     * @throws \RKW\RkwMailer\Exception
      */
     public function getHtmlBody(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): string 
     {
@@ -105,8 +108,9 @@ class MailBodyCache
      * Sets the htmlBody
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param string $htmlBody
+     * @param string                                     $htmlBody
      * @return void
+     * @throws \RKW\RkwMailer\Exception
      */
     public function setHtmlBody(
         \RKW\RkwMailer\Domain\Model\QueueRecipient$queueRecipient, 
@@ -121,6 +125,7 @@ class MailBodyCache
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return string $calendarBody
+     * @throws \RKW\RkwMailer\Exception
      */
     public function getCalendarBody(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): string
     {
@@ -128,13 +133,14 @@ class MailBodyCache
         return $this->getCache($cacheIdentifier);
     }
 
-    
+
     /**
      * Sets the calendarBody
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param string $calendarBody
+     * @param string                                     $calendarBody
      * @return void
+     * @throws \RKW\RkwMailer\Exception
      */
     public function setCalendarBody(
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
@@ -159,13 +165,21 @@ class MailBodyCache
      * Returns CacheIdentifier
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param string $property
+     * @param string                                     $property
      * @return string
+     * @throws \RKW\RkwMailer\Exception
      */
     protected function getCacheIdentifier(
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
         string $property
     ) : string {
+
+        if ($queueRecipient->_isNew()) {
+            throw new \RKW\RkwMailer\Exception (
+                'The queueRecipient-object has to be persisted before it can be used.',
+                1634308452
+            );
+        }
         
         return 'MailBodyCache_' . intval($queueRecipient->getUid()) . '_' . $property;
     }

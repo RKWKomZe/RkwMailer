@@ -15,8 +15,7 @@ namespace RKW\RkwMailer\Tests\Integration\Mail;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Domain\Model\Pages;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+
 use RKW\RkwMailer\Cache\MailBodyCache;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Model\QueueMail;
@@ -25,11 +24,7 @@ use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Mail\Mailer;
-use RKW\RkwMailer\Persistence\MarkerReducer;
-use RKW\RkwMailer\Service\MailService;
 use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -288,12 +283,15 @@ class MailerTest extends FunctionalTestCase
          * Then three queueMail-objects are returned
          * Then the first object has the uid of the one with the missing fromName-property
          * Then this object has the status 99
+         * Then the corresponding mailingStatistics-object of this object has the status 99
          * Then the status change of this object is persisted
          * Then the second object has the uid of the one with the missing fromAddress-property
          * Then this object has the status 99
+         * Then the corresponding mailingStatistics-object of this object has the status 99
          * Then the status change of this object is persisted
          * Then the third object has the uid of the one with the missing subject-property
          * Then this object has the status 4 
+         * Then the corresponding mailingStatistics-object of this object has the status 99
          * Then the status change of this object is persisted
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check120.xml');
@@ -308,28 +306,34 @@ class MailerTest extends FunctionalTestCase
         $queueMailOne = $result[0];
         self::assertEquals(120, $queueMailOne->getUid());
         self::assertEquals(99, $queueMailOne->getStatus());
-
+        self::assertEquals(99, $queueMailOne->getMailingStatistics()->getStatus());
+        
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbOne = $this->queueMailRepository->findByIdentifier(120);
         self::assertEquals(99, $queueMailDbOne->getStatus());
+        self::assertEquals(99, $queueMailDbOne->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailTwo */
         $queueMailTwo = $result[1];
         self::assertEquals(121, $queueMailTwo->getUid());
         self::assertEquals(99, $queueMailTwo->getStatus());
+        self::assertEquals(99, $queueMailTwo->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbTwo = $this->queueMailRepository->findByIdentifier(121);
         self::assertEquals(99, $queueMailDbTwo->getStatus());
+        self::assertEquals(99, $queueMailDbTwo->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailThree */
         $queueMailThree = $result[2];
         self::assertEquals(122, $queueMailThree->getUid());
         self::assertEquals(4, $queueMailThree->getStatus());
+        self::assertEquals(4, $queueMailThree->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbThree = $this->queueMailRepository->findByIdentifier(122);
         self::assertEquals(4, $queueMailDbThree->getStatus());
+        self::assertEquals(4, $queueMailDbThree->getMailingStatistics()->getStatus());
 
     }
 
@@ -511,6 +515,9 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $this->mailingStatisticsRepository->findAll()->getFirst();
         
+        // remove linkage
+        $mailingStatistics = unserialize(serialize($mailingStatistics));
+        
         $result = $this->subject->processQueueMails();
         self::assertCount(1, $result);
 
@@ -519,11 +526,11 @@ class MailerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $queueMail);
         
         self::assertInstanceOf(MailingStatistics::class,  $result[0]->getMailingStatistics());
-        self::assertSame($mailingStatistics, $result[0]->getMailingStatistics());
+        self::assertEquals($mailingStatistics, $result[0]->getMailingStatistics());
 
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatisticsDb */
         $mailingStatisticsDb = $this->mailingStatisticsRepository->findByIdentifier(180);
-        self::assertSame($mailingStatistics, $mailingStatisticsDb);
+        self::assertEquals($mailingStatistics, $mailingStatisticsDb);
     }
 
 
@@ -587,6 +594,7 @@ class MailerTest extends FunctionalTestCase
          * When the method is called
          * Then one queueMail-object is returned
          * Then this queueMail-object has the status sending
+         * Then the corresponding mailingStatistics-object has the status sending
          * Then this status-change is persisted
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check200.xml');
@@ -598,10 +606,13 @@ class MailerTest extends FunctionalTestCase
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
         self::assertEquals(3, $queueMail->getStatus());
+        self::assertEquals(3, $queueMail->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(200);
         self::assertEquals(3, $queueMailDb->getStatus());
+        self::assertEquals(3, $queueMailDb->getMailingStatistics()->getStatus());
+
     }
     
 
@@ -620,7 +631,8 @@ class MailerTest extends FunctionalTestCase
          * Given this queueMail-object has no queueRecipient
          * When the method is called
          * Then one queueMail-object is returned
-         * Then this queueMail-object has the status sending
+         * Then this queueMail-object has the status finished
+         * Then the corresponding mailingStatistics-object has the status finished
          * Then this status-change is persisted
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check210.xml');
@@ -632,10 +644,13 @@ class MailerTest extends FunctionalTestCase
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
         self::assertEquals(4, $queueMail->getStatus());
-
+        self::assertEquals(4, $queueMail->getMailingStatistics()->getStatus());
+        
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(210);
         self::assertEquals(4, $queueMailDb->getStatus());
+        self::assertEquals(4, $queueMailDb->getMailingStatistics()->getStatus());
+
     }
     //=============================================
 
@@ -1146,7 +1161,7 @@ class MailerTest extends FunctionalTestCase
          *
          * Given a queueMail-object in database
          * Given this queueMail-objects has all basic values for validation set (fromAddress, fromName)
-         * Given this queueMail-object is marked as pipeline
+         * Given this queueMail-object has the type-property set to a value greater than zero
          * Given a queueRecipient-object in database
          * Given this queueRecipient-object has all basic values for validation set (email)
          * When the method is called

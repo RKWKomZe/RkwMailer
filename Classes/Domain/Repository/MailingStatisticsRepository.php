@@ -14,6 +14,8 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
@@ -36,30 +38,81 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
-
-
+    
+    
     /**
-     * removeAllByQueueMail
+     * findByTstampFavSendingAndType
      *
-     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @param int $fromTime
+     * @param int $toTime
+     * @param int $type
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @toDo: write tests
      */
-    public function removeAllByQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
+    public function findByTstampFavSendingAndType(
+        int $fromTime,
+        int $toTime,
+        int $type = -1
+    ) {
 
         $query = $this->createQuery();
+        $constraints = [
+            $query->greaterThanOrEqual('status', 3)
+        ];
+
+        if ($type > -1) {
+            $constraints[] = $query->equals('type', $type);
+        }
+
+        if ($fromTime) {
+            $constraints[] = $query->greaterThanOrEqual('tstampFavSending', $fromTime);
+        }
+
+        if ($toTime) {
+            $constraints[] = $query->lessThanOrEqual('tstampFavSending', $toTime);
+        }
+
         $query->matching(
-            $query->logicalAnd(
-                $query->equals('queueMail', $queueMail)
+            $query->logicalAnd($constraints)
+        );
+
+        $query->setOrderings(
+            array(
+                'status' => QueryInterface::ORDER_ASCENDING,
+                'tstampFavSending' => QueryInterface::ORDER_DESCENDING,
+                'tstampRealSending' => QueryInterface::ORDER_DESCENDING,
             )
         );
 
-        if ($mailStatistics = $query->execute()) {
-            foreach ($mailStatistics as $mailStatistic) {
-                $this->remove($mailStatistic);
-            }
-        }
+        return $query->execute();
+    }
+    
+    
+
+    /**
+     * deleteByQueueMail
+     * We use a straight-forward approach here because it may be a lot of data to delete!
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @comment implicitly tested
+     */
+    public function deleteByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_rkwmailer_domain_model_mailingstatistics');
+
+        return $queryBuilder
+            ->delete('tx_rkwmailer_domain_model_mailingstatistics')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'queue_mail',
+                    $queryBuilder->createNamedParameter($queueMail->getUid(), \PDO::PARAM_INT))
+            )
+            ->execute();
 
     }
 }

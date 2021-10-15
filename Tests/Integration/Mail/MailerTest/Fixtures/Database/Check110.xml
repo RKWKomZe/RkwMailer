@@ -30,6 +30,7 @@
         <uid>110</uid>
         <pid>0</pid>
         <queue_mail>110</queue_mail>
+        <queue_mail_uid>110</queue_mail_uid>
         <tstamp_real_sending>999</tstamp_real_sending>
     </tx_rkwmailer_domain_model_mailingstatistics>
 
@@ -37,6 +38,7 @@
         <uid>111</uid>
         <pid>0</pid>
         <queue_mail>111</queue_mail>
+        <queue_mail_uid>111</queue_mail_uid>
         <tstamp_real_sending>555</tstamp_real_sending>
     </tx_rkwmailer_domain_model_mailingstatistics>
     

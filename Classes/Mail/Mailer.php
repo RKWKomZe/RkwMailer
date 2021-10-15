@@ -48,56 +48,6 @@ class Mailer
 {
 
     /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_TO_BEFORE_ATTACH = 'toBeforeAttach';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_RENDER_TEMPLATE_AFTER_MARKERS = 'renderTemplateAfterMarkers';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_RENDER_TEMPLATE_AFTER_RENDER = 'renderTemplateAfterRender';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND = 'sendToRecipientBeforeSend';
-
-    /**
-     * Namespace Keyword
-     *
-     * @const string
-     */
-    const NAMESPACE_KEYWORD = 'RKW_MAILER_NAMESPACES';
-
-    /**
-     * Namespace Keyword
-     *
-     * @const string
-     */
-    const NAMESPACE_ARRAY_KEYWORD = 'RKW_MAILER_NAMESPACES_ARRAY';
-
-    /**
-     * Debug switch
-     *
-     * @const string
-     */
-    const DEBUG_TIME = false;
-
-
-    /**
      * objectManager
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -123,23 +73,18 @@ class Mailer
      */
     protected $persistenceManager;
 
-    /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
-     */
-    protected $queueMail;
 
     /**
-     * QueueMailRepository
+     * queueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @inject
      */
     protected $queueMailRepository;
 
+    
     /**
-     * QueueRecipientRepository
+     * queueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @inject
@@ -148,30 +93,12 @@ class Mailer
 
 
     /**
-     * BounceMailRepository
+     * bounceMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
      * @inject
      */
     protected $bounceMailRepository;
-
-
-    /**
-     * QueueMailValidator
-     *
-     * @var \RKW\RkwMailer\Validation\QueueMailValidator
-     * @inject
-     */
-    protected $queueMailValidator;
-
-
-    /**
-     * QueueMailValidator
-     *
-     * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
-     * @inject
-     */
-    protected $queueRecipientValidator;
 
     
     /**
@@ -181,41 +108,60 @@ class Mailer
      * @inject
      */
     protected $mailingStatisticsRepository;
-    
+
 
     /**
-     * MailBodyCache
+     * queueMailValidator
+     *
+     * @var \RKW\RkwMailer\Validation\QueueMailValidator
+     * @inject
+     */
+    protected $queueMailValidator;
+
+
+    /**
+     * queueMailValidator
+     *
+     * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
+     * @inject
+     */
+    protected $queueRecipientValidator;
+
+    
+    /**
+     * mailBodyCache
      *
      * @var \RKW\RkwMailer\Cache\MailBodyCache
      * @inject
      */
     protected $mailBodyCache;
+  
     
     /**
-     * MarkerReducer
+     * markerReducer
      *
      * @var \RKW\RkwMailer\Persistence\MarkerReducer
      * @inject
      */
     protected $markerReducer;
     
+    
     /**
-     * Logger
+     * logger
      *
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
     
+    
     /**
-     * MailStandaloneView
+     * mailStandaloneView
      *
      * @var \RKW\RkwMailer\View\MailStandaloneView
      */
     protected $view;
 
     
-
-
     /**
      * Gets queueMails from queue and send mails to associated recipients
      *
@@ -235,6 +181,7 @@ class Mailer
         float $sleep = 0.0
     ): array {
 
+        self::debugTime(__LINE__, __METHOD__);
         $processedQueueMails = [];
 
         // get mails with status "waiting" (2) or "sending" (3)
@@ -243,17 +190,6 @@ class Mailer
         foreach ($queueMails as $queueMail) {
 
             try {
-
-                // validate queueMail
-                if (! $this->queueMailValidator->validate($queueMail)) {
-                    throw new \RKW\RkwMailer\Exception(
-                        sprintf(
-                            'Invalid data or missing data in queueMail with uid %s.',
-                            $queueMail->getUid()
-                        ),
-                        1540186577
-                    );
-                }
 
                 // migrate values for backwards compatibility
                 if (!$queueMail->getMailingStatistics()) {
@@ -267,6 +203,17 @@ class Mailer
                     $queueMail->setMailingStatistics($mailingStatistics);
                 }
 
+                // validate queueMail
+                if (! $this->queueMailValidator->validate($queueMail)) {
+                    throw new \RKW\RkwMailer\Exception(
+                        sprintf(
+                            'Invalid data or missing data in queueMail with uid %s.',
+                            $queueMail->getUid()
+                        ),
+                        1540186577
+                    );
+                }
+
                 // if there is no configuration set, we use the one given as param
                 if (!$queueMail->getSettingsPid()) {
                     $queueMail->setSettingsPid($settingsPid);
@@ -275,6 +222,7 @@ class Mailer
                 // set status to sending and set sending time
                 if ($queueMail->getStatus() != 3) {
                     $queueMail->setStatus(3);
+                    $queueMail->getMailingStatistics()->setStatus(3);
                     $queueMail->getMailingStatistics()->setTstampRealSending(time());
                     $queueMail->getMailingStatistics()->setTstampFinishedSending(0);
                 }
@@ -286,6 +234,7 @@ class Mailer
 
                     if (!$queueMail->getPipeline()) {
                         $queueMail->setStatus(4);
+                        $queueMail->getMailingStatistics()->setStatus(4);
                         $queueMail->getMailingStatistics()->setTstampFinishedSending(time());
                         $this->getLogger()->log(
                             \TYPO3\CMS\Core \Log\LogLevel::INFO, 
@@ -308,7 +257,8 @@ class Mailer
             // try to catch error and set status to 99
             } catch (\Exception $e) {
 
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, 
+                $this->getLogger()->log(
+                    \TYPO3\CMS\Core\Log\LogLevel::ERROR, 
                     sprintf('
                         An unexpected error occurred while trying to send e-mails. QueueMail with uid %s has not been sent. Error: %s.', 
                         $queueMail->getUid(), 
@@ -316,6 +266,7 @@ class Mailer
                     )
                 );
 
+                $queueMail->getMailingStatistics()->setStatus(99);
                 $queueMail->setStatus(99);
             }
 
@@ -331,7 +282,8 @@ class Mailer
             $this->persistenceManager->persistAll();
             $processedQueueMails[] = $queueMail;
         }
-        
+
+        self::debugTime(__LINE__, __METHOD__);
         return $processedQueueMails;
     }
 
@@ -352,6 +304,8 @@ class Mailer
         int $emailsPerInterval = 10,
         float $sleep = 0.0
     ): array {
+
+        self::debugTime(__LINE__, __METHOD__);
 
         $processedQueueRecipients = [];
         $queueRecipients = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, $emailsPerInterval);
@@ -436,7 +390,8 @@ class Mailer
                 usleep(intval($sleep * 1000000));
             }
         }
-        
+
+        self::debugTime(__LINE__, __METHOD__);
         return $processedQueueRecipients;
     }
 
@@ -448,13 +403,15 @@ class Mailer
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return null |\TYPO3\CMS\Core\Mail\MailMessage
+     * @return \TYPO3\CMS\Core\Mail\MailMessage
      * @throws \RKW\RkwMailer\Exception
      */
     public function prepareEmailBody (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
     ): \TYPO3\CMS\Core\Mail\MailMessage {
+
+        self::debugTime(__LINE__, __METHOD__);
 
         // validate queueMail
         if (! $this->queueMailValidator->validate($queueMail)) {
@@ -482,7 +439,7 @@ class Mailer
         $this->renderTemplates($queueMail, $queueRecipient);
 
         /** @var \TYPO3\CMS\Core\Mail\MailMessage $message */
-        $message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailMessage::class);
+        $message = GeneralUtility::makeInstance(MailMessage::class);
 
         // Set message parts based on cache
         if (
@@ -560,8 +517,8 @@ class Mailer
             }
         }
 
-        // add mailing list header if it is a pipeline
-        if ($queueMail->getPipeline()) {
+        // add mailing list header if type > 0
+        if ($queueMail->getType() > 0) {
             $message->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:' . EmailValidator::cleanUpEmail($queueMail->getFromAddress()) . '>');
         }
 
@@ -582,6 +539,7 @@ class Mailer
             ->setTo($recipientAddress)
             ->setSubject($queueRecipient->getSubject() ? $queueRecipient->getSubject() : $queueMail->getSubject());
 
+        self::debugTime(__LINE__, __METHOD__);
         return $message;
     }
 
@@ -633,7 +591,7 @@ class Mailer
 
                     // load EmailStandaloneView with configuration of queueMail
                     /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
-                    $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                    $emailView = GeneralUtility::makeInstance(
                         MailStandaloneView::class,
                         $queueMail->getSettingsPid()
                     );
@@ -691,7 +649,7 @@ class Mailer
     protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
     {
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
         return $this->logger;
     }
@@ -705,9 +663,9 @@ class Mailer
      */
     private static function debugTime(int $line, string $function): void
     {
-        if (self::DEBUG_TIME) {
+        if (GeneralUtility::getApplicationContext()->isDevelopment()) {
 
-            $path = PATH_site . '/typo3temp/tx_rkwmailer_runtime.txt';
+            $path = PATH_site . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
             file_put_contents($path, microtime() . ' ' . $line . ' ' . $function . "\n", FILE_APPEND);
         }
     }
