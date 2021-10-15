@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  */
 
 use RKW\RkwMailer\UriBuilder\FrontendUriBuilder;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -106,7 +107,13 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set pixel-counter: %s', $e->getMessage()));
+            $logger->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'Error while trying to set pixel-counter: %s', 
+                    $e->getMessage()
+                )
+            );
         }
 
         return '';

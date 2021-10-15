@@ -19,6 +19,7 @@ use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -318,7 +319,7 @@ class MailService
             $this->persistenceManager->persistAll();
 
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                LogLevel::INFO, 
                 sprintf(
                     'Added recipient with email "%s" (uid %s) to queueMail with uid %s.', 
                     $queueRecipient->getEmail(), 
@@ -354,7 +355,7 @@ class MailService
        
         if ($this->queueRecipientRepository->findOneByEmailAndQueueMail($email, $this->getQueueMail())) {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                LogLevel::INFO, 
                 sprintf(
                     'Recipient with email "%s" already exists for queueMail with uid %s.', 
                     $email, 
@@ -416,7 +417,7 @@ class MailService
                 $this->unsetVariables();
 
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                    LogLevel::INFO, 
                     sprintf(
                         'Marked queueMail with uid %s for cronjob (%s recipients).', 
                         $queueMail->getUid(), 
@@ -429,7 +430,7 @@ class MailService
 
             } else {
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                    LogLevel::INFO, 
                     sprintf(
                         'QueueMail with uid %s has no recipients.', 
                         $queueMail->getUid()
@@ -439,7 +440,7 @@ class MailService
 
         } else {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                LogLevel::INFO, 
                 sprintf(
                     'QueueMail with uid %s is not a draft (status %s).', 
                     $queueMail->getUid(), 

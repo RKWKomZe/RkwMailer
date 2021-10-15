@@ -14,16 +14,10 @@ namespace RKW\RkwMailer\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * A class to cleanup the database
@@ -72,7 +66,6 @@ class Cleaner
     protected $clickStatisticsRepository;
 
 
-
     /**
      * mailingStatisticsRepository
      *
@@ -107,6 +100,17 @@ class Cleaner
         bool $includingStatistics = false
     ): bool {
         
+        // check if migration of statistics is done completely
+        if (count($this->queueMailRepository->findByMissingMailingStatistics())) {
+            $this->getLogger()->log(
+                LogLevel::WARNING,
+                'Statistic migration not yet complete. Please check if the ' .
+                 'cronjob for the statistic analysis is activated. Aborting cleanup.'
+            );
+            return false;
+        }
+        
+        // do cleanup
         if (
             ($queueMails = $this->queueMailRepository->findByTstampFinishedSendingAndTypes(
                 $daysAfterSendingFinished,
@@ -117,15 +121,15 @@ class Cleaner
 
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
             foreach ($queueMails as $queueMail) {
-
-                $this->deleteQueueMail($queueMail);
-                $this->deleteQueueRecipients($queueMail);
+                
                 if ($includingStatistics) {
                     $this->deleteStatistics($queueMail);
                 }
-                
+                $this->deleteQueueRecipients($queueMail);
+                $this->deleteQueueMail($queueMail);
+
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                    LogLevel::INFO, 
                     sprintf(
                         'Cleanup for queueMail with uid %s finished successfully.', 
                         $queueMail->getUid()
@@ -151,8 +155,9 @@ class Cleaner
     ): int {
             
         $result = $this->queueMailRepository->deleteByQueueMail($queueMail);
+        
         $this->getLogger()->log(
-            \TYPO3\CMS\Core\Log\LogLevel::INFO,
+            LogLevel::INFO,
             sprintf(
                 'Deleted queueMail with uid %s.',
                 $queueMail->getUid()
@@ -174,9 +179,9 @@ class Cleaner
     ): int {
 
         $result = $this->queueRecipientRepository->deleteByQueueMail($queueMail);
-       
+        
         $this->getLogger()->log(
-            \TYPO3\CMS\Core\Log\LogLevel::INFO,
+            LogLevel::INFO,
             sprintf(
                 'Deleted %s queueRecipients of queueMail with uid %s.',
                 $result,
@@ -203,7 +208,7 @@ class Cleaner
         $result += $this->clickStatisticsRepository->deleteByQueueMail($queueMail);
 
         $this->getLogger()->log(
-            \TYPO3\CMS\Core\Log\LogLevel::INFO,
+            LogLevel::INFO,
             sprintf(
                 'Deleted %s statistic-datasets of queueMail with uid %s.',
                 $result,

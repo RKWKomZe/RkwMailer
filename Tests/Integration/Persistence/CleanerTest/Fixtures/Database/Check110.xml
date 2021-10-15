@@ -2,7 +2,7 @@
 <dataset>
 
     <tx_rkwmailer_domain_model_queuemail>
-        <uid>90</uid>
+        <uid>110</uid>
         <pid>0</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
@@ -10,12 +10,11 @@
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
         <status>4</status>
-        <type>1</type>
-        <mailing_statistics>90</mailing_statistics>
+        <mailing_statistics>110</mailing_statistics>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_queuemail>
-        <uid>91</uid>
+        <uid>111</uid>
         <pid>0</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
@@ -23,21 +22,16 @@
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
         <status>4</status>
-        <type>2</type>
-        <mailing_statistics>91</mailing_statistics>
+        <tstamp_fav_sending>111</tstamp_fav_sending>
+        <tstamp_real_sending>222</tstamp_real_sending>
+        <tstamp_send_finish>333</tstamp_send_finish>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_mailingstatistics>
-        <uid>90</uid>
+        <uid>110</uid>
         <pid>0</pid>
-        <queue_mail>90</queue_mail>
-        <queue_mail_uid>90</queue_mail_uid>
-    </tx_rkwmailer_domain_model_mailingstatistics>
+        <queue_mail>110</queue_mail>
+        <queue_mail_uid>110</queue_mail_uid>
+    </tx_rkwmailer_domain_model_mailingstatistics>    
 
-    <tx_rkwmailer_domain_model_mailingstatistics>
-        <uid>91</uid>
-        <pid>0</pid>
-        <queue_mail>91</queue_mail>
-        <queue_mail_uid>91</queue_mail_uid>
-    </tx_rkwmailer_domain_model_mailingstatistics>
 </dataset>

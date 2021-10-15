@@ -18,6 +18,8 @@ namespace RKW\RkwMailer\Controller;
 use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Statistics\BounceMailAnalyser;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -149,7 +151,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         } catch (\Exception $e) {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::ERROR, 
+                LogLevel::ERROR, 
                 sprintf('An unexpected error occurred while trying to send e-mails: %s', 
                     str_replace(array("\n", "\r"), '', $e->getMessage())
                 )
@@ -174,7 +176,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             
         } catch (\Exception $e) {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                LogLevel::ERROR,
                 sprintf('An unexpected error occurred while trying to update the statistics of e-mails: %s',
                     str_replace(array("\n", "\r"), '', $e->getMessage())
                 )
@@ -207,7 +209,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 
         } catch (\Exception $e) {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::ERROR,
+                LogLevel::ERROR,
                 sprintf('An unexpected error occurred while trying to cleanup the database: %s',
                     str_replace(array("\n", "\r"), '', $e->getMessage())
                 )
@@ -253,7 +255,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             $bounceMailAnalyser->analyseMails($maxEmails);
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
         }
     }
 
@@ -288,15 +290,31 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         $this->bounceMailRepository->update($bounceMail);
                     }
 
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Setting bounced status for queueRecipient id=%, email=%s.', $queueRecipient->getUid(), $queueRecipient->getEmail()));
+                    $this->getLogger()->log(
+                        LogLevel::INFO, 
+                        sprintf(
+                            'Setting bounced status for queueRecipient id=%, email=%s.', 
+                            $queueRecipient->getUid(), 
+                            $queueRecipient->getEmail()
+                        )
+                    );
                 }
 
             } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, ('No bounced mails processed.'));
+                $this->getLogger()->log(
+                    LogLevel::DEBUG, 
+                    'No bounced mails processed.'
+                );
             }
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to process bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'An unexpected error occurred while trying to process bounced e-mails: %s.', 
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
     }
 
@@ -354,7 +372,7 @@ Require all denied
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

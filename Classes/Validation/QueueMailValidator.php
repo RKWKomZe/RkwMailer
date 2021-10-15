@@ -14,6 +14,9 @@ namespace RKW\RkwMailer\Validation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
+
 /**
  * QueueMailValidator
  *
@@ -22,6 +25,7 @@ namespace RKW\RkwMailer\Validation;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @toDo: write tests
  */
 class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -36,28 +40,45 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
      * validateQueueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return boolean
+     * @return bool
      */
-    public function validate(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
+    public function validate(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): bool {
 
         $valid = true;
         if (!$queueMail->getFromName()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No FromName is set (Mail UID "%s").', $queueMail->getUid()));
+            $this->getLogger()->log(LogLevel::ERROR, 
+                sprintf(
+                    'No fromName is set (queueMail with uid %s).', 
+                    $queueMail->getUid()
+                )
+            );
             $valid = false;
         }
 
         if (!$queueMail->getFromAddress()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('No FromAddress is set (Mail UID "%s").', $queueMail->getUid()));
+            $this->getLogger()->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'No fromAddress is set (queueMail with uid %s).', 
+                    $queueMail->getUid()
+                )
+            );
             $valid = false;
         }
 
         if (!$queueMail->getSubject()) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('No Subject is set (Mail UID "%s").', $queueMail->getUid()));
+            $this->getLogger()->log(
+                LogLevel::WARNING, 
+                sprintf(
+                    'No Subject is set (queueMail with uid %s).', 
+                    $queueMail->getUid()
+                )
+            );
         }
         
         return $valid;
-
     }
 
 
@@ -68,9 +89,8 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getLogger()
     {
-
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

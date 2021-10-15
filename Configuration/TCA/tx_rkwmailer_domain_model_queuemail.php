@@ -2,13 +2,13 @@
 return [
 	'ctrl' => [
 		'title'	=> 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_queuemail',
-		'label' => 'subject',
+		'label' => 'uid',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
 		'dividers2tabs' => true,
 		'hideTable' => true,
 
-		'searchFields' => '',
+		'searchFields' => 'from_name, from_address, subject',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_queuemail.gif'
 	],
     'interface' => [

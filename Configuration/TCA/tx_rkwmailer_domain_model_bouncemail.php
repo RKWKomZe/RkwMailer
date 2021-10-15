@@ -11,15 +11,15 @@ return [
 		'searchFields' => 'hash, url',
 		'iconfile' => 'EXT:rkw_mailer/Resources/Public/Icons/tx_rkwmailer_domain_model_bouncemail.gif'
 	],
-	'interface' => [
-		'showRecordFieldList' => 'status, type, email, subject, rule_number, rule_category, header, body, header_full, body_full',
-	],
-	'types' => [
-		'1' => ['showitem' => 'status, type, email, subject, rule_number, rule_category, header, body, header_full, body_full'],
-	],
-	'palettes' => [
-		'1' => ['showitem' => ''],
-	],
+    'interface' => [
+        'showRecordFieldList' => '',
+    ],
+    'types' => [
+        '1' => ['showitem' => ''],
+    ],
+    'palettes' => [
+        '1' => ['showitem' => ''],
+    ],
 	'columns' => [
 
         'status' => [

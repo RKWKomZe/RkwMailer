@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
 
 use Psr\Log\LoggerInterface;
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -93,12 +94,22 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
                 }
 
                 $result = $this->replacePath($this->tag->render());
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('Using fallback image rendering for image %s. Result: %s', $imageUri, $result));
+                $this->getLogger()->log(
+                    LogLevel::WARNING, 
+                    sprintf(
+                        'Using fallback image rendering for image %s. Result: %s', 
+                        $imageUri, 
+                        $result
+                    )
+                );
 
                 $return = $result;
 
             } catch (\Exception $e) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Unable to render image.'));
+                $this->getLogger()->log(
+                    LogLevel::ERROR,
+                    'Unable to render image.'
+                );
             }
         }
 

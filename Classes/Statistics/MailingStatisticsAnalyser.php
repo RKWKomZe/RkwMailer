@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Statistics;
  */
 
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -91,7 +92,7 @@ class MailingStatisticsAnalyser
                 $this->analyseQueueMail($queueMail);
 
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::INFO,
+                    LogLevel::INFO,
                     sprintf(
                         'Statistic migration for queueMail with uid %s finished successfully.',
                         $queueMail->getUid()
@@ -100,7 +101,7 @@ class MailingStatisticsAnalyser
             }
         } else {
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::INFO,
+                LogLevel::DEBUG,
                 'No statistic migration needed.'
             );
         }
@@ -112,7 +113,7 @@ class MailingStatisticsAnalyser
             $this->analyseQueueMail($queueMail);
 
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::INFO,
+                LogLevel::INFO,
                 sprintf(
                     'Statistical analysis for queueMail with uid %s finished successfully.',
                     $queueMail->getUid()

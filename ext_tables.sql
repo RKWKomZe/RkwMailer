@@ -58,7 +58,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	queue_mail int(11) unsigned DEFAULT '0',
-	frontend_user int(11) unsigned DEFAULT '0',
 
 	email varchar(255) DEFAULT '' NOT NULL,
 	salutation tinyint(2) unsigned DEFAULT '0',

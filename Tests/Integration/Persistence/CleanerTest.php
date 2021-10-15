@@ -298,12 +298,51 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(0, $this->clickStatisticsRepository->findByQueueMail($queueMail));
     }
     //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function cleanupReturnsFalseIfStatisticsMigrationIncomplete()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given two queueMail-objects in database
+         * Given the first queueMail-object has the status finished
+         * Given the first queueMail-object has one queueRecipient
+         * Given the first queueMail-object has a mailingStatistics-object
+         * Given the first mailingStatistics-object has a tstampRealSending-value which is older than 30 days
+         * Given the first queueMail-object as parameter for the method
+         * Given the second queueMail-object has the status finished
+         * Given the second queueMail-object has no mailingStatistics-object
+         * When the method is called
+         * Then false is returned
+         * Then no queueMail-object is deleted
+         */
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check110.xml');
+
+        /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
+        $mailingStatistics = $this->mailingStatisticsRepository->findByIdentifier(110);
+        $mailingStatistics->setTstampFinishedSending(time() - intval(31 * 24 * 60 * 60));
+        $this->mailingStatisticsRepository->update($mailingStatistics);
+        $this->persistenceManager->persistAll();
+
+        $result = $this->subject->cleanup();
+
+        self::assertFalse($result);
+        self::assertCount(2, $this->queueMailRepository->findAll());
+
+
+    }
     
     /**
      * @test
      * @throws \Exception
      */
-    public function cleanupDoesNotDeleteQueueMailNotFinished()
+    public function cleanupReturnsFalseOnQueueMailIfNotFinished()
     {
 
         /**
@@ -336,7 +375,7 @@ class CleanerTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
-    public function cleanupDoesNotDeleteQueueMailWithError()
+    public function cleanupReturnsFalseOnQueueMailWithError()
     {
 
         /**
@@ -368,7 +407,7 @@ class CleanerTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
-    public function cleanupDoesNotDeleteQueueMailWithWrongType()
+    public function cleanupReturnsFalseOnQueueMailWithWrongType()
     {
 
         /**
@@ -401,7 +440,7 @@ class CleanerTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
-    public function cleanupDoesNotDeleteQueueMailNotOldEnough()
+    public function cleanupReturnsFalseOnQueueMailNotOldEnough()
     {
 
         /**

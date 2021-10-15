@@ -14,6 +14,9 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
+
 /**
  * GetRenderCacheViewHelper
  *
@@ -47,7 +50,7 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      * @param array $marker
      * @return string
      */
-    public function replaceMarker ($content, $marker = [])
+    public function replaceMarker (string $content, array $marker = []): string
     {
         // replace marker
         foreach ($marker as $key => $value) {
@@ -58,12 +61,18 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
             $content = str_replace('{' . $key . '}', $value, $content);
 
             if ($contentBefore != $content) {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('ViewHelperCache replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
+                $this->getLogger()->log(
+                    LogLevel::DEBUG, 
+                    sprintf(
+                        'ViewHelperCache replaced key "%s" with value "%s".', 
+                        $key, 
+                        str_replace("\n", '', print_r($value, true))
+                    )
+                );
             }
         }
 
         return $content;
-        //===
     }
     
     
@@ -76,10 +85,12 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      * @param string $additionalIdentifier
      * @return string
      */
-    protected function getIdentifier(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
-    {
+    protected function getIdentifier(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, 
+        bool $isPlaintext = false, 
+        string $additionalIdentifier = ''
+    ): string {
        return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
-       //===
     }
 
 
@@ -93,11 +104,10 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;
-        //===
     }
 
 

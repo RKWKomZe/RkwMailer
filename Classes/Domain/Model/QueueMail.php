@@ -17,6 +17,7 @@ namespace RKW\RkwMailer\Domain\Model;
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Validation\EmailValidator;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * QueueMail
@@ -692,10 +693,6 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->layoutPaths, true);
         return $paths;
-
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        // return array_merge($paths, $this->getSettings('layoutRootPaths', 'view'));
-        //===
     }
 
 
@@ -763,10 +760,6 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
         return $paths;
-        
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        // return array_merge($paths, $this->getSettings('partialRootPaths', 'view'));
-        //===
     }
 
 
@@ -803,7 +796,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function addPartialPath($partialPath)
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->partialPaths, true);
         $paths[] = $partialPath;
         $this->partialPaths = implode(',', $paths);
     }
@@ -818,7 +811,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function addPartialPaths($partialPaths)
     {
         if (is_array($partialPaths)) {
-            $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
+            $paths = GeneralUtility::trimExplode(',', $this->partialPaths, true);
             $this->partialPaths = implode(',', array_merge($paths, $partialPaths));
         }
     }
@@ -832,12 +825,8 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getTemplatePaths()
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
         return $paths;
-        
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        //return array_merge($paths, $this->getSettings('templateRootPaths', 'view'));
-        //===
     }
 
 
@@ -874,7 +863,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function addTemplatePath($templatePath)
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
         $paths[] = $templatePath;
         $this->templatePaths = implode(',', $paths);
     }
@@ -889,7 +878,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function addTemplatePaths($templatePaths)
     {
         if (is_array($templatePaths)) {
-            $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+            $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
             $this->templatePaths = implode(',', array_merge($paths, $templatePaths));
         }
     }

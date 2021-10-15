@@ -10,6 +10,7 @@
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
         <status>4</status>
+        <mailing_statistics>80</mailing_statistics>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_mailingstatistics>

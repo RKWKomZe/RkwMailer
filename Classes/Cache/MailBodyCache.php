@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Cache;
 */
 
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -156,7 +157,7 @@ class MailBodyCache
      */
     public function clearCache(): void
     {
-        $this->logger->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, 'Flushing MailBodyCache');
+        $this->logger->log(LogLevel::DEBUG, 'Flushing MailBodyCache');
         $this->cache->flush();
     }
 
@@ -198,7 +199,7 @@ class MailBodyCache
 
             // get cached content
             $this->logger->log(
-                \TYPO3\CMS\Core\Log\LogLevel::DEBUG, 
+                LogLevel::DEBUG, 
                 sprintf(
                     'Getting MailBodyCache for identifier "%s".', 
                     $cacheIdentifier
@@ -222,7 +223,7 @@ class MailBodyCache
     {
 
         $this->logger->log(
-            \TYPO3\CMS\Core\Log\LogLevel::DEBUG, 
+            LogLevel::DEBUG, 
             sprintf(
                 'Setting MailBodyCache for identifier "%s".', 
                 $cacheIdentifier

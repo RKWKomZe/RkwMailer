@@ -40,7 +40,7 @@ use \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated 
- * @toDo: rework
+ * @toDo: finalize rework in Tests/Integration/Service/MailServiceTest
  */
 class MailServiceTest extends FunctionalTestCase
 {
@@ -79,8 +79,7 @@ class MailServiceTest extends FunctionalTestCase
      */
     private $objectManager = null;
 
-
-
+    
     /**
      * Setup
      * @throws \Exception
@@ -95,8 +94,6 @@ class MailServiceTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/Database/BounceMail.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/BeUsers.xml');
         $this->importDataSet(__DIR__ . '/Fixtures/Database/FeUsers.xml');
-
-
 
         $this->setUpFrontendRootPage(
             1,

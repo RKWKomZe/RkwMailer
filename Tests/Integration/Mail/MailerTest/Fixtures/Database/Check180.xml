@@ -13,6 +13,7 @@
         <tstamp_fav_sending>777</tstamp_fav_sending>
         <tstamp_real_sending>888</tstamp_real_sending>
         <tstamp_send_finish>999</tstamp_send_finish>
+        <mailing_statistics>180</mailing_statistics>
     </tx_rkwmailer_domain_model_queuemail>
 
     <tx_rkwmailer_domain_model_queuerecipient>

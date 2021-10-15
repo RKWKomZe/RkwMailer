@@ -46,7 +46,7 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
     /**
      * @var string
      */
-    protected $title = 'Migrate statistics to new version. Maybe this wizard has to be executed multiple times until all data is migrated. When the migration was successful, the wizward is marked as done automatically.';
+    protected $title = 'Migrate statistics of "rkw_mailer" to new version. Maybe this wizard has to be executed multiple times until all data is migrated. When the migration was successful, the wizward is marked as done automatically.';
 
 
     /**
@@ -87,13 +87,10 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
             && ($this->deleteOrphanedStatisticOpenings($databaseQueries))
             && ($this->migrateStatistics($databaseQueries))
         ){
-            //  $this->markWizardAsDone();
-
+            $this->markWizardAsDone();
         }
-        
-        
+                
         return true;
-
     }
 
     /**
@@ -195,6 +192,7 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
                     'link_hash' => $link['hash'],
                     'counter' => $openedLink['click_count'],
                     'queue_mail' => $openedLink['queue_mail'],
+                    'queue_mail_uid' => $openedLink['queue_mail'],
                     'tstamp' => $openedLink['tstamp'],
                     'crdate' => $openedLink['crdate'],
                     'hash' => StatisticsUtility::generateLinkHash($link['url']),
@@ -281,6 +279,7 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
                 'pid' => $opening['pid'],
                 'counter' => $opening['click_count'],
                 'queue_mail' => $opening['queue_mail'],
+                'queue_mail_uid' => $opening['queue_mail'],
                 'queue_recipient' => $opening['queue_recipient'],
                 'hash' => sha1($opening['queue_recipient']),
                 'tstamp' => $opening['tstamp'],
@@ -391,29 +390,26 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
             ->where(
                 $queryBuilderQueueRecipient ->expr()->lt('migrated',1)
             )
-            ->setMaxResults(10000)
+            ->setMaxResults(50000)
             ->execute();
 
+        // get all queueMails
+        $allQueueMailUids = $queryBuilderQueueMail
+            ->select('uid')
+            ->from('tx_rkwmailer_domain_model_queuemail')
+            ->execute()
+            ->fetchAll(\PDO::FETCH_COLUMN);
+
+        $allQueueMailUids = array_flip($allQueueMailUids);
+        
         // go through all openings
         while ($queueRecipient = $statement->fetch()) {
 
             // if there are still some entries left, set flag accordingly
             $migrationFinished = false;
 
-            // check if queueMail exists!
-            $existingQueueMail = $queryBuilderQueueMail
-                ->select('*')
-                ->from('tx_rkwmailer_domain_model_queuemail')
-                ->where(
-                    $queryBuilderQueueMail->expr()->eq('uid',
-                        $queryBuilderQueueMail->createNamedParameter($queueRecipient['queue_mail'], \PDO::PARAM_INT)
-                    )
-                )
-                ->execute()
-                ->fetch();
-
             // delete existing dataset
-            if (! $existingQueueMail) {
+            if (! isset($allQueueMailUids[$queueRecipient['queue_mail']])) {
 
                 $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
                     ->getQueryBuilderForTable('tx_rkwmailer_domain_model_queuerecipient');
@@ -426,6 +422,7 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
                     );
                 $databaseQueries[] = $queryBuilder->getSQL();
                 $queryBuilder->execute();
+                
             } else {
                 
                 /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $updateQueryBuilder */
@@ -482,15 +479,24 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
             ->removeByType(DeletedRestriction::class);
 
         // ============================================================
-        // Now we check of queueRecipients without existing queueMail!
+        // Now we check of statisticOpenings without existing queueMail!
         // ============================================================ 
         $statement = $queryBuilderStatisticOpenings ->select('*')
             ->from('tx_rkwmailer_domain_model_statisticopening')
             ->where(
                 $queryBuilderStatisticOpenings ->expr()->lt('migrated',1)
             )
-            ->setMaxResults(10000)
+            ->setMaxResults(50000)
             ->execute();
+
+        // get all queueMails
+        $allQueueMailUids = $queryBuilderQueueMail
+            ->select('uid')
+            ->from('tx_rkwmailer_domain_model_queuemail')
+            ->execute()
+            ->fetchAll(\PDO::FETCH_COLUMN);
+
+        $allQueueMailUids = array_flip($allQueueMailUids);
 
         // go through all openings
         while ($statisticOpenings = $statement->fetch()) {
@@ -498,20 +504,8 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
             // if there are still some entries left, set flag accordingly
             $migrationFinished = false;
 
-            // check if queueMail exists!
-            $existingQueueMail = $queryBuilderQueueMail
-                ->select('*')
-                ->from('tx_rkwmailer_domain_model_queuemail')
-                ->where(
-                    $queryBuilderQueueMail->expr()->eq('uid',
-                        $queryBuilderQueueMail->createNamedParameter($statisticOpenings['queue_mail'], \PDO::PARAM_INT)
-                    )
-                )
-                ->execute()
-                ->fetch();
-
             // delete existing dataset
-            if (! $existingQueueMail) {
+            if (! isset($allQueueMailUids[$statisticOpenings['queue_mail']])) {
 
                 $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
                     ->getQueryBuilderForTable('tx_rkwmailer_domain_model_statisticopening');

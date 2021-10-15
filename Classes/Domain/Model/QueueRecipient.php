@@ -34,14 +34,6 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $queueMail;
 
-
-    /**
-     * frontendUser
-     *
-     * @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
-     */
-    protected $frontendUser;
-
     
     /**
      * email
@@ -145,26 +137,6 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->queueMail = $queueMail;
     }
 
-    /**
-     * Returns the frontendUser
-     *
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
-     */
-    public function getFrontendUser()
-    {
-        return $this->frontendUser;
-    }
-
-    /**
-     * Sets the frontendUser
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
-     * @return void
-     */
-    public function setFrontendUser(\TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser): void
-    {
-        $this->frontendUser = $frontendUser;
-    }
 
     /**
      * Returns the email

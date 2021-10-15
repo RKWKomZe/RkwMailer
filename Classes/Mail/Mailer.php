@@ -22,6 +22,7 @@ use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\View\MailStandaloneView;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -245,7 +246,7 @@ class Mailer
                         );
                     } else {
                         $this->getLogger()->log(
-                            \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                            LogLevel::INFO, 
                             sprintf(
                                 'Currently no recipients for queueMail with uid %s, but marked for pipeline-usage.',
                                 $queueMail->getUid()
@@ -258,7 +259,7 @@ class Mailer
             } catch (\Exception $e) {
 
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::ERROR, 
+                    LogLevel::ERROR, 
                     sprintf('
                         An unexpected error occurred while trying to send e-mails. QueueMail with uid %s has not been sent. Error: %s.', 
                         $queueMail->getUid(), 
@@ -332,7 +333,7 @@ class Mailer
                             $queueRecipient->setStatus(4);
 
                             $this->getLogger()->log(
-                                \TYPO3\CMS\Core\Log\LogLevel::INFO, 
+                                LogLevel::INFO, 
                                 sprintf('Successfully sent e-mail to "%s" (recipient-uid %s) for queueMail id %s.', 
                                     $queueRecipient->getEmail(), 
                                     $queueRecipient->getUid(), 
@@ -346,7 +347,7 @@ class Mailer
                             $queueRecipient->setStatus(99);
 
                             $this->getLogger()->log(
-                                \TYPO3\CMS\Core\Log\LogLevel::WARNING, 
+                                LogLevel::WARNING, 
                                 sprintf(
                                     'An error occurred while trying to send an e-mail to "%s" (recipient-uid %s). Message: %s', 
                                     $queueRecipient->getEmail(), 
@@ -360,7 +361,7 @@ class Mailer
                         // set status to deferred - we don't sent emails to this address again
                         $queueRecipient->setStatus(97);
                         $this->getLogger()->log(
-                            \TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf(
+                            LogLevel::WARNING, sprintf(
                                 'E-mail "%s" (recipient-uid %s) blocked for further mailings because of bounces detected during processing of queueMail width uid %s.', 
                                 $queueRecipient->getEmail(), 
                                 $queueRecipient->getUid(), 
@@ -372,7 +373,7 @@ class Mailer
                 } catch (\Exception $e) {
                     $queueRecipient->setStatus(99);
                     $this->getLogger()->log(
-                        \TYPO3\CMS\Core\Log\LogLevel::WARNING, 
+                        LogLevel::WARNING, 
                         sprintf(
                             'An error occurred while trying to send an e-mail to queueRecipient with uid %s. Error: %s.',
                             $queueRecipient->getUid(), 
@@ -460,7 +461,7 @@ class Mailer
                     
                     $message->addPart($template, 'text/' . $shortName);
                     $this->getLogger()->log(
-                        \TYPO3\CMS\Core\Log\LogLevel::DEBUG, 
+                        LogLevel::DEBUG, 
                         sprintf(
                             'Setting %s-body for recipient with uid=%s in queueMail with uid=%s.', 
                             $longName, 
@@ -476,7 +477,7 @@ class Mailer
             $emailBody = $queueMail->getBodyText();
             $message->setBody($emailBody, 'text/plain');
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::DEBUG, 
+                LogLevel::DEBUG, 
                 sprintf(
                     'Setting default body for recipient with uid %s in queueMail with uid %s.', 
                     $queueRecipient->getUid(), 
@@ -493,7 +494,7 @@ class Mailer
             $attachment = \Swift_Attachment::newInstance($emailString, 'meeting.ics', 'text/calendar');
             $message->attach($attachment);
             $this->getLogger()->log(
-                \TYPO3\CMS\Core\Log\LogLevel::DEBUG, 
+                LogLevel::DEBUG, 
                 sprintf(
                     'Setting calendar-body for recipient with uid %s in queueMail with uid %s.', 
                     $queueRecipient->getUid(), 
@@ -606,7 +607,7 @@ class Mailer
                     $this->mailBodyCache->$propertySetter($queueRecipient, $renderedTemplate);
 
                     $this->getLogger()->log(
-                        \TYPO3\CMS\Core\Log\LogLevel::DEBUG,
+                        LogLevel::DEBUG,
                         sprintf(
                             'Added %s-template-property for recipient with email "%s" (queueMail uid=%s).',
                             ucFirst($type),
@@ -616,7 +617,7 @@ class Mailer
                     );
                 } else {
                     $this->getLogger()->log(
-                        \TYPO3\CMS\Core\Log\LogLevel::DEBUG,
+                        LogLevel::DEBUG,
                         sprintf(
                             '%s-template-property is already set for recipient with email "%s" (queueMail uid=%s).',
                             ucFirst($type),
@@ -627,7 +628,7 @@ class Mailer
                 }
             } else {
                 $this->getLogger()->log(
-                    \TYPO3\CMS\Core\Log\LogLevel::INFO,
+                    LogLevel::DEBUG,
                     sprintf(
                         '%s-template is not set for recipient with email "%s" (queueMail uid=%s).',
                         ucFirst($type),
