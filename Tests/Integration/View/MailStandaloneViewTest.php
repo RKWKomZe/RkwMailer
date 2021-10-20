@@ -1229,7 +1229,9 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Then the absolute src is resolved to an url
          */
         $this->subject->setTemplate('Testing/Check50.html');
+        $this->subject->assign('webPath', $_SERVER['TYPO3_PATH_WEB']);
         $result = $this->subject->render();
+        
 
         self::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
         self::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
