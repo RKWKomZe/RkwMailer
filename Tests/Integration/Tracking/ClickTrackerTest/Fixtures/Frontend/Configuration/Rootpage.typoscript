@@ -3,19 +3,19 @@ module.tx_rkwmailer {
 
         layoutRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Layouts/
-            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Layouts/
+            1 = EXT:rkw_mailer/Tests/Integration/Tracking/ClickTrackerTest/Fixtures/Frontend/Layouts/
         }
 
         # cat=module.tx_rkwmailer/file; type=string; label=Path to template root (BE)
         templateRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Templates/
-            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Templates/
+            1 = EXT:rkw_mailer/Tests/Integration/Tracking/ClickTrackerTest/Fixtures/Frontend/Templates/
         }
 
         # cat=module.tx_rkwmailer/file; type=string; label=Path to template layouts (BE)
         partialRootPaths {
             0 = EXT:rkw_mailer/Resources/Private/Partials/
-            1 = EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Rootpage/Partials/
+            1 = EXT:rkw_mailer/Tests/Integration/Tracking/ClickTrackerTest/Fixtures/Frontend/Partials/
         }
     }
     persistence {

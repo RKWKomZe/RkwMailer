@@ -73,9 +73,9 @@ class ImageViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -113,9 +113,9 @@ class ImageViewHelperTest extends FunctionalTestCase
 
         $result = $this->standAloneViewHelper->render();
 
-        static::assertContains('<img src="/typo3temp/', $result);
-        static::assertContains('width="536"', $result);
-        static::assertContains('height="200"', $result);
+        self::assertContains('<img src="/typo3temp/', $result);
+        self::assertContains('width="536"', $result);
+        self::assertContains('height="200"', $result);
     }
 
 

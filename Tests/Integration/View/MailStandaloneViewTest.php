@@ -19,8 +19,10 @@ use RKW\RkwBasics\Domain\Repository\PagesRepository;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\View\MailStandaloneView;
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
 
 /**
@@ -39,7 +41,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/MailStandaloneViewTest/Fixtures';
 
-
+    
     /**
      * @var string[]
      */
@@ -51,7 +53,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
     /**
      * @var string[]
      */
-    protected $coreExtensionsToLoad = [ ];
+    protected $coreExtensionsToLoad = [];
 
 
     /**
@@ -77,15 +79,15 @@ class MailStandaloneViewTest extends FunctionalTestCase
      */
     protected function setUp()
     {
-
+        
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -118,8 +120,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             10,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
@@ -127,22 +129,22 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 11);
         $settings = $this->subject->getSettings();
 
-        static::assertInternalType(
+        self::assertInternalType(
             'array',
             $settings
         );
 
-        static::assertEquals(
-            'EXT:rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Check10/Layouts/',
+        self::assertEquals(
+            'EXT:rkw_mailer/Tests/Integration/Service/Fixtures/Frontend/Check10/Layouts/',
             $settings['view']['layoutRootPaths'][1]
         );
 
-        static::assertEquals(
+        self::assertEquals(
             1010,
             $settings['persistence']['storagePid']
         );
 
-        static::assertEquals(
+        self::assertEquals(
             1010,
             $settings['settings']['redirectPid']
         );
@@ -169,22 +171,22 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class);
         $settings = $this->subject->getSettings();
 
-        static::assertInternalType(
+        self::assertInternalType(
             'array',
             $settings
         );
 
-        static::assertEquals(
+        self::assertEquals(
             'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Layouts/',
             $settings['view']['layoutRootPaths'][1]
         );
 
-        static::assertEquals(
+        self::assertEquals(
             9999,
             $settings['persistence']['storagePid']
         );
 
-        static::assertEquals(
+        self::assertEquals(
             9999,
             $settings['settings']['redirectPid']
         );
@@ -211,15 +213,15 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             10,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
 
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 11);
 
-        static::assertEquals(11, $this->subject->getSettingsPid());
+        self::assertEquals(11, $this->subject->getSettingsPid());
 
     }
 
@@ -245,8 +247,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             10,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check10.typoscript',
             ]
         );
@@ -256,35 +258,35 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $expected = [
             'layout' => [
                 0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Layouts/',
-                1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Check10/Layouts/'
+                1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/Fixtures/Frontend/Check10/Layouts/'
             ],
             'partial' => [
                 0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Partials/',
-                1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Check10/Partials/'
+                1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/Fixtures/Frontend/Check10/Partials/'
             ],
             'template' => [
                 0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Templates/',
-                1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/Fixtures/Frontend/Check10/Templates/'
+                1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/Fixtures/Frontend/Check10/Templates/'
             ],
         ];
 
         $result = $this->subject->getLayoutRootPaths();
-        static::assertInternalType('array', $result);
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected['layout'][0], $result[0]);
-        static::assertStringEndsWith($expected['layout'][1], $result[1]);
+        self::assertInternalType('array', $result);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected['layout'][0], $result[0]);
+        self::assertStringEndsWith($expected['layout'][1], $result[1]);
 
         $result = $this->subject->getPartialRootPaths();
-        static::assertInternalType('array', $result);
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected['partial'][0], $result[0]);
-        static::assertStringEndsWith($expected['partial'][1], $result[1]);
+        self::assertInternalType('array', $result);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected['partial'][0], $result[0]);
+        self::assertStringEndsWith($expected['partial'][1], $result[1]);
 
         $result = $this->subject->getTemplateRootPaths();
-        static::assertInternalType('array', $result);
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected['template'][0], $result[0]);
-        static::assertStringEndsWith($expected['template'][1], $result[1]);
+        self::assertInternalType('array', $result);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected['template'][0], $result[0]);
+        self::assertStringEndsWith($expected['template'][1], $result[1]);
 
 
     }
@@ -308,7 +310,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
         $path = 'fileadmin/stuff/Images/';
         $expected = 'fileadmin/stuff/Images';
-        static::assertEquals($expected, $this->subject->getRelativePath($path));
+        self::assertEquals($expected, $this->subject->getRelativePath($path));
     }
 
     /**
@@ -328,7 +330,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
         $path = 'EXI:rkw_mailer/rkw_mailer/Resources/Public/Images/';
         $expected = 'EXI:rkw_mailer/rkw_mailer/Resources/Public/Images';
-        static::assertEquals($expected, $this->subject->getRelativePath($path));
+        self::assertEquals($expected, $this->subject->getRelativePath($path));
     }
     /**
      * @test
@@ -348,7 +350,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
         $path = 'EXT:rkw_tester/rkw_mailer/Resources/Public/Images/';
         $expected = 'EXT:rkw_tester/rkw_mailer/Resources/Public/Images';
-        static::assertEquals($expected, $this->subject->getRelativePath($path));
+        self::assertEquals($expected, $this->subject->getRelativePath($path));
     }
 
     /**
@@ -369,7 +371,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
         $path = 'EXT:rkw_mailer/rkw_mailer/Resources/Public/Images/';
         $expected = 'typo3conf/ext/rkw_mailer/rkw_mailer/Resources/Public/Images';
-        static::assertEquals($expected, $this->subject->getRelativePath($path));
+        self::assertEquals($expected, $this->subject->getRelativePath($path));
     }
 
     //=============================================
@@ -394,8 +396,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             20,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
@@ -404,7 +406,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
 
         $expected = 'http://www.example.de';
-        static::assertEquals($expected, $this->subject->getBaseUrl());
+        self::assertEquals($expected, $this->subject->getBaseUrl());
     }
 
     //=============================================
@@ -429,8 +431,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             20,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
@@ -438,7 +440,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 20);
 
         $expected = 'http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images';
-        static::assertEquals($expected, $this->subject->getBaseUrlImages());
+        self::assertEquals($expected, $this->subject->getBaseUrlImages());
     }
 
 
@@ -464,8 +466,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             20,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check20.typoscript',
             ]
         );
@@ -473,7 +475,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 20);
 
         $expected = 'http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png';
-        static::assertEquals($expected, $this->subject->getLogoUrl());
+        self::assertEquals($expected, $this->subject->getLogoUrl());
     }
 
 
@@ -497,25 +499,25 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Layouts/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Layouts/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Layouts/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Layouts/'
         ];
 
         $expected = [
             0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Layouts/',
             1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Layouts/',
-            2 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Layouts/',
-            3 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Layouts/'
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Layouts/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Layouts/'
         ];
 
         $this->subject->addLayoutRootPaths($paths);
         $result = $this->subject->getLayoutRootPaths();
 
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);
     }
 
 
@@ -530,10 +532,10 @@ class MailStandaloneViewTest extends FunctionalTestCase
         /**
          * Scenario:
          *
-         * Given no a valid configuration for layoutPaths for the view
+         * Given no valid configuration for layoutPaths for the view
          * Given two further layoutPaths for the view
          * When the method is called
-         * Then two layoutPaths exist
+         * Then four layoutPaths exist
          * Then the further layoutPaths are added
          */
 
@@ -541,8 +543,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             30,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
@@ -550,21 +552,21 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 30);
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Layouts/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Layouts/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Layouts/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Layouts/'
         ];
 
         $expected = [
-            0 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Layouts/',
-            1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Layouts/'
+            0 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Layouts/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Layouts/'
         ];
 
         $this->subject->addLayoutRootPaths($paths);
         $result = $this->subject->getLayoutRootPaths();
 
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
 
     }
 
@@ -588,25 +590,25 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Partials/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Partials/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Partials/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Partials/'
         ];
 
         $expected = [
             0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Partials/',
             1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Partials/',
-            2 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Partials/',
-            3 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Partials/'
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Partials/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Partials/'
         ];
 
         $this->subject->addPartialRootPaths($paths);
         $result = $this->subject->getPartialRootPaths();
 
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);
     }
 
 
@@ -632,8 +634,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             30,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
@@ -641,21 +643,21 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 30);
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Partials/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Partials/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Partials/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Partials/'
         ];
 
         $expected = [
-            0 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Partials/',
-            1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Partials/'
+            0 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Partials/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Partials/'
         ];
 
         $this->subject->addPartialRootPaths($paths);
         $result = $this->subject->getPartialRootPaths();
 
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
 
     }
     
@@ -679,25 +681,25 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Templates/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Templates/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Templates/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Templates/'
         ];
 
         $expected = [
             0 => 'typo3conf/ext/rkw_mailer/Resources/Private/Templates/',
             1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/',
-            2 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Templates/',
-            3 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Templates/'
+            2 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Templates/',
+            3 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Templates/'
         ];
 
         $this->subject->addTemplateRootPaths($paths);
         $result = $this->subject->getTemplateRootPaths();
 
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);
     }
 
 
@@ -723,8 +725,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             30,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Check30.typoscript',
             ]
         );
@@ -732,21 +734,21 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailStandaloneView::class, 30);
 
         $paths = [
-            0 => 'EXT:rkw_mailer/Tests/Functional/Service/New100/Templates/',
-            1 => 'EXT:rkw_mailer/Tests/Functional/Service/New200/Templates/'
+            0 => 'EXT:rkw_mailer/Tests/Integration/Service/New100/Templates/',
+            1 => 'EXT:rkw_mailer/Tests/Integration/Service/New200/Templates/'
         ];
 
         $expected = [
-            0 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New100/Templates/',
-            1 => 'typo3conf/ext/rkw_mailer/Tests/Functional/Service/New200/Templates/'
+            0 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New100/Templates/',
+            1 => 'typo3conf/ext/rkw_mailer/Tests/Integration/Service/New200/Templates/'
         ];
 
         $this->subject->addTemplateRootPaths($paths);
         $result = $this->subject->getTemplateRootPaths();
 
-        static::assertCount(2, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
+        self::assertCount(2, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
 
     }
 
@@ -773,9 +775,9 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('test');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(2, $resultingPaths);
-        static::assertEquals($expected, $resultingPaths);
-        static::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
+        self::assertCount(2, $resultingPaths);
+        self::assertEquals($expected, $resultingPaths);
+        self::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
     }
 
     /**
@@ -801,8 +803,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         );
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(2, $resultingPaths);
-        static::assertStringEndsWith(
+        self::assertCount(2, $resultingPaths);
+        self::assertStringEndsWith(
             'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.html',
             $this->subject->getTemplatePathAndFilename()
         );
@@ -831,8 +833,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         );
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(2, $resultingPaths);
-        static::assertStringEndsWith(
+        self::assertCount(2, $resultingPaths);
+        self::assertStringEndsWith(
             'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.test', 
             $this->subject->getTemplatePathAndFilename()
         );
@@ -857,12 +859,12 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('Testing/test');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(3, $resultingPaths);
-        static::assertStringEndsWith(
+        self::assertCount(3, $resultingPaths);
+        self::assertStringEndsWith(
             'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/', 
             $resultingPaths[2]
         );
-        static::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
+        self::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
     }
 
     /**
@@ -883,8 +885,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('Testingxyz/test');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(2, $resultingPaths);
-        static::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
+        self::assertCount(2, $resultingPaths);
+        self::assertEquals('test', $this->subject->getRenderingContext()->getControllerAction());
     }
 
     //=============================================
@@ -967,12 +969,12 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplateType('plaInTeXt');
 
         $resultingPaths = $this->subject->getTemplateRootPaths();
-        static::assertCount(2, $resultingPaths);
-        static::assertStringEndsWith(
+        self::assertCount(2, $resultingPaths);
+        self::assertStringEndsWith(
             'typo3conf/ext/rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test.html', 
             $this->subject->getTemplatePathAndFilename()
         );
-        static::assertEquals('plaintext', $this->subject->getTemplateType());
+        self::assertEquals('plaintext', $this->subject->getTemplateType());
 
     }
     
@@ -1199,10 +1201,10 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('Testing/Check40.html');
         $result = $this->subject->render();
 
-        static::assertContains('baseUrl: http://www.example.de', $result);
-        static::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        static::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
-        static::assertContains('logoUrl: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
+        self::assertContains('baseUrl: http://www.example.de', $result);
+        self::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
+        self::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
+        self::assertContains('logoUrl: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
     }
 
 
@@ -1229,9 +1231,9 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('Testing/Check50.html');
         $result = $this->subject->render();
 
-        static::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
-        static::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
-        static::assertContains('<img src="http://www.example.de/fileadmin/_processed_/', $result);
+        self::assertContains('<a href="http://www.example.de/test.html">Test</a>', $result);
+        self::assertContains('<img src="http://www.example.de/test.png" width="30" height="30" alt="Test"/>', $result);
+        self::assertContains('<img src="http://www.example.de/fileadmin/_processed_/', $result);
 
     }
 
@@ -1252,7 +1254,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setTemplate('Testing/Check70.html');
         $result = $this->subject->render();
 
-        static::assertContains('Wonderful!', $result);
+        self::assertContains('Wonderful!', $result);
 
     }
 
@@ -1289,11 +1291,11 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setQueueMail($queueMail);
         $result = $this->subject->getLayoutRootPaths();
         
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);        
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);        
     }
 
     /**
@@ -1328,11 +1330,11 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setQueueMail($queueMail);
         $result = $this->subject->getTemplateRootPaths();
 
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);
     }
 
 
@@ -1368,11 +1370,11 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $this->subject->setQueueMail($queueMail);
         $result = $this->subject->getPartialRootPaths();
 
-        static::assertCount(4, $result);
-        static::assertStringEndsWith($expected[0], $result[0]);
-        static::assertStringEndsWith($expected[1], $result[1]);
-        static::assertStringEndsWith($expected[2], $result[2]);
-        static::assertStringEndsWith($expected[3], $result[3]);
+        self::assertCount(4, $result);
+        self::assertStringEndsWith($expected[0], $result[0]);
+        self::assertStringEndsWith($expected[1], $result[1]);
+        self::assertStringEndsWith($expected[2], $result[2]);
+        self::assertStringEndsWith($expected[3], $result[3]);
     }
 
 

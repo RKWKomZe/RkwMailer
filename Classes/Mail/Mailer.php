@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Mail;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwMailer\Cache\MailBodyCache;
+use RKW\RkwMailer\Cache\MailCache;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Persistence\MarkerReducer;
@@ -130,12 +130,12 @@ class Mailer
 
     
     /**
-     * mailBodyCache
+     * mailCache
      *
-     * @var \RKW\RkwMailer\Cache\MailBodyCache
+     * @var \RKW\RkwMailer\Cache\MailCache
      * @inject
      */
-    protected $mailBodyCache;
+    protected $mailCache;
   
     
     /**
@@ -444,8 +444,8 @@ class Mailer
 
         // Set message parts based on cache
         if (
-            $this->mailBodyCache->getPlaintextBody($queueRecipient)
-            || $this->mailBodyCache->getHtmlBody($queueRecipient)
+            $this->mailCache->getPlaintextBody($queueRecipient)
+            || $this->mailCache->getHtmlBody($queueRecipient)
         ) {
 
             // build e-mail
@@ -457,7 +457,7 @@ class Mailer
             ) {
 
                 $getter = 'get' . ucFirst($longName) . 'Body';
-                if ($template = $this->mailBodyCache->$getter($queueRecipient)) {
+                if ($template = $this->mailCache->$getter($queueRecipient)) {
                     
                     $message->addPart($template, 'text/' . $shortName);
                     $this->getLogger()->log(
@@ -487,7 +487,7 @@ class Mailer
         }
 
         // set calendar attachment
-        if ($template = $this->mailBodyCache->getCalendarBody($queueRecipient)) {
+        if ($template = $this->mailCache->getCalendarBody($queueRecipient)) {
 
             // replace line breaks according to RFC 5545 3.1.
             $emailString = preg_replace('/\n/', "\r\n", $template);
@@ -503,21 +503,54 @@ class Mailer
             );
         }
 
-        /** @toDo: rework to object-based version!! also: write tests for it!!! */
-        // add attachment if set
-        if (
-            $queueMail->getAttachment()
-            || is_array(json_decode($queueMail->getAttachment(), true))
-        ) {
+        
+        // add attachment if set - old versions first
+        if ($queueMail->getAttachment()) {
+            $this->getLogger()->log(
+                LogLevel::WARNING,
+                'This method to add attachments is deprecated. Please use $this->setAttachmentPath to add attachments.'
+            );
+            GeneralUtility::deprecationLog(__CLASS__ . ': Please use $this->setAttachmentPath to add attachments.');
 
-            $attachments = json_decode($queueMail->getAttachment(), true);
+            // via BLOB: old version from Max
+            /** @deprecated */
+            if (
+                (is_string($queueMail->getAttachment()) 
+                && (! json_decode($queueMail->getAttachment(), true)))
+            ) {
 
+                $attachment = \Swift_Attachment::newInstance(
+                    $queueMail->getAttachment(), 
+                    $queueMail->getAttachmentName(), 
+                    $queueMail->getAttachmentType()
+                );
+                $message->attach($attachment);
+            }
+            
+            // via array - old version from Christian
+            /** @deprecated */
+            if (is_array($attachments = json_decode($queueMail->getAttachment(), true))) {
+                foreach ($attachments as $attachment) {
+                    $file = \Swift_Attachment::fromPath(
+                        $attachment['path'], 
+                        $attachment['type']
+                    );
+                    $message->attach($file);
+                }
+            }            
+        }
+        
+        // add attachments - new version
+        if ($attachments = $queueMail->getAttachmentPaths()) {
             foreach ($attachments as $attachment) {
-                $file = \Swift_Attachment::fromPath($attachment['path']);
+                $file = \Swift_Attachment::fromPath(
+                    $attachment,
+                    mime_content_type($attachment)
+                );
                 $message->attach($file);
             }
         }
-
+        
         // add mailing list header if type > 0
         if ($queueMail->getType() > 0) {
             $message->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:' . EmailValidator::cleanUpEmail($queueMail->getFromAddress()) . '>');
@@ -588,7 +621,7 @@ class Mailer
             if ($queueMail->$templateGetter()) {
 
                 // check if templates have already been rendered and stored in cache
-                if (! $this->mailBodyCache->$propertyGetter($queueRecipient)) {
+                if (! $this->mailCache->$propertyGetter($queueRecipient)) {
 
                     // load EmailStandaloneView with configuration of queueMail
                     /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
@@ -604,7 +637,7 @@ class Mailer
                     $renderedTemplate = $emailView->render();
 
                     // cache rendered templates
-                    $this->mailBodyCache->$propertySetter($queueRecipient, $renderedTemplate);
+                    $this->mailCache->$propertySetter($queueRecipient, $renderedTemplate);
 
                     $this->getLogger()->log(
                         LogLevel::DEBUG,

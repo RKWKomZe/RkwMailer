@@ -88,8 +88,8 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -126,8 +126,8 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->track(9999, $encodedUrl);
-        static::assertFalse( $result);
-        static::assertEmpty($this->clickStatisticsRepository->findAll());
+        self::assertFalse( $result);
+        self::assertEmpty($this->clickStatisticsRepository->findAll());
     }
 
     /**
@@ -148,8 +148,8 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check100.xml');
 
         $result = $this->subject->track(100, '');
-        static::assertFalse($result);
-        static::assertEmpty($this->clickStatisticsRepository->findAll());
+        self::assertFalse($result);
+        self::assertEmpty($this->clickStatisticsRepository->findAll());
     }
 
 
@@ -179,18 +179,18 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->track(100, $encodedUrl);
-        static::assertTrue($result);
+        self::assertTrue($result);
 
         $statisticResultList = $this->clickStatisticsRepository->findAll();
-        static::assertCount(1, $statisticResultList);
+        self::assertCount(1, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\ClickStatistics $clickStatistics */
         $clickStatistics = $statisticResultList->getFirst();
-        static::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
-        static::assertEquals(100, $clickStatistics->getQueueMail()->getUid());
-        static::assertEquals($expected, $clickStatistics->getUrl());
-        static::assertNotEmpty($clickStatistics->getHash());
-        static::assertEquals(1, $clickStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
+        self::assertEquals(100, $clickStatistics->getQueueMail()->getUid());
+        self::assertEquals($expected, $clickStatistics->getUrl());
+        self::assertNotEmpty($clickStatistics->getHash());
+        self::assertEquals(1, $clickStatistics->getCounter());
 
     }
 
@@ -219,18 +219,18 @@ class ClickTrackerTest extends FunctionalTestCase
         $encodedUrl = $expected = 'https://www.google.de/suchen/';
 
         $result = $this->subject->track(100, $encodedUrl);
-        static::assertTrue($result);
+        self::assertTrue($result);
 
         $statisticResultList = $this->clickStatisticsRepository->findAll();
-        static::assertCount(1, $statisticResultList);
+        self::assertCount(1, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\ClickStatistics $clickStatistics */
         $clickStatistics = $statisticResultList->getFirst();
-        static::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
-        static::assertEquals(100, $clickStatistics->getQueueMail()->getUid());
-        static::assertEquals($expected, $clickStatistics->getUrl());
-        static::assertNotEmpty($clickStatistics->getHash());
-        static::assertEquals(1, $clickStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
+        self::assertEquals(100, $clickStatistics->getQueueMail()->getUid());
+        self::assertEquals($expected, $clickStatistics->getUrl());
+        self::assertNotEmpty($clickStatistics->getHash());
+        self::assertEquals(1, $clickStatistics->getCounter());
 
     }
 
@@ -262,19 +262,19 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->track(110, $encodedUrl);
-        static::assertTrue($result);
+        self::assertTrue($result);
 
         $statisticResultList = $this->clickStatisticsRepository->findAll();
-        static::assertCount(2, $statisticResultList);
+        self::assertCount(2, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\ClickStatistics $clickStatistics */
         $statisticResultList->next();
         $clickStatistics = $statisticResultList->current();
-        static::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
-        static::assertEquals(110, $clickStatistics->getQueueMail()->getUid());
-        static::assertEquals($expected, $clickStatistics->getUrl());
-        static::assertNotEmpty($clickStatistics->getHash());
-        static::assertEquals(1, $clickStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
+        self::assertEquals(110, $clickStatistics->getQueueMail()->getUid());
+        self::assertEquals($expected, $clickStatistics->getUrl());
+        self::assertNotEmpty($clickStatistics->getHash());
+        self::assertEquals(1, $clickStatistics->getCounter());
     }
 
 
@@ -305,18 +305,18 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->track(120, $encodedUrl);
-        static::assertTrue($result);
+        self::assertTrue($result);
 
         $statisticResultList = $this->clickStatisticsRepository->findAll();
-        static::assertCount(1, $statisticResultList);
+        self::assertCount(1, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\ClickStatistics $clickStatistics */
         $clickStatistics = $statisticResultList->getFirst();
-        static::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
-        static::assertEquals(120, $clickStatistics->getQueueMail()->getUid());
-        static::assertEquals($expected, $clickStatistics->getUrl());
-        static::assertNotEmpty($clickStatistics->getHash());
-        static::assertEquals(2, $clickStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $clickStatistics->getQueueMail());
+        self::assertEquals(120, $clickStatistics->getQueueMail()->getUid());
+        self::assertEquals($expected, $clickStatistics->getUrl());
+        self::assertNotEmpty($clickStatistics->getHash());
+        self::assertEquals(2, $clickStatistics->getCounter());
 
     }
 
@@ -344,9 +344,9 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 99999);
-        static::assertEquals($expected, $result);
-        static::assertNotContains('tx_rkwmailer[mid]=', $result);
-        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertEquals($expected, $result);
+        self::assertNotContains('tx_rkwmailer[mid]=', $result);
+        self::assertNotContains('tx_rkwmailer[uid]=', $result);
     }
 
 
@@ -374,9 +374,9 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 200);
-        static::assertStringStartsWith($expected, $result);
-        static::assertStringEndsWith('?tx_rkwmailer[mid]=200', $result);
-        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringStartsWith($expected, $result);
+        self::assertStringEndsWith('?tx_rkwmailer[mid]=200', $result);
+        self::assertNotContains('tx_rkwmailer[uid]=', $result);
 
     }
 
@@ -405,9 +405,9 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 210, 210);
-        static::assertStringStartsWith($expected, $result);
-        static::assertStringEndsWith('?tx_rkwmailer[mid]=210', $result);
-        static::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringStartsWith($expected, $result);
+        self::assertStringEndsWith('?tx_rkwmailer[mid]=210', $result);
+        self::assertNotContains('tx_rkwmailer[uid]=', $result);
 
     }
 
@@ -434,8 +434,8 @@ class ClickTrackerTest extends FunctionalTestCase
         $expected = urldecode($encodedUrl);
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 220, 220);
-        static::assertStringStartsWith($expected, $result);
-        static::assertStringEndsWith('?tx_rkwmailer[mid]=220&tx_rkwmailer[uid]=220', $result);
+        self::assertStringStartsWith($expected, $result);
+        self::assertStringEndsWith('?tx_rkwmailer[mid]=220&tx_rkwmailer[uid]=220', $result);
     }
 
     //=============================================
@@ -453,7 +453,7 @@ class ClickTrackerTest extends FunctionalTestCase
          * When the method is called
          * Then an empty string is returned
          */
-        static::assertEmpty($this->subject->getPlainUrlByHash('abc'));
+        self::assertEmpty($this->subject->getPlainUrlByHash('abc'));
     }
 
     /**
@@ -472,7 +472,7 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
 
         $result = $this->subject-> getPlainUrlByHash('48723b1aa49952c291e71078d6690caabd1370ae');
-        static::assertEquals('http://aprodi-projekt.de', $result);
+        self::assertEquals('http://aprodi-projekt.de', $result);
     }
 
 

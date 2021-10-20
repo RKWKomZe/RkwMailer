@@ -140,7 +140,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
-    public function getQueueMail(): \RKW\RkwMailer\Domain\Model\QueueMail
+    public function getQueueMail()
     {
         return $this->queueMail;
     }

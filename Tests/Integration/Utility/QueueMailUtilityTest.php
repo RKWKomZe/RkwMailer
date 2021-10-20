@@ -71,9 +71,9 @@ class QueueMailUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -242,52 +242,8 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals(1, $result->getStatus());
 
     }
-
-
-    /**
-     * @test
-     * @throws \Exception
-     */
-    public function initQueueMailSetsMailingStatisticsObject()
-    {
-        /**
-         * Scenario:
-         *
-         * When the method is called
-         * Then a QueueMail-object is returned
-         * Then mailingStistics-property contains an MailingStatistics-object
-         */
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
-        $result = $this->subject->initQueueMail();
-        self::assertInstanceOf(QueueMail::class, $result);
-        self::assertInstanceOf(MailingStatistics::class, $result->getMailingStatistics());
-
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     */
-    public function initQueueMailSetsFavSendingTimestamp()
-    {
-        /**
-         * Scenario:
-         *
-         * When the method is called
-         * Then a QueueMail-object is returned
-         * Then mailingStatistics-property contains an MailingStatistics-object
-         * Then the mailingStatistics-object has the tstampFavSending-property set to the current time
-         */
-        $timeMin = time();
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
-        $result = $this->subject->initQueueMail();
-        self::assertInstanceOf(QueueMail::class, $result);
-        self::assertInstanceOf(MailingStatistics::class, $result->getMailingStatistics());
-        
-        self::assertGreaterThanOrEqual($timeMin, $result->getMailingStatistics()->getTstampFavSending());
-        self::assertLessThanOrEqual(time(), $result->getMailingStatistics()->getTstampFavSending());
-    }
+    
+    
     /**
      * TearDown
      */

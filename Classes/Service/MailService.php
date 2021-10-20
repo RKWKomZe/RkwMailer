@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
@@ -91,6 +93,14 @@ class MailService
      */
     protected $queueRecipientRepository;
 
+
+    /**
+     * MailingStatisticsRepository
+     *
+     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
+     * @inject
+     */
+    protected $mailingStatisticsRepository;
 
     /**
      * QueueMailValidator
@@ -179,7 +189,10 @@ class MailService
         }
         if (!$this->mailer) {
             $this->mailer = $this->objectManager->get(Mailer::class);
-        }        
+        }
+        if (!$this->mailingStatisticsRepository) {
+            $this->mailingStatisticsRepository = $this->objectManager->get(MailingStatisticsRepository::class);
+        }
         GeneralUtility::deprecationLog(__CLASS__ . ': Please use the ObjectManager to load this class.');
     }
 
@@ -203,7 +216,18 @@ class MailService
             $this->queueMail = QueueMailUtility::initQueueMail($storagePid);
 
             // add and persist
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
             $this->queueMailRepository->add($this->queueMail);
+            $this->persistenceManager->persistAll();
+            
+            // add mailingStatistics - we do it now because before the persist-call we had no uid!
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
+            $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
+            $mailingStatistics->setQueueMail($this->queueMail);
+            $this->mailingStatisticsRepository->add($mailingStatistics);
+
+            $this->queueMail->setMailingStatistics($mailingStatistics);
+            $this->queueMailRepository->update($this->queueMail);
             $this->persistenceManager->persistAll();
         }
 
@@ -229,6 +253,19 @@ class MailService
             );
         }
 
+        // add mailingStatistics if not already existent
+        if (! $queueMail->getMailingStatistics()) {
+            
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
+            $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
+            $mailingStatistics->setQueueMail($queueMail);
+            $this->mailingStatisticsRepository->add($mailingStatistics);
+
+            $queueMail->setMailingStatistics($mailingStatistics);
+            $this->queueMailRepository->update($queueMail);
+            $this->persistenceManager->persistAll();
+        }
+        
         $this->queueMail = $queueMail;
     }
 
@@ -408,6 +445,7 @@ class MailService
 
                 // set status to waiting so the email will be processed
                 $queueMail->setStatus(2);
+                $queueMail->getMailingStatistics()->setTstampFavSending(time());
 
                 // update and persist changes
                 $this->queueMailRepository->update($queueMail);
@@ -453,21 +491,6 @@ class MailService
         return false;
     }
 
-
-    /**
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return \TYPO3\CMS\Core\Mail\MailMessage
-     * @throws \RKW\RkwMailer\Exception
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @deprecated 
-     */
-    public function prepareEmailForRecipient(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-    ): \TYPO3\CMS\Core\Mail\MailMessage {
-        return $this->mailer->prepareEmailBody($this->getQueueMail(), $queueRecipient);
-    }
-    
 
     /**
      * unset several variables

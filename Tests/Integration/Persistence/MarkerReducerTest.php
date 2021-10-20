@@ -87,8 +87,8 @@ class MarkerReducerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailerConfiguration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -155,11 +155,11 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->implodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test3'], $result['test3']);
-        static::assertEquals($expected['test4'], $result['test4']);
+        self::assertCount(4, $expected);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test3'], $result['test3']);
+        self::assertEquals($expected['test4'], $result['test4']);
 
     }
 
@@ -218,11 +218,11 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->implodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test3'], $result['test3']);
-        static::assertEquals($expected['test4'], $result['test4']);
+        self::assertCount(4, $expected);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test3'], $result['test3']);
+        self::assertEquals($expected['test4'], $result['test4']);
     }
 
     /**
@@ -264,10 +264,10 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->implodeMarker($marker);
 
-        static::assertCount(3, $expected);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test1'], $result['test1']);
-        static::assertEquals($expected['test3'], $result['test3']);
+        self::assertCount(3, $expected);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test1'], $result['test1']);
+        self::assertEquals($expected['test3'], $result['test3']);
     }
 
 
@@ -329,24 +329,24 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertInstanceOf(Pages::class, $result['test3']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
-        static::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
+        self::assertCount(4, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertInstanceOf(Pages::class, $result['test3']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
 
         /** @var ObjectStorage $resultStorage */
         $resultStorage = $result['test4'];
-        static::assertInstanceOf(ObjectStorage::class, $resultStorage);
-        static::assertCount(2, $resultStorage);
+        self::assertInstanceOf(ObjectStorage::class, $resultStorage);
+        self::assertCount(2, $resultStorage);
 
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
         $resultStorage->next();
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
     }
 
 
@@ -408,24 +408,24 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertInstanceOf(Pages::class, $result['test3']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
-        static::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
+        self::assertCount(4, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertInstanceOf(Pages::class, $result['test3']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
 
         /** @var ObjectStorage $resultStorage */
         $resultStorage = $result['test4'];
-        static::assertInstanceOf(ObjectStorage::class, $resultStorage);
-        static::assertCount(2, $resultStorage);
+        self::assertInstanceOf(ObjectStorage::class, $resultStorage);
+        self::assertCount(2, $resultStorage);
 
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
         $resultStorage->next();
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
     }
 
     /**
@@ -490,24 +490,24 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertInstanceOf(Pages::class, $result['test3']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
-        static::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
+        self::assertCount(4, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertInstanceOf(Pages::class, $result['test3']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertEquals($expected['test3']->getUid(), $result['test3']->getUid());
 
         /** @var ObjectStorage $resultStorage */
         $resultStorage = $result['test4'];
-        static::assertInstanceOf(ObjectStorage::class, $resultStorage);
-        static::assertCount(2, $resultStorage);
+        self::assertInstanceOf(ObjectStorage::class, $resultStorage);
+        self::assertCount(2, $resultStorage);
 
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityTwo->getUid(), $resultStorage->current()->getUid());
         $resultStorage->next();
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
     }
 
     /**
@@ -566,19 +566,19 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(3, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertCount(3, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
 
         /** @var ObjectStorage $resultStorage */
         $resultStorage = $result['test4'];
-        static::assertInstanceOf(ObjectStorage::class, $resultStorage);
-        static::assertCount(1, $resultStorage);
+        self::assertInstanceOf(ObjectStorage::class, $resultStorage);
+        self::assertCount(1, $resultStorage);
 
-        static::assertInstanceOf(Pages::class, $resultStorage->current());
-        static::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
+        self::assertInstanceOf(Pages::class, $resultStorage->current());
+        self::assertEquals($entityThree->getUid(), $resultStorage->current()->getUid());
     }
 
     /**
@@ -630,16 +630,16 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(3, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertCount(3, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
 
         /** @var ObjectStorage $resultStorage */
         $resultStorage = $result['test4'];
-        static::assertInstanceOf(ObjectStorage::class, $resultStorage);
-        static::assertCount(0, $resultStorage);
+        self::assertInstanceOf(ObjectStorage::class, $resultStorage);
+        self::assertCount(0, $resultStorage);
 
     }
 
@@ -691,13 +691,13 @@ class MarkerReducerTest extends FunctionalTestCase
 
         $result = $this->subject->explodeMarker($marker);
 
-        static::assertCount(4, $expected);
-        static::assertInstanceOf(Pages::class, $result['test1']);
-        static::assertInstanceOf(Pages::class, $result['test2']);
-        static::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
-        static::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
-        static::assertEquals($expected['test3'], $result['test3']);
-        static::assertEquals($expected['test4'], $result['test4']);
+        self::assertCount(4, $expected);
+        self::assertInstanceOf(Pages::class, $result['test1']);
+        self::assertInstanceOf(Pages::class, $result['test2']);
+        self::assertEquals($expected['test1']->getUid(), $result['test1']->getUid());
+        self::assertEquals($expected['test2']->getUid(), $result['test2']->getUid());
+        self::assertEquals($expected['test3'], $result['test3']);
+        self::assertEquals($expected['test4'], $result['test4']);
 
     }
 
