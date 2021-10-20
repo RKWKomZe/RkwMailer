@@ -87,9 +87,9 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -146,7 +146,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);        
+        self::assertEquals($expected, $result);        
     }
 
     /**
@@ -172,7 +172,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $frontendUser->setUsername('lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -200,7 +200,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -241,7 +241,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -295,7 +295,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('fr');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -343,7 +343,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -401,7 +401,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('fr');
         
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
     
     //=============================================
@@ -429,7 +429,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -460,7 +460,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -494,7 +494,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -529,7 +529,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -570,7 +570,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -615,7 +615,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('ru');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -668,7 +668,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('ru');
 
         $result = $this->subject::initQueueRecipient($basicData, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -688,7 +688,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
         $result = $this->subject->initQueueRecipient([], ['marker' => 'test']);
         self::assertInstanceOf(QueueRecipient::class, $result);
-        static::assertEmpty($result->getMarker());
+        self::assertEmpty($result->getMarker());
 
     }
 
@@ -731,9 +731,9 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         self::assertInstanceOf(QueueRecipient::class, $result);
 
         $marker = $result->getMarker();
-        static::assertCount(2, $marker);
-        static::assertEquals($expected['test1'], $marker['test1']);
-        static::assertEquals($expected['test2'], $marker['test2']);
+        self::assertCount(2, $marker);
+        self::assertEquals($expected['test1'], $marker['test1']);
+        self::assertEquals($expected['test2'], $marker['test2']);
 
     }
     

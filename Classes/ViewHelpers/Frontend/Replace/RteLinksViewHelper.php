@@ -138,7 +138,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
         } catch (\Exception $e) {
             
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger()->log(
+            $logger->log(
                 LogLevel::ERROR, 
                 sprintf(
                     'Error while trying to replace links: %s', 

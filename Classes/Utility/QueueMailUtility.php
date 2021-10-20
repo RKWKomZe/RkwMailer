@@ -46,14 +46,9 @@ class QueueMailUtility
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail*/
         $queueMail = GeneralUtility::makeInstance(QueueMail::class);
-        
-        /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
-        $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
-        
+          
         $queueMail->setPid($storagePid);
         $queueMail->setSettingsPid(intval($GLOBALS['TSFE']->id));
-        $queueMail->setMailingStatistics($mailingStatistics);
-        $queueMail->getMailingStatistics()->setTstampFavSending(time());
 
         // set defaults
         $queueMail->setFromName($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']);

@@ -15,7 +15,13 @@ namespace RKW\RkwMailer\Xclass;
  */
 
 /**
- * A general purpose configuration manager used in backend mode.
+ * Class BackendConfigurationManager
+ **
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright Rkw Kompetenzzentrum
+ * @package RKW_RkwMailer
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated This class is not used any more
  */
 class BackendConfigurationManager extends \TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager
 {

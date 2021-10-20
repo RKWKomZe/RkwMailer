@@ -14,9 +14,6 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Log\LogLevel;
-use TYPO3\CMS\Core\Log\LogManager;
-
 /**
  * GetRenderCacheViewHelper
  *
@@ -24,6 +21,7 @@ use TYPO3\CMS\Core\Log\LogManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated Use rkwMailer:cache.renderCache instead
  */
 abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
@@ -42,7 +40,14 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected $escapeOutput = false;
 
-
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:cache.renderCache instead.');
+    }
+    
     /**
      * Replaces marker in content
      *
@@ -50,7 +55,7 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      * @param array $marker
      * @return string
      */
-    public function replaceMarker (string $content, array $marker = []): string
+    public function replaceMarker ($content, $marker = [])
     {
         // replace marker
         foreach ($marker as $key => $value) {
@@ -61,21 +66,15 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
             $content = str_replace('{' . $key . '}', $value, $content);
 
             if ($contentBefore != $content) {
-                $this->getLogger()->log(
-                    LogLevel::DEBUG, 
-                    sprintf(
-                        'ViewHelperCache replaced key "%s" with value "%s".', 
-                        $key, 
-                        str_replace("\n", '', print_r($value, true))
-                    )
-                );
+                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('ViewHelperCache replaced key "%s" with value "%s".', $key, str_replace("\n", '', print_r($value, true))));
             }
         }
 
         return $content;
+        //===
     }
-    
-    
+
+
 
     /**
      * Returns logger instance
@@ -85,12 +84,10 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      * @param string $additionalIdentifier
      * @return string
      */
-    protected function getIdentifier(
-        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, 
-        bool $isPlaintext = false, 
-        string $additionalIdentifier = ''
-    ): string {
-       return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
+    protected function getIdentifier(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
+    {
+        return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
+        //===
     }
 
 
@@ -104,10 +101,11 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
         }
 
         return $this->logger;
+        //===
     }
 
 

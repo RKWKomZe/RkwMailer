@@ -20,6 +20,8 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	return_path varchar(255) DEFAULT '' NOT NULL,
 	subject varchar(255) DEFAULT '' NOT NULL,
 	body_text text NOT NULL,
+	attachment_paths text NOT NULL,
+	
 	attachment blob,
 	attachment_type varchar(255) DEFAULT '' NOT NULL,
 	attachment_name varchar(255) DEFAULT '' NOT NULL,

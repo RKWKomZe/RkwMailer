@@ -69,6 +69,11 @@ return [
                 'type' => 'passthrough',
             ],
 		],
+        'attachment_paths' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
         'attachment' => [
             'config' => [
                 'type' => 'passthrough',

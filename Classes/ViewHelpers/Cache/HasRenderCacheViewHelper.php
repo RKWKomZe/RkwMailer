@@ -24,7 +24,7 @@ use TYPO3\CMS\Core\Log\LogLevel;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: Write tests
+ * @deprecated Use rkwMailer:cache.renderCache instead
  */
 class HasRenderCacheViewHelper extends AbstractRenderCacheViewHelper
 {

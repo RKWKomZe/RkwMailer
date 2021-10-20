@@ -17,14 +17,11 @@ namespace RKW\RkwMailer\UriBuilder;
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwBasics\Utility\GeneralUtility;
-use RKW\RkwMailer\Domain\Model\Link;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwMailer\Domain\Repository\LinkRepository;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * FrontendUriBuilder
@@ -34,6 +31,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @comment implicitly tested
  */
 class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 {
@@ -74,27 +72,27 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      */
     public function initializeObject(): void
     {
-
-        // init frontend wit defaults
+        // init frontend with defaults
         FrontendSimulatorUtility::simulateFrontendEnvironment();
 
-        // set url scheme
+        // re-initialize configurationManager in order to load correct concreteConfigurationManager (FE vs. BE)
+        $this->configurationManager->initializeObject();
+        
+        // set contentObject to configurationManager
+        /** @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject */
+        $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $this->configurationManager->setContentObject($contentObject);
+        
+        // set url scheme based on settings
         $this->settings = $this->getSettings();
-        $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
-
+        if (isset($this->settings['baseUrl'])) {
+            $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
+        }
+        
         parent::initializeObject();
     }
 
-
-    /**
-     * Override the normal EnvironmentService with own
-     */
-    public function injectEnvironmentServiceOverride(): void
-    {
-        $this->environmentService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\RKW\RkwMailer\Service\EnvironmentService::class);
-    }
-
-
+    
     /**
      * Uid of the target page
      *
@@ -322,7 +320,13 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                $url = $this->uriFor('redirect', array(), 'Tracking', 'rkwmailer', 'Rkwmailer');
+                $url = $this->uriFor(
+                    'redirect', 
+                    [], 
+                    'Tracking', 
+                    'rkwmailer', 
+                    'Rkwmailer'
+                );
 
                 // reset frontend
                 FrontendSimulatorUtility::resetFrontendEnvironment();
@@ -345,19 +349,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         return $url;
     }
 
-    /**
-     * Resets all UriBuilder options to their default value
-     *
-     * @return \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder the current UriBuilder to allow method chaining
-     * @api
-     */
-    public function reset()
-    {
-        // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
-
-        return parent::reset();
-    }
 
     
     /**

@@ -79,8 +79,8 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -124,7 +124,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -153,7 +153,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -183,7 +183,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -212,7 +212,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check40.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -241,7 +241,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check50.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -270,7 +270,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check60.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -300,7 +300,7 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check70.txt');
         $result = str_replace("\n", '', $this->standAloneViewHelper->render());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 

@@ -83,8 +83,8 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -119,7 +119,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $expected = sha1($linkTrimmed);
         
         $result = $this->subject::generateLinkHash($link);
-        static::assertEquals($expected, $result);        
+        self::assertEquals($expected, $result);        
     }
 
 
@@ -145,7 +145,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $resultOne = $this->subject::generateLinkHash($linkOne);
         $resultTwo = $this->subject::generateLinkHash($linkTwo);
 
-        static::assertNotEquals($resultOne, $resultTwo);
+        self::assertNotEquals($resultOne, $resultTwo);
     }
 
     /**
@@ -167,7 +167,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $expected = sha1($linkDecoded);
 
         $result = $this->subject::generateLinkHash($link);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
     
     
@@ -214,7 +214,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $result = $this->subject::generateRecipientHash($queueRecipient);
         $expected = sha1($queueRecipient->getUid());
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     //=============================================
@@ -237,7 +237,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $additionalParameters = [];
 
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
-        static::assertEquals($url, $result);
+        self::assertEquals($url, $result);
     }
 
     /**
@@ -265,7 +265,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $expected = 'https://www.php.net/manual/de/?test1=1&test2=2';
 
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -294,7 +294,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $expected = 'https://www.php.net/manual/de/?test0=0&test1=1&test2=2';
 
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -325,7 +325,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $expected = 'https://www.php.net/manual/de/?test1=1&test2=2#anchor';
 
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     

@@ -90,9 +90,9 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -140,7 +140,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -175,11 +175,11 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
         $result = $this->standAloneViewHelper->render();
 
-        static::assertEquals($expected, $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        static::assertNotContains('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
-        static::assertNotContains('cHash=', $result);
-        static::assertContains('/nc/', $result);
+        self::assertEquals($expected, $result);
+        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        self::assertNotContains('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
+        self::assertNotContains('cHash=', $result);
+        self::assertContains('/nc/', $result);
     }
 
     /**
@@ -216,11 +216,11 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
         $result = $this->standAloneViewHelper->render();
 
-        static::assertEquals($expected, $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        static::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        static::assertNotContains('cHash=', $result);
-        static::assertContains('/nc/', $result);
+        self::assertEquals($expected, $result);
+        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        self::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
+        self::assertNotContains('cHash=', $result);
+        self::assertContains('/nc/', $result);
     }
 
 

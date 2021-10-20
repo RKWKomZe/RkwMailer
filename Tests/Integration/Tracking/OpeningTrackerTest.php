@@ -89,8 +89,8 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -118,8 +118,8 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then no entry in the statistic table is generated 
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
-        static::assertFalse($this->subject->track(10, 10));
-        static::assertEmpty($this->openingStatisticsRepository->findAll());
+        self::assertFalse($this->subject->track(10, 10));
+        self::assertEmpty($this->openingStatisticsRepository->findAll());
 
     }
 
@@ -139,8 +139,8 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then no entry in the statistic table is generated
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
-        static::assertFalse($this->subject->track(20, 20));
-        static::assertEmpty($this->openingStatisticsRepository->findAll());
+        self::assertFalse($this->subject->track(20, 20));
+        self::assertEmpty($this->openingStatisticsRepository->findAll());
 
     }
 
@@ -167,19 +167,19 @@ class OpeningTrackerTest extends FunctionalTestCase
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
         
-        static::assertTrue($this->subject->track(30, 30));
+        self::assertTrue($this->subject->track(30, 30));
 
         $statisticResultList = $this->openingStatisticsRepository->findAll();
-        static::assertCount(1, $statisticResultList);
+        self::assertCount(1, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\OpeningStatistics $openingStatistics */
         $openingStatistics = $statisticResultList->getFirst();
-        static::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
-        static::assertEquals(30, $openingStatistics->getQueueMail()->getUid());
-        static::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        static::assertEquals(30, $openingStatistics->getQueueRecipient()->getUid());
-        static::assertNotEmpty($openingStatistics->getHash());
-        static::assertEquals(1, $openingStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
+        self::assertEquals(30, $openingStatistics->getQueueMail()->getUid());
+        self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
+        self::assertEquals(30, $openingStatistics->getQueueRecipient()->getUid());
+        self::assertNotEmpty($openingStatistics->getHash());
+        self::assertEquals(1, $openingStatistics->getCounter());
     }
 
 
@@ -207,20 +207,20 @@ class OpeningTrackerTest extends FunctionalTestCase
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check40.xml');
 
-        static::assertTrue($this->subject->track(40, 40));
+        self::assertTrue($this->subject->track(40, 40));
 
         $statisticResultList = $this->openingStatisticsRepository->findAll();
-        static::assertCount(2, $statisticResultList);
+        self::assertCount(2, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\OpeningStatistics $openingStatistics */
         $statisticResultList->next();
         $openingStatistics = $statisticResultList->current();
-        static::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
-        static::assertEquals(40, $openingStatistics->getQueueMail()->getUid());
-        static::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        static::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());        
-        static::assertNotEmpty($openingStatistics->getHash());
-        static::assertEquals(1, $openingStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
+        self::assertEquals(40, $openingStatistics->getQueueMail()->getUid());
+        self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
+        self::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertNotEmpty($openingStatistics->getHash());
+        self::assertEquals(1, $openingStatistics->getCounter());
     }
 
     /**
@@ -247,19 +247,19 @@ class OpeningTrackerTest extends FunctionalTestCase
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check50.xml');
 
-        static::assertTrue($this->subject->track(50, 50));
+        self::assertTrue($this->subject->track(50, 50));
 
         $statisticResultList = $this->openingStatisticsRepository->findAll();
-        static::assertCount(1, $statisticResultList);
+        self::assertCount(1, $statisticResultList);
 
         /** @var \RKW\RkwMailer\Domain\Model\OpeningStatistics $openingStatistics */
         $openingStatistics = $statisticResultList->getFirst();
-        static::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
-        static::assertEquals(50, $openingStatistics->getQueueMail()->getUid());
-        static::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        static::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());        
-        static::assertNotEmpty($openingStatistics->getHash());
-        static::assertEquals(2, $openingStatistics->getCounter());
+        self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
+        self::assertEquals(50, $openingStatistics->getQueueMail()->getUid());
+        self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
+        self::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertNotEmpty($openingStatistics->getHash());
+        self::assertEquals(2, $openingStatistics->getCounter());
     }
 
     //=============================================
