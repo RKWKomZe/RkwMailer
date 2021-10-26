@@ -148,7 +148,8 @@ class MailServiceTest extends FunctionalTestCase
 
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'] = 'RKW';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] = 'service@mein.rkw.de';
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] = 'reply@mein.rkw.de';
+        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyName'] = 'RKW';
+        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] = 'reply@mein.rkw.de';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] = 'bounces@mein.rkw.de';
         
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -161,7 +162,8 @@ class MailServiceTest extends FunctionalTestCase
 
         self::assertEquals('RKW', $queueMail->getFromName());
         self::assertEquals('service@mein.rkw.de', $queueMail->getFromAddress());
-        self::assertEquals('reply@mein.rkw.de', $queueMail->getReplyAddress());
+        self::assertEquals('RKW', $queueMail->getReplyToName());
+        self::assertEquals('reply@mein.rkw.de', $queueMail->getReplyToAddress());
         self::assertEquals('bounces@mein.rkw.de', $queueMail->getReturnPath());
 
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());

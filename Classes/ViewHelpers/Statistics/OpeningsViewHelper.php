@@ -18,6 +18,8 @@ namespace RKW\RkwMailer\ViewHelpers\Statistics;
 use RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Class OpeningsViewHelper
@@ -28,22 +30,39 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @toDo: write tests
  */
-class OpeningsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+class OpeningsViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
+    use CompileWithRenderStatic;
+
+
     /**
-     * Returns the number of links that have been clicked in a given queueMail
-     * 
-     * @param int $queueMailUid
-     * @return int
+     * Initialize arguments.
+     *
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function render (int $queueMailUid) 
+    public function initializeArguments()
     {
+        parent::initializeArguments();
+        $this->registerArgument('queueMailUid', 'integer', 'queueMailUid to retrieve the number of openings from.');
+    }
+    
+   
+    /**
+     * Returns the number of openings of a given queueMail
+     * 
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     * @return string
+     */
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    {
+        $queueMailUid = $arguments['queueMailUid'];
+        
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $openingStatisticsRepository = $objectManager->get(OpeningStatisticsRepository::class);
-        
         return $openingStatisticsRepository->findByQueueMailUid($queueMailUid)->count();
     }
-
 
 }

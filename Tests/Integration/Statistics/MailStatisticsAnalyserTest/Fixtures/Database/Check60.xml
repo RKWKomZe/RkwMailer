@@ -6,7 +6,8 @@
         <pid>0</pid>
         <from_name>Test</from_name>
         <from_address>test@testen.de</from_address>
-        <reply_address>reply@testen.de</reply_address>
+        <reply_to_name>RKW Reply</reply_to_name>
+        <reply_to_address>reply@testen.de</reply_to_address>
         <return_path>return@testen.de</return_path>
         <subject>Test</subject>
         <status>1</status>

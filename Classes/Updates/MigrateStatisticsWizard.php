@@ -57,7 +57,6 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
      */
     public function checkForUpdate(&$description)
     {
-
         $currentVersion = VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
         if ($currentVersion < 8000000) {
             return false;
@@ -80,12 +79,12 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessage)
     {
-        
         // flag for wizard
         if (
             ($this->deleteOrphanedRecipients($databaseQueries))
             && ($this->deleteOrphanedStatisticOpenings($databaseQueries))
             && ($this->migrateStatistics($databaseQueries))
+            && ($this->migrateReplyTo($databaseQueries))
         ){
             $this->markWizardAsDone();
         }
@@ -536,5 +535,43 @@ class MigrateStatisticsWizard extends \RKW\RkwBasics\Updates\AbstractUpdate
         }
 
         return $migrationFinished;
+    }
+
+
+    /**
+     * migrate the reply-to fields
+     *
+     * @param array $databaseQueries Queries done in this update
+     * @return bool
+     */
+    protected function migrateReplyTo(array &$databaseQueries)
+    {
+        
+        /** @var  \TYPO3\CMS\Core\Database\Connection $connectionQueueMail */
+        $connectionQueueMail = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('tx_rkwmailer_domain_model_queuemail');
+
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilderQueueMail */
+        $queryBuilderQueueMail = $connectionQueueMail->createQueryBuilder();
+        $queryBuilderQueueMail->getRestrictions()
+            ->removeByType(StartTimeRestriction::class)
+            ->removeByType(EndTimeRestriction::class)
+            ->removeByType(HiddenRestriction::class)
+            ->removeByType(DeletedRestriction::class);
+        
+
+        // ============================================================
+        // Now we do the update
+        // ============================================================ 
+
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $updateQueryBuilder */
+        $updateQueryBuilder = $connectionQueueMail->createQueryBuilder();
+        $updateQueryBuilder->update('tx_rkwmailer_domain_model_queuemail')
+            ->set('reply_to_address', 'reply_address', false)
+            ->set('reply_to_name', 'from_name', false);
+        $databaseQueries[] = $updateQueryBuilder->getSQL();
+        $updateQueryBuilder->execute();
+
+        return true;
     }
 }

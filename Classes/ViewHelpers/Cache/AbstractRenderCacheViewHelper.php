@@ -23,7 +23,7 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated Use rkwMailer:cache.renderCache instead
  */
-abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+abstract class AbstractRenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
     /**

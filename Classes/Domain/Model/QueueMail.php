@@ -83,11 +83,18 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $fromAddress = '';
 
     /**
-     * replyAddress
+     * replyToName
      *
      * @var string
      */
-    protected $replyAddress = '';
+    protected $replyToName = '';
+    
+    /**
+     * replyToAddress
+     *
+     * @var string
+     */
+    protected $replyToAddress = '';
 
     /**
      * returnPath
@@ -484,25 +491,48 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->fromAddress = EmailValidator::cleanUpEmail($fromAddress);
     }
 
+
     /**
-     * Returns the replyAddress
+     * Returns the replyToName
      *
-     * @return string $replyAddress
+     * @return string $replyToName
      */
-    public function getReplyAddress(): string
+    public function getReplyToName(): string
     {
-        return $this->replyAddress;
+        return $this->replyToName;
     }
 
     /**
-     * Sets the replyAddress
+     * Sets the replyToName
      *
-     * @param string $replyAddress
+     * @param string $replyToName
      * @return void
      */
-    public function setReplyAddress(string $replyAddress)
+    public function setReplyToName(string $replyToName)
     {
-        $this->replyAddress = EmailValidator::cleanUpEmail($replyAddress);
+        $this->replyToName = $replyToName;
+    }
+    
+    
+    /**
+     * Returns the replyToAddress
+     *
+     * @return string $replyToAddress
+     */
+    public function getReplyToAddress(): string
+    {
+        return $this->replyToAddress;
+    }
+
+    /**
+     * Sets the replyToAddress
+     *
+     * @param string $replyToAddress
+     * @return void
+     */
+    public function setReplyToAddress(string $replyToAddress)
+    {
+        $this->replyToAddress = EmailValidator::cleanUpEmail($replyToAddress);
     }
 
     /**

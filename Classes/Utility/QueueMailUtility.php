@@ -53,15 +53,17 @@ class QueueMailUtility
         // set defaults
         $queueMail->setFromName($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']);
         $queueMail->setFromAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        $queueMail->setReplyAddress(
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] ? 
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] : 
+        $queueMail->setReplyToAddress(
+            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] ?: 
             $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
         );
+        $queueMail->setReplyToName(
+            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToName'] ?:
+                $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
+        );
         $queueMail->setReturnPath(
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ? 
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] : 
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
+            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ?: 
+                $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
         );
 
         return $queueMail;

@@ -21,7 +21,6 @@ use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * FrontendUriBuilder
@@ -74,14 +73,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     {
         // init frontend with defaults
         FrontendSimulatorUtility::simulateFrontendEnvironment();
-
-        // re-initialize configurationManager in order to load correct concreteConfigurationManager (FE vs. BE)
-        $this->configurationManager->initializeObject();
-        
-        // set contentObject to configurationManager
-        /** @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject */
-        $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $this->configurationManager->setContentObject($contentObject);
         
         // set url scheme based on settings
         $this->settings = $this->getSettings();
@@ -117,7 +108,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @param boolean $useRedirectLink
      * @return $this the current UriBuilder to allow method chaining
      */
-    public function setUseRedirectLink($useRedirectLink)
+    public function setUseRedirectLink(bool $useRedirectLink): FrontendUriBuilder
     {
         $this->useRedirectLink = (boolean) $useRedirectLink;
         return $this;
@@ -219,7 +210,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getRedirectPid(): int
     {
         if (!$this->redirectPid) {
-            $this->redirectPid = $this->settings['redirectPid'];
+            $this->redirectPid = intval($this->settings['redirectPid']);
         }
         return $this->redirectPid;
     }

@@ -20,7 +20,7 @@ use RKW\RkwMailer\ViewHelpers\Frontend\Uri\TypolinkViewHelper;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
@@ -61,7 +61,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
      **
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
-     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)

@@ -567,11 +567,11 @@ class Mailer
         }
 
         $message->setFrom([EmailValidator::cleanUpEmail($queueMail->getFromAddress()) => $queueMail->getFromName()])
-            ->setReplyTo(EmailValidator::cleanUpEmail($queueMail->getReplyAddress()))
+            ->setReplyTo([EmailValidator::cleanUpEmail($queueMail->getReplyToAddress()) => $queueMail->getReplyToName() ?: $queueMail->getFromName()])
             ->setReturnPath(EmailValidator::cleanUpEmail($queueMail->getReturnPath()))
             ->setPriority($queueMail->getPriority())
             ->setTo($recipientAddress)
-            ->setSubject($queueRecipient->getSubject() ? $queueRecipient->getSubject() : $queueMail->getSubject());
+            ->setSubject($queueRecipient->getSubject() ?: $queueMail->getSubject());
 
         self::debugTime(__LINE__, __METHOD__);
         return $message;

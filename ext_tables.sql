@@ -12,20 +12,16 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	type tinyint(2) unsigned DEFAULT '0',
     pipeline tinyint(1) unsigned DEFAULT '0',
     
-    sorting int(11) unsigned DEFAULT '0' NOT NULL,
-
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
-	reply_address varchar(255) DEFAULT '' NOT NULL,
+	reply_to_name varchar(255) DEFAULT '' NOT NULL,
+	reply_to_address varchar(255) DEFAULT '' NOT NULL,
 	return_path varchar(255) DEFAULT '' NOT NULL,
+	
 	subject varchar(255) DEFAULT '' NOT NULL,
 	body_text text NOT NULL,
 	attachment_paths text NOT NULL,
 	
-	attachment blob,
-	attachment_type varchar(255) DEFAULT '' NOT NULL,
-	attachment_name varchar(255) DEFAULT '' NOT NULL,
-
 	plaintext_template longtext NOT NULL,
 	html_template longtext NOT NULL,
 	calendar_template longtext NOT NULL,
@@ -44,6 +40,12 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp_send_finish int(11) unsigned DEFAULT '0' NOT NULL,
 
 	mailing_statistics int(11) DEFAULT '0' NOT NULL,
+
+	reply_address varchar(255) DEFAULT '' NOT NULL,
+	attachment blob,
+	attachment_type varchar(255) DEFAULT '' NOT NULL,
+	attachment_name varchar(255) DEFAULT '' NOT NULL,
+    sorting int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
@@ -70,10 +72,11 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	marker longtext NOT NULL,
 	status tinyint(2) unsigned DEFAULT '1',
 	language_code varchar(2) DEFAULT '' NOT NULL,
-    migrated int(1) DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+    migrated int(1) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
@@ -133,10 +136,11 @@ CREATE TABLE tx_rkwmailer_domain_model_clickstatistics (
 	link_hash varchar(255) DEFAULT '' NOT NULL,
 	url text NOT NULL,
 	counter int(11) DEFAULT '1' NOT NULL,
-	comment text NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	comment text NOT NULL,
 
 	PRIMARY KEY (uid),
     UNIQUE KEY `hash` (`hash`, `queue_mail`),
@@ -158,10 +162,11 @@ CREATE TABLE tx_rkwmailer_domain_model_openingstatistics (
 	queue_recipient int(11) DEFAULT '0' NOT NULL,	
 	hash varchar(255) DEFAULT '' NOT NULL,
 	counter int(11) DEFAULT '1' NOT NULL,
-	comment text NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	comment text NOT NULL,
 
 	PRIMARY KEY (uid),
     UNIQUE KEY `hash` (`hash`, `queue_mail`),

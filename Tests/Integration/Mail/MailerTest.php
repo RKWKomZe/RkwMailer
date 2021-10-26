@@ -1142,8 +1142,8 @@ class MailerTest extends FunctionalTestCase
 
         self::assertInstanceOf(MailMessage::class, $result);
 
-        self::assertEquals(['test@testen.de' => 'Test'], $result->getFrom());
-        self::assertEquals(['reply@testen.de' => null], $result->getReplyTo());
+        self::assertEquals(['test@testen.de' => 'RKW'], $result->getFrom());
+        self::assertEquals(['reply@testen.de' => 'RKW Reply'], $result->getReplyTo());
         self::assertEquals('return@testen.de', $result->getReturnPath());
         self::assertEquals(1, $result->getPriority());
 

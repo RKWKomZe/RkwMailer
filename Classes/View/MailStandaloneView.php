@@ -20,6 +20,7 @@ use RKW\RkwMailer\Exception;
 use RKW\RkwMailer\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
@@ -234,7 +235,7 @@ class MailStandaloneView extends StandaloneView
                 && (ExtensionManagementUtility::isLoaded($extKey))
                 && ((string)$local !== '')
             ) {
-                $path = ExtensionManagementUtility::siteRelPath($extKey) . $local;
+                $path = PathUtility::stripPathSitePrefix(ExtensionManagementUtility::extPath($extKey)) . $local;
                 if (strpos($path, '../') === 0) {
                     $path = substr($path, -(strlen($path)-3));
                 }

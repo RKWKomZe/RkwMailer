@@ -49,7 +49,12 @@ return [
                 'type' => 'passthrough',
             ],
 		],
-		'reply_address' => [
+        'reply_to_name' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
+		'reply_to_address' => [
             'config' => [
                 'type' => 'passthrough',
             ],

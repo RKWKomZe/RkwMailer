@@ -1,11 +1,16 @@
 <?php
 defined('TYPO3_MODE') || die('Access denied.');
 
-//=================================================================
-// Register Plugin
-//=================================================================
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'RKW.RkwMailer',
-    'Rkwmailer',
-    'RKW Mailer Tracking'
+call_user_func(
+    function () {
+
+        //=================================================================
+        // Register Plugin
+        //=================================================================
+        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+            'RKW.RkwMailer',
+            'Rkwmailer',
+            'RKW Mailer Tracking'
+        );
+    }
 );

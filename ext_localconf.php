@@ -1,10 +1,9 @@
-    <?php
+<?php
 defined('TYPO3_MODE') || die('Access denied.');
 
 call_user_func(
-    function($extKey)
+    function(string $extKey)
     {
-
         //=================================================================
         // Configure Plugin
         //=================================================================
@@ -68,8 +67,6 @@ call_user_func(
         //=================================================================
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\RKW\RkwMailer\Updates\MigrateStatisticsWizard::class] = \RKW\RkwMailer\Updates\MigrateStatisticsWizard::class;
     },
-    $_EXTKEY
+    'rkw_mailer'
 );
-
-
 

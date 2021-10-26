@@ -120,13 +120,15 @@ class QueueMailUtilityTest extends FunctionalTestCase
          * Then a QueueMail-object is returned
          * Then the fromName-property is set accordingly
          * Then the fromAddress-property is set accordingly
-         * Then the replyAddress-property is set accordingly
+         *  hen the replyToName-property is set accordingly
+         * Then the replyToAddress-property is set accordingly
          * Then the returnPath-property is set accordingly
          */
 
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'] = 'RKW';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] = 'service@mein.rkw.de';
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] = 'reply@mein.rkw.de';
+        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToName'] = 'RKW Reply';
+        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] = 'reply@mein.rkw.de';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] = 'bounces@mein.rkw.de';
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
@@ -134,7 +136,8 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $result);
         self::assertEquals('RKW', $result->getFromName());
         self::assertEquals('service@mein.rkw.de', $result->getFromAddress());
-        self::assertEquals('reply@mein.rkw.de', $result->getReplyAddress());
+        self::assertEquals('RKW Reply', $result->getReplyToName());
+        self::assertEquals('reply@mein.rkw.de', $result->getReplyToAddress());
         self::assertEquals('bounces@mein.rkw.de', $result->getReturnPath());
 
         
@@ -151,12 +154,13 @@ class QueueMailUtilityTest extends FunctionalTestCase
          *
          * Given some TYPO3_CONF_VARS for the mail-configuration are set
          * Given the defaultMailFromName-key and the defaultMailFromAddress-key are set in TYPO3_CONF_VARS
-         * Given no defaultMailReplyAddress-key and no defaultMailReturnAddress-key is set in TYPO3_CONF_VARS
+         * Given no defaultMailReplyToAddress-key and no defaultMailReturnAddress-key is set in TYPO3_CONF_VARS
          * When the method is called
          * Then a QueueMail-object is returned
          * Then the fromName-property is set accordingly
          * Then the fromAddress-property is set accordingly
-         * Then as value for the replyAddress-property the defaultMailFromAddress is used
+         * Then as value for the replyToName-property the defaultFromName is used
+         * Then as value for the replyToAddress-property the defaultMailFromAddress is used
          * Then as value for the returnPath-property the defaultMailFromAddress is used
          */
 
@@ -168,7 +172,8 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $result);
         self::assertEquals('RKW', $result->getFromName());
         self::assertEquals('service@mein.rkw.de', $result->getFromAddress());
-        self::assertEquals('service@mein.rkw.de', $result->getReplyAddress());
+        self::assertEquals('RKW', $result->getReplyToName());
+        self::assertEquals('service@mein.rkw.de', $result->getReplyToAddress());
         self::assertEquals('service@mein.rkw.de', $result->getReturnPath());
 
     }
