@@ -21,25 +21,16 @@ return [
 		'1' => ['showitem' => ''],
 	],
 	'columns' => [
-
-		
+        
 		'hash' => [
-			'exclude' => 0,
-			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_link.hash',
-			'config' => [
-				'type' => 'input',
-				'size' => 30,
-				'eval' => 'trim'
-			],
+            'config' => [
+                'type' => 'passthrough',
+            ],
 		],
 		'url' => [
-			'exclude' => 0,
-			'label' => 'LLL:EXT:rkw_mailer/Resources/Private/Language/locallang_db.xlf:tx_rkwmailer_domain_model_link.url',
 			'config' => [
-				'type' => 'input',
-				'size' => 30,
-				'eval' => 'trim'
-			],
+                'type' => 'passthrough',
+            ],
 		],
 
         'queue_mail' => [

@@ -1,17 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\ViewHelpers\Frontend;
 
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -25,6 +14,10 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * TranslateViewHelperTest
@@ -82,9 +75,9 @@ class TranslateViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -123,7 +116,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
         $result = $this->standAloneViewHelper->render();
 
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 

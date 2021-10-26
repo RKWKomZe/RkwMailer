@@ -16,11 +16,12 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend;
  */
 
 use RKW\RkwMailer\UriBuilder\FrontendUriBuilder;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
@@ -31,7 +32,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
     
     use CompileWithRenderStatic;
@@ -95,9 +96,9 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 
                 return '<img src="' . urldecode(
                     $uriBuilder->uriFor(
-                        'confirmation', 
+                        'opening', 
                         array(), 
-                        'Link', 
+                        'Tracking', 
                         'rkwmailer', 
                         'Rkwmailer')
                     ) . '" width="1" height="1" alt="" />';
@@ -106,7 +107,13 @@ class PixelCounterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set pixel-counter: %s', $e->getMessage()));
+            $logger->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'Error while trying to set pixel-counter: %s', 
+                    $e->getMessage()
+                )
+            );
         }
 
         return '';

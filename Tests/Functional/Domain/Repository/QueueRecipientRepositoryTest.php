@@ -26,6 +26,8 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated
+ * @toDo: rework
  */
 class QueueRecipientRepositoryTest extends FunctionalTestCase
 {

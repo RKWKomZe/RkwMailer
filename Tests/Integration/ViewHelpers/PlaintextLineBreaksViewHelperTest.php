@@ -74,8 +74,8 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
@@ -113,7 +113,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check10.txt');
 
-        static::assertEquals($expected, $this->standAloneViewHelper->render());
+        self::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
 
@@ -137,7 +137,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check20.txt');
 
-        static::assertEquals($expected, $this->standAloneViewHelper->render());
+        self::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
     /**
@@ -162,7 +162,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->setTemplate('Check30.html');
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check30.txt');
 
-        static::assertEquals($expected, $this->standAloneViewHelper->render());
+        self::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
     
@@ -189,7 +189,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->setTemplate('Check40.html');
         $expected = file_get_contents(self::FIXTURE_PATH . '/Expected/Check40.txt');
 
-        static::assertEquals($expected, $this->standAloneViewHelper->render());
+        self::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
 

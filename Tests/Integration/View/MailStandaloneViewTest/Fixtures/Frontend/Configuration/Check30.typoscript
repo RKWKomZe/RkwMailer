@@ -1,5 +1,11 @@
 module.tx_rkwmailer {
 
+    view {
+        layoutRootPaths >
+        templateRootPaths >
+        partialRootPaths >
+    }
+        
     persistence {
         # cat=module.tx_rkwmailer//a; type=string; label=Default storage PID
         storagePid = 1010

@@ -15,15 +15,14 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Psr\Log\LoggerInterface;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use RKW\RkwMailer\UriBuilder\FrontendUriBuilder;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
@@ -34,7 +33,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
     use CompileWithContentArgumentAndRenderStatic;
@@ -65,7 +64,7 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
      **
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
-     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
@@ -94,7 +93,7 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
                                 && (strpos($matches[1], 'mailto:') !== 0)
                             ) {
                                 return self::replace(
-                                    $matches[1],
+                                    trim($matches[1], '[](){}'),
                                     $queueMail,
                                     $queueRecipient,
                                     $additionalParams
@@ -138,7 +137,13 @@ class RedirectLinksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractV
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
+            $logger()->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'Error while trying to replace links: %s', 
+                    $e->getMessage()
+                )
+            );
         }
 
         return $value;

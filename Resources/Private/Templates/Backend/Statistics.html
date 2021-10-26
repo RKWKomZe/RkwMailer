@@ -1,164 +1,155 @@
-{namespace vh=RKW\RkwMailer\ViewHelpers}
-<f:layout name="BackendModule" />
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
+	data-namespace-typo3-fluid="true">
+	
+	<f:layout name="BackendModule" />
+	
+	<f:section name="content">
+	
+		<f:render partial="FlashMessages" arguments="{_all}" />
+	
+		<f:form action="statistics" name="timeFrame">
+			<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>
+			<f:render partial="Backend/MailTypePicker" arguments="{mailTypeList:mailTypeList, mailType:mailType}"/>
+		</f:form>
 
-This Template is responsible for creating a table of domain objects.
+		<f:be.widget.paginate objects="{mailingStatisticsList}" as="mailingStatisticsListSub" configuration="{itemsPerPage: 25}">
 
-If you modify this template, do not forget to change the overwrite settings
-in /Configuration/ExtensionBuilder/settings.yaml:
-  Resources:
-    Private:
-      Templates:
-        List.html: keep
-
-Otherwise your changes will be overwritten the next time you save the extension in the extension builder
-
-<f:section name="content">
-
-	<f:render partial="FlashMessages" arguments="{_all}" />
-
-	<f:form action="statistics" name="timeFrame">
-		<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>
-		<f:render partial="Backend/MailTypePicker" arguments="{mailTypeList:mailTypeList, mailType:mailType}"/>
-	</f:form>
-
-
-	<f:comment>
-		f:be.widget.paginate objects="{sentMails}" as="sentMailListItem" configuration="{itemsPerPage: 2}"
-	</f:comment>
-
-		<table class="tx_rkwmailer" border="1" >
-			<tr>
-				<th><f:translate key="templates_backend_statistics.uid" /></th>
-				<th><f:translate key="templates_backend_statistics.subject" /></th>
-				<th><f:translate key="templates_backend_statistics.status" /></th>
-				<th><f:translate key="templates_backend_statistics.realSending" /></th>
-				<th><f:translate key="templates_backend_statistics.endSending" /></th>
-				<th><f:translate key="templates_backend_statistics.mailsTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.statusTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.readTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.clicksTotal" /></th>
-				<th><f:translate key="templates_backend_statistics.clickStatistics" /></th>
-			</tr>
-
-			<f:for each="{sentMailListItem}" as="queueMail" >
+			<table class="tx_rkwmailer" border="1" >
 				<tr>
-					<td>
-						{queueMail.uid}
-					</td>
-					<td>
-						<strong>
-							<span title="{queueMail.subject}"><f:format.crop maxCharacters="60" respectWordBoundaries="false">{queueMail.subject}</f:format.crop></span>
-						</strong>
-					</td>
-					<td class="center">
-						<span class="status{queueMail.status}">
-							<nobr><f:translate key="templates_backend_statistics.status.{queueMail.status}" /></nobr>
-						</span>
-					</td>
-					<td class="center">
-						<f:if condition="{queueMail.tstampRealSending}">
-							<nobr><f:format.date format="d.m.Y H:i">{queueMail.tstampRealSending}</f:format.date></nobr>
-						</f:if>
-					</td>
-					<td class="center">
-						<f:if condition="{queueMail.tstampSendFinish}">
-							<nobr><f:format.date format="d.m.Y H:i">{queueMail.tstampSendFinish}</f:format.date></nobr>
-						</f:if>
-					</td>
-					<td class="center">
-						<nobr>
-							<span class="sent">
-								{queueMail.sent}
-							</span> /
-							<span class="total">
-								{queueMail.total}
-							</span>
-						</nobr>
-					</td>
-					<td class="center">
-						<table>
-							<tr>
-								<td class="okay">
-									{queueMail.successful}
-								</td>
-								<td>
-									/
-								</td>
-								<td class="failed">
-									{queueMail.failed}
-								</td>
-								<td>
-									/
-								</td>
-								<td class="deferred">
-									{queueMail.deferred}
-								</td>
-								<td>
-									/
-								</td>
-								<td class="bounced">
-									{queueMail.bounced}
-								</td>
-							</tr>
-							<tr>
-								<td class="okay">
-									<vh:calcPercentage percentage="{queueMail.successful}" total="{queueMail.sent}" />
-								</td>
-								<td>
-									/
-								</td>
-								<td class="failed">
-									<vh:calcPercentage percentage="{queueMail.failed}" total="{queueMail.sent}" />
-								</td>
-								<td>
-									/
-								</td>
-								<td class="deferred">
-									<vh:calcPercentage percentage="{queueMail.deferred}" total="{queueMail.sent}" />
-								</td>
-								<td>
-									/
-								</td>
-								<td class="bounced">
-									<vh:calcPercentage percentage="{queueMail.bounced}" total="{queueMail.sent}" />
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td class="center">
-						<table>
-							<tr>
-								<td>
-									{queueMail.opened}
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<vh:calcPercentage percentage="{queueMail.opened}" total="{queueMail.successful}" />
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td class="center">
-						{queueMail.clicked}
-					</td>
-					<td>
-						<f:if condition="{queueMail.clicked}">
-							<f:then>
-								<f:link.action action="clickStatistics" arguments="{queueMail:queueMail}" class="link">&gt;&gt; <f:translate key="templates_backend_statistics.openClickStatistics" /></f:link.action>
-
-							</f:then>
-							<f:else>
-								<f:translate key="templates_backend_statistics.noClicks" />
-							</f:else>
-						</f:if>
-					</td>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.uid" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.subject" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.status" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.realSending" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.endSending" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.mailsTotal" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.statusTotal" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.readTotal" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.clicksTotal" /></f:format.raw></th>
+					<th><f:format.raw><f:translate key="templates_backend_statistics.clickStatistics" /></f:format.raw></th>
 				</tr>
-			</f:for>
-		</table>
-
-	<f:comment>
-		/f:be.widget.paginate
-	</f:comment>
-
-</f:section>
+	
+				<f:for each="{mailingStatisticsListSub}" as="mailingStatistics" >
+					<tr>
+						<td>
+							{mailingStatistics.queueMailUid}
+						</td>
+						<td>
+							<strong>
+								<span title="{mailingStatistics.subject}">
+									<f:format.crop maxCharacters="60" respectWordBoundaries="false">{mailingStatistics.subject}</f:format.crop>
+								</span>
+							</strong>
+						</td>
+						<td class="center">
+							<span class="status{mailingStatistics.status}">
+								<nobr><f:translate key="templates_backend_statistics.status.{mailingStatistics.status}" /></nobr>
+							</span>
+						</td>
+						<td class="center">
+							<f:if condition="{mailingStatistics.tstampRealSending}">
+								<nobr><f:format.date format="d.m.Y H:i">{mailingStatistics.tstampRealSending}</f:format.date></nobr>
+							</f:if>
+						</td>
+						<td class="center">
+							<f:if condition="{mailingStatistics.tstampFinishedSending}">
+								<nobr><f:format.date format="d.m.Y H:i">{mailingStatistics.tstampFinishedSending}</f:format.date></nobr>
+							</f:if>
+						</td>
+						<td class="center">
+							<nobr>
+								<span class="sent">
+									{mailingStatistics.totalRecipients}
+								</span> /
+								<span class="total">
+									{mailingStatistics.totalSent}
+								</span>
+							</nobr>
+						</td>
+						<td class="center">
+							<table>
+								<tr>
+									<td class="okay">
+										{mailingStatistics.delivered}
+									</td>
+									<td>
+										/
+									</td>
+									<td class="failed">
+										{mailingStatistics.failed}
+									</td>
+									<td>
+										/
+									</td>
+									<td class="deferred">
+										{mailingStatistics.deferred}
+									</td>
+									<td>
+										/
+									</td>
+									<td class="bounced">
+										{mailingStatistics.bounced}
+									</td>
+								</tr>
+								<tr>
+									<td class="okay">
+										<rkwMailer:calcPercentage percentage="{mailingStatistics.delivered}" total="{mailingStatistics.totalSent}" />
+									</td>
+									<td>
+										/
+									</td>
+									<td class="failed">
+										<rkwMailer:calcPercentage percentage="{mailingStatistics.failed}" total="{mailingStatistics.totalSent}" />
+									</td>
+									<td>
+										/
+									</td>
+									<td class="deferred">
+										<rkwMailer:calcPercentage percentage="{mailingStatistics.deferred}" total="{mailingStatistics.totalSent}" />
+									</td>
+									<td>
+										/
+									</td>
+									<td class="bounced">
+										<rkwMailer:calcPercentage percentage="{mailingStatistics.bounced}" total="{mailingStatistics.totalSent}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td class="center">
+							<table>
+								<tr>
+									<td>
+										<rkwMailer:statistics.openings queueMailUid="{mailingStatistics.queueMailUid}" />
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<rkwMailer:calcPercentage percentage="{rkwMailer:statistics.openings(queueMailUid:mailingStatistics.queueMailUid)}" total="{mailingStatistics.delivered}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td class="center">
+							<rkwMailer:statistics.clickedLinks queueMailUid="{mailingStatistics.queueMailUid}" />
+						</td>
+						<td>
+							<f:if condition="{rkwMailer:statistics.clickedLinks(queueMailUid:mailingStatistics.queueMailUid)}">
+								<f:then>
+									<f:link.action action="clickStatistics" arguments="{queueMailUid:mailingStatistics.queueMailUid}" class="link">
+										&gt;&gt; <f:translate key="templates_backend_statistics.openClickStatistics" />
+									</f:link.action>
+								</f:then>
+								<f:else>
+									<f:translate key="templates_backend_statistics.noClicks" />
+								</f:else>
+							</f:if>
+						</td>
+					</tr>
+				</f:for>
+			</table>
+			
+		</f:be.widget.paginate>
+	
+	</f:section>
+</html>

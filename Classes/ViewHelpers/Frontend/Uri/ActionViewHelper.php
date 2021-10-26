@@ -16,10 +16,11 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Uri;
  */
 
 use RKW\RkwMailer\UriBuilder\FrontendUriBuilder;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Class ActionViewHelper
@@ -118,7 +119,13 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to set link: %s', $e->getMessage()));
+            $logger->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'Error while trying to set link: %s', 
+                    $e->getMessage()
+                )
+            );
         }
         
         return '';

@@ -21,6 +21,7 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated Use rkwMailer:cache.renderCache instead
  */
 class SetRenderCacheViewHelper extends AbstractRenderCacheViewHelper
 {

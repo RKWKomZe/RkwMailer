@@ -17,7 +17,7 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Uri;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Class TypolinkViewHelper
@@ -45,7 +45,7 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      **
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
-     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)

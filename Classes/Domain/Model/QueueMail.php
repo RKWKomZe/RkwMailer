@@ -17,6 +17,7 @@ namespace RKW\RkwMailer\Domain\Model;
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Validation\EmailValidator;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * QueueMail
@@ -64,7 +65,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var bool
      */
-    protected $pipeline;
+    protected $pipeline = false;
 
 
     /**
@@ -82,11 +83,18 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $fromAddress = '';
 
     /**
-     * replyAddress
+     * replyToName
      *
      * @var string
      */
-    protected $replyAddress = '';
+    protected $replyToName = '';
+    
+    /**
+     * replyToAddress
+     *
+     * @var string
+     */
+    protected $replyToAddress = '';
 
     /**
      * returnPath
@@ -110,10 +118,20 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $bodyText = '';
 
+
+    /**
+     * attachmentPath
+     *
+     * @var string
+     */
+    protected $attachmentPaths = '';
+
+    
     /**
      * attachment
      *
      * @var string
+     * @deprecated 
      */
     protected $attachment = '';
 
@@ -122,6 +140,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * attachmentType
      *
      * @var string
+     * @deprecated 
      */
     protected $attachmentType = '';
 
@@ -129,6 +148,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * attachmentName
      *
      * @var string
+     * @deprecated 
      */
     protected $attachmentName = '';
 
@@ -139,6 +159,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $plaintextTemplate = '';
 
+    
     /**
      * htmlTemplate
      *
@@ -146,6 +167,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $htmlTemplate = '';
 
+    
     /**
      * calendarTemplate
      *
@@ -206,93 +228,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var integer
      */
-    protected $settingsPid;
+    protected $settingsPid = 0;
 
-    /**
-     * tstampFavSending
-     *
-     * @var integer
-     */
-    protected $tstampFavSending;
-
-    /**
-     * tstampRealSending
-     *
-     * @var integer
-     */
-    protected $tstampRealSending;
-
-    /**
-     * tstampSendFinish
-     *
-     * @var integer
-     */
-    protected $tstampSendFinish;
-
-
-    /**
-     * total
-     *
-     * @var integer
-     */
-    protected $total;
-
-
-    /**
-     * sent
-     *
-     * @var integer
-     */
-    protected $sent;
-
-
-    /**
-     * successful
-     *
-     * @var integer
-     */
-    protected $successful;
-
-
-    /**
-     * failed
-     *
-     * @var integer
-     */
-    protected $failed;
-
-    /**
-     * deferred
-     *
-     * @var integer
-     */
-    protected $deferred;
-
-    /**
-     * bounced
-     *
-     * @var integer
-     */
-    protected $bounced;
-
-
-    /**
-     * opened
-     *
-     * @var integer
-     */
-    protected $opened;
-
-
-    /**
-     * clicked
-     *
-     * @var integer
-     */
-    protected $clicked;
-
-
-    /**
+      /**
      * settings
      *
      * @var array
@@ -301,57 +239,116 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
 
     /**
-     * Constructor
+     * queueMail
      *
-     * @throws \Exception
+     * @var \RKW\RkwMailer\Domain\Model\MailingStatistics
      */
-    public function __construct()
-    {
-        $this->initializeObject();
-    }
+    protected $mailingStatistics;
+    
 
     /**
-     * Initialize object with default values from configuration
+     * tstampFavSending
      *
-     * @throws \Exception
+     * @var integer
+     * @deprecated
      */
-    public function initializeObject()
-    {
+    protected $tstampFavSending = 0;
 
-        // set defaults
-        if (!$this->getFromAddress()) {
-            $this->setFromAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
+    /**
+     * tstampRealSending
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $tstampRealSending = 0;
 
-        if (!$this->getReplyAddress()) {
-            $this->setReplyAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
+    
+    /**
+     * tstampSendFinish
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $tstampSendFinish = 0;
+    
 
-        if (!$this->getReturnPath()) {
-            $this->setReturnPath($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
-        }
+    /**
+     * total
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $total;
 
-        if (!$this->getFromName()) {
-            $this->setFromName($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']);
-        }
 
-        // set configuration root-page
-        if (
-            (!$this->getSettingsPid())
-            && ($GLOBALS['TSFE']->id)
-        ) {
-            $this->setSettingsPid(intval($GLOBALS['TSFE']->id));
+    /**
+     * sent
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $sent;
 
-        }
 
-    }
+    /**
+     * successful
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $successful;
+
+
+    /**
+     * failed
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $failed;
+
+    /**
+     * deferred
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $deferred;
+
+    /**
+     * bounced
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $bounced;
+
+
+    /**
+     * opened
+     *
+     * @var integer
+     * @deprecated
+     */
+    protected $opened;
+
+
+    /**
+     * clicked
+     *
+     * @var integer
+     * @deprecated 
+     */
+    protected $clicked;
+    
+    
 
     /**
      * Returns the crdate
      *
      * @return integer $crdate
      */
-    public function getCrdate()
+    public function getCrdate(): int
     {
         return $this->crdate;
     }
@@ -362,7 +359,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $crdate
      * @return void
      */
-    public function setCrdate($crdate)
+    public function setCrdate(int $crdate)
     {
         $this->crdate = $crdate;
     }
@@ -372,7 +369,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $sorting
      */
-    public function getSorting()
+    public function getSorting(): int 
     {
         return $this->sorting;
     }
@@ -383,7 +380,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $sorting
      * @return void
      */
-    public function setSorting($sorting)
+    public function setSorting(int $sorting)
     {
         $this->sorting = $sorting;
     }
@@ -394,7 +391,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $status
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -405,7 +402,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $status
      * @return void
      */
-    public function setStatus($status)
+    public function setStatus(int $status)
     {
         $this->status = $status;
     }
@@ -415,7 +412,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $type
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -426,7 +423,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $type
      * @return void
      */
-    public function setType($type)
+    public function setType(int $type)
     {
         $this->type = $type;
     }
@@ -436,7 +433,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return bool $pipeline
      */
-    public function getPipeline()
+    public function getPipeline(): bool
     {
         return $this->pipeline;
     }
@@ -447,7 +444,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param bool $pipeline
      * @return void
      */
-    public function setPipeline($pipeline)
+    public function setPipeline(bool $pipeline)
     {
         $this->pipeline = $pipeline;
     }
@@ -457,7 +454,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $fromName
      */
-    public function getFromName()
+    public function getFromName(): string
     {
         return $this->fromName;
     }
@@ -468,7 +465,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $fromName
      * @return void
      */
-    public function setFromName($fromName)
+    public function setFromName(string $fromName)
     {
         $this->fromName = $fromName;
     }
@@ -478,7 +475,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $fromAddress
      */
-    public function getFromAddress()
+    public function getFromAddress(): string
     {
         return $this->fromAddress;
     }
@@ -489,30 +486,53 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $fromAddress
      * @return void
      */
-    public function setFromAddress($fromAddress)
+    public function setFromAddress(string $fromAddress)
     {
         $this->fromAddress = EmailValidator::cleanUpEmail($fromAddress);
     }
 
+
     /**
-     * Returns the replyAddress
+     * Returns the replyToName
      *
-     * @return string $replyAddress
+     * @return string $replyToName
      */
-    public function getReplyAddress()
+    public function getReplyToName(): string
     {
-        return $this->replyAddress;
+        return $this->replyToName;
     }
 
     /**
-     * Sets the replyAddress
+     * Sets the replyToName
      *
-     * @param string $replyAddress
+     * @param string $replyToName
      * @return void
      */
-    public function setReplyAddress($replyAddress)
+    public function setReplyToName(string $replyToName)
     {
-        $this->replyAddress = EmailValidator::cleanUpEmail($replyAddress);
+        $this->replyToName = $replyToName;
+    }
+    
+    
+    /**
+     * Returns the replyToAddress
+     *
+     * @return string $replyToAddress
+     */
+    public function getReplyToAddress(): string
+    {
+        return $this->replyToAddress;
+    }
+
+    /**
+     * Sets the replyToAddress
+     *
+     * @param string $replyToAddress
+     * @return void
+     */
+    public function setReplyToAddress(string $replyToAddress)
+    {
+        $this->replyToAddress = EmailValidator::cleanUpEmail($replyToAddress);
     }
 
     /**
@@ -520,7 +540,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $returnPath
      */
-    public function getReturnPath()
+    public function getReturnPath(): string
     {
         return $this->returnPath;
     }
@@ -531,7 +551,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $returnPath
      * @return void
      */
-    public function setReturnPath($returnPath)
+    public function setReturnPath(string $returnPath)
     {
         $this->returnPath = EmailValidator::cleanUpEmail($returnPath);
     }
@@ -541,7 +561,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $subject
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
@@ -552,7 +572,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $subject
      * @return void
      */
-    public function setSubject($subject)
+    public function setSubject(string $subject)
     {
         $this->subject = $subject;
     }
@@ -562,7 +582,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $bodyText
      */
-    public function getBodyText()
+    public function getBodyText(): string
     {
         return $this->bodyText;
     }
@@ -573,26 +593,83 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $bodyText
      * @return void
      */
-    public function setBodyText($bodyText)
+    public function setBodyText(string $bodyText)
     {
         $this->bodyText = $bodyText;
     }
+    
 
+    /**
+     * Returns the attachmentPath
+     *
+     * @return array $attachmentPath
+     */
+    public function getAttachmentPaths(): array
+    {
+        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->attachmentPaths, true);
+        return $paths;
+    }
+
+    
+    /**
+     * Sets the attachmentPaths
+     *
+     * @param array $attachmentPaths
+     * @return void
+     */
+    public function setAttachmentPaths (array $attachmentPaths): void
+    {
+        $this->attachmentPaths = implode(',', $attachmentPaths);
+    }
+
+    
+    /**
+     * Adds an attachmentPath
+     *
+     * @param string $attachmentPath
+     * @return void
+     */
+    public function addAttachmentPath(string $attachmentPath)
+    {
+        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->attachmentPaths);
+        $paths[] = $attachmentPath;
+        $this->attachmentPaths = implode(',', $paths);
+    }
+
+
+    /**
+     * Adds attachmentPaths
+     *
+     * @param array $attachmentPaths
+     * @return void
+     */
+    public function addAttachmentPaths(array $attachmentPaths)
+    {
+        if (is_array($attachmentPaths)) {
+            $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->attachmentPaths, true);
+            $this->attachmentPaths = implode(',', array_merge($paths, $attachmentPaths));
+        }
+    }
+    
+    
     /**
      * Returns the attachment
      *
      * @return string $attachment
+     * @deprecated use $this->getAttachmentPath() instead
      */
     public function getAttachment()
     {
         return $this->attachment;
     }
+    
 
     /**
      * Sets the attachment
      *
      * @param string $attachment
      * @return void
+     * @deprecated use $this->setAttachmentPath() instead
      */
     public function setAttachment($attachment)
     {
@@ -603,6 +680,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the attachment
      *
      * @return integer $attachment
+     * @deprecated 
      */
     public function getAttachmentType()
     {
@@ -614,6 +692,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param string $attachmentType
      * @return void
+     * @deprecated 
      */
     public function setAttachmentType($attachmentType)
     {
@@ -624,6 +703,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the attachment
      *
      * @return integer $attachment
+     * @deprecated 
      */
     public function getAttachmentName()
     {
@@ -635,6 +715,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param string $attachmentName
      * @return void
+     * @deprecated 
      */
     public function setAttachmentName($attachmentName)
     {
@@ -646,7 +727,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $plaintextTemplate
      */
-    public function getPlaintextTemplate()
+    public function getPlaintextTemplate(): string
     {
         return $this->plaintextTemplate;
     }
@@ -657,7 +738,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $plaintextTemplate
      * @return void
      */
-    public function setPlaintextTemplate($plaintextTemplate)
+    public function setPlaintextTemplate(string $plaintextTemplate)
     {
         $this->plaintextTemplate = $plaintextTemplate;
     }
@@ -667,7 +748,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $htmlTemplate
      */
-    public function getHtmlTemplate()
+    public function getHtmlTemplate(): string
     {
         return $this->htmlTemplate;
     }
@@ -678,7 +759,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $htmlTemplate
      * @return void
      */
-    public function setHtmlTemplate($htmlTemplate)
+    public function setHtmlTemplate(string $htmlTemplate)
     {
         $this->htmlTemplate = $htmlTemplate;
     }
@@ -688,7 +769,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $calendarTemplate
      */
-    public function getCalendarTemplate()
+    public function getCalendarTemplate(): string
     {
         return $this->calendarTemplate;
     }
@@ -699,7 +780,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $calendarTemplate
      * @return void
      */
-    public function setCalendarTemplate($calendarTemplate)
+    public function setCalendarTemplate(string $calendarTemplate)
     {
         $this->calendarTemplate = $calendarTemplate;
     }
@@ -711,14 +792,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return array
      * @throws \Exception
      */
-    public function getLayoutPaths()
+    public function getLayoutPaths(): array
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->layoutPaths, true);
         return $paths;
-
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        // return array_merge($paths, $this->getSettings('layoutRootPaths', 'view'));
-        //===
     }
 
 
@@ -728,7 +805,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $layoutPaths
      * @return void
      */
-    public function setLayoutPaths($layoutPaths)
+    public function setLayoutPaths(array $layoutPaths)
     {
         $this->layoutPaths = implode(',', $layoutPaths);
     }
@@ -741,7 +818,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return void
      * @deprecated use addLayoutPath or setLayoutPaths instead
      */
-    public function setLayoutPath($layoutPath)
+    public function setLayoutPath(string $layoutPath)
     {
         $this->addLayoutPath($layoutPath);
     }
@@ -753,7 +830,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $layoutPath
      * @return void
      */
-    public function addLayoutPath($layoutPath)
+    public function addLayoutPath(string $layoutPath)
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->layoutPaths);
         $paths[] = $layoutPath;
@@ -767,7 +844,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $layoutPaths
      * @return void
      */
-    public function addLayoutPaths($layoutPaths)
+    public function addLayoutPaths(array $layoutPaths)
     {
         if (is_array($layoutPaths)) {
             $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->layoutPaths, true);
@@ -782,14 +859,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return array
      * @throws \Exception
      */
-    public function getPartialPaths()
+    public function getPartialPaths(): array
     {
         $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
         return $paths;
-        
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        // return array_merge($paths, $this->getSettings('partialRootPaths', 'view'));
-        //===
     }
 
 
@@ -799,7 +872,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $partialPaths
      * @return void
      */
-    public function setPartialPaths($partialPaths)
+    public function setPartialPaths(array $partialPaths)
     {
         $this->partialPaths = implode(',', $partialPaths);
     }
@@ -812,7 +885,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return void
      * @deprecated use addPartialPath or setPartialPaths instead
      */
-    public function setPartialPath($partialPath)
+    public function setPartialPath(string $partialPath)
     {
         $this->addPartialPath($partialPath);
     }
@@ -824,9 +897,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $partialPath
      * @return void
      */
-    public function addPartialPath($partialPath)
+    public function addPartialPath(string $partialPath)
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->partialPaths, true);
         $paths[] = $partialPath;
         $this->partialPaths = implode(',', $paths);
     }
@@ -838,10 +911,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $partialPaths
      * @return void
      */
-    public function addPartialPaths($partialPaths)
+    public function addPartialPaths(array $partialPaths)
     {
         if (is_array($partialPaths)) {
-            $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->partialPaths, true);
+            $paths = GeneralUtility::trimExplode(',', $this->partialPaths, true);
             $this->partialPaths = implode(',', array_merge($paths, $partialPaths));
         }
     }
@@ -853,14 +926,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return array
      * @throws \Exception
      */
-    public function getTemplatePaths()
+    public function getTemplatePaths(): array 
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
         return $paths;
-        
-        /** @toDo: remove call of getSettings(); is now done in EmailStandaloneView */
-        //return array_merge($paths, $this->getSettings('templateRootPaths', 'view'));
-        //===
     }
 
 
@@ -870,7 +939,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $templatePaths
      * @return void
      */
-    public function setTemplatePaths($templatePaths)
+    public function setTemplatePaths(array $templatePaths)
     {
         $this->templatePaths = implode(',', $templatePaths);
     }
@@ -883,7 +952,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return void
      * @deprecated use addTemplatePath or setTemplatePaths instead
      */
-    public function setTemplatePath($templatePath)
+    public function setTemplatePath(string $templatePath)
     {
         $this->addTemplatePath($templatePath);
     }
@@ -895,9 +964,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $templatePath
      * @return void
      */
-    public function addTemplatePath($templatePath)
+    public function addTemplatePath(string $templatePath)
     {
-        $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+        $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
         $paths[] = $templatePath;
         $this->templatePaths = implode(',', $paths);
     }
@@ -909,10 +978,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $templatePaths
      * @return void
      */
-    public function addTemplatePaths($templatePaths)
+    public function addTemplatePaths(array $templatePaths)
     {
         if (is_array($templatePaths)) {
-            $paths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->templatePaths, true);
+            $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
             $this->templatePaths = implode(',', array_merge($paths, $templatePaths));
         }
     }
@@ -923,7 +992,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $category
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return $this->category;
     }
@@ -935,7 +1004,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $category
      * @return void
      */
-    public function setCategory($category)
+    public function setCategory(string $category)
     {
         $this->category = $category;
     }
@@ -946,7 +1015,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $campaignParameter
      */
-    public function getCampaignParameter()
+    public function getCampaignParameter(): string
     {
         return $this->campaignParameter;
     }
@@ -956,7 +1025,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return array
      */
-    public function getCampaignParameterExploded()
+    public function getCampaignParameterExploded(): array
     {
 
         // explode by ampersand
@@ -985,7 +1054,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $campaignParameter
      * @return void
      */
-    public function setCampaignParameter($campaignParameter)
+    public function setCampaignParameter(string $campaignParameter)
     {
         $this->campaignParameter = $campaignParameter;
     }
@@ -996,7 +1065,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $priority
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return $this->priority;
     }
@@ -1007,7 +1076,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $priority
      * @return void
      */
-    public function setPriority($priority)
+    public function setPriority(int $priority)
     {
         $this->priority = $priority;
     }
@@ -1018,7 +1087,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $settingsPid
      */
-    public function getSettingsPid()
+    public function getSettingsPid(): int
     {
         return $this->settingsPid;
     }
@@ -1029,17 +1098,40 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $settingsPid
      * @return void
      */
-    public function setSettingsPid($settingsPid)
+    public function setSettingsPid(int $settingsPid)
     {
         $this->settingsPid = $settingsPid;
     }
 
     /**
+     * Returns the mailingStatistics
+     *
+     * @return \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics
+     */
+    public function getMailingStatistics()
+    {
+        return $this->mailingStatistics;
+    }
+
+    /**
+     * Sets the mailingStatistics
+     *
+     * @param \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics
+     * @return void
+     */
+    public function setMailingStatistics(\RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics): void
+    {
+        $this->mailingStatistics = $mailingStatistics;
+    }
+
+
+    /**
      * Returns the tstampFavSending
      *
      * @return integer $tstampFavSending
+     * @deprecated
      */
-    public function getTstampFavSending()
+    public function getTstampFavSending(): int
     {
         return $this->tstampFavSending;
     }
@@ -1049,8 +1141,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampFavSending
      * @return void
+     * @deprecated
      */
-    public function setTstampFavSending($tstampFavSending)
+    public function setTstampFavSending(int $tstampFavSending)
     {
         $this->tstampFavSending = $tstampFavSending;
     }
@@ -1059,8 +1152,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the tstampRealSending
      *
      * @return integer $tstampRealSending
+     * @deprecated
      */
-    public function getTstampRealSending()
+    public function getTstampRealSending(): int
     {
         return $this->tstampRealSending;
     }
@@ -1070,8 +1164,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampRealSending
      * @return void
+     * @deprecated
      */
-    public function setTstampRealSending($tstampRealSending)
+    public function setTstampRealSending(int $tstampRealSending)
     {
         $this->tstampRealSending = $tstampRealSending;
     }
@@ -1080,8 +1175,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the tstampSendFinish
      *
      * @return integer $tstampSendFinish
+     * @deprecated
      */
-    public function getTstampSendFinish()
+    public function getTstampSendFinish(): int
     {
         return $this->tstampSendFinish;
     }
@@ -1091,18 +1187,21 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param integer $tstampSendFinish
      * @return void
+     * @deprecated
      */
-    public function setTstampSendFinish($tstampSendFinish)
+    public function setTstampSendFinish(int $tstampSendFinish)
     {
         $this->tstampSendFinish = $tstampSendFinish;
     }
+
 
     /**
      * Returns the total
      *
      * @return integer $total
+     * @deprecated
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->total;
     }
@@ -1112,19 +1211,21 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the sent
      *
      * @return integer $sent
+     * @deprecated
      */
-    public function getSent()
+    public function getSent(): int
     {
         return $this->sent;
     }
 
-    
+
     /**
      * Returns the successful
      *
      * @return integer $successful
+     * @deprecated
      */
-    public function getSuccessful()
+    public function getSuccessful(): int
     {
         return $this->successful;
     }
@@ -1134,8 +1235,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the failed
      *
      * @return integer $failed
+     * @deprecated
      */
-    public function getFailed()
+    public function getFailed(): int
     {
         return $this->failed;
     }
@@ -1145,8 +1247,9 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the deferred
      *
      * @return integer $deferred
+     * @deprecated
      */
-    public function getDeferred()
+    public function getDeferred(): int
     {
         return $this->deferred;
     }
@@ -1156,19 +1259,21 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the bounced
      *
      * @return integer $bounced
+     * @deprecated
      */
-    public function getBounced()
+    public function getBounced(): int
     {
         return $this->bounced;
     }
 
-    
+
     /**
      * Returns the opened
      *
      * @return integer $opened
+     * @deprecated
      */
-    public function getOpened()
+    public function getOpened(): int
     {
         return $this->opened;
     }
@@ -1177,98 +1282,11 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the clicked
      *
      * @return integer $clicked
+     * @deprecated 
      */
-    public function getClicked()
+    public function getClicked(): int
     {
         return $this->clicked;
     }
 
-
-
-    /**
-     * Gets TypoScript framework settings
-     *
-     * @param string $param
-     * @param string $type
-     * @return mixed
-     * @throws \Exception
-     * @deprecated Will be removed from here; is now done in EmailStandaloneView
-     */
-    public function getSettings($param = '', $type = 'settings')
-    {
-
-        if (!$this->settings) {
-
-            // simulate frontend
-            FrontendSimulatorUtility::simulateFrontendEnvironment($this->getSettingsPid());
-
-            /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-
-            /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-
-            if ($this->getSettingsPid()) {
-                $settingsTemp = $this->getTsForPage($this->getSettingsPid());
-
-                // workaround because of dots
-                $this->settings = array(
-                    'persistence' => $settingsTemp['persistence.'],
-                    'view'        => $settingsTemp['view.'],
-                    'settings'    => $settingsTemp['settings.'],
-                );
-
-            } else {
-
-                $this->settings = $configurationManager->getConfiguration(
-                    \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK,
-                    'RkwMailer',
-                    'user'
-                );
-            }
-
-            // reset frontend
-            FrontendSimulatorUtility::resetFrontendEnvironment();
-        }
-
-        if ($param) {
-
-            if ($this->settings[$type][$param . '.']) {
-                return $this->settings[$type][$param . '.'];
-                //===
-            }
-
-            return $this->settings[$type][$param];
-            //===
-
-        }
-
-        return $this->settings[$type];
-        //===
-    }
-
-
-    /**
-     * Return TS-Settings for given pid
-     *
-     * @param $pageId
-     * @return array
-     * @throws \Exception
-     */
-    private function getTsForPage($pageId)
-    {
-        /** @var \TYPO3\CMS\Core\TypoScript\TemplateService $template */
-        $template = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
-        $template->tt_track = 0;
-        $template->init();
-
-        /** @var \TYPO3\CMS\Frontend\Page\PageRepository $sysPage */
-        $sysPage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-        $rootLine = $sysPage->getRootLine(intval($pageId));
-        $template->runThroughTemplates($rootLine, 0);
-        $template->generateConfig();
-
-        return $template->setup['plugin.']['tx_rkwmailer.'];
-        //===
-    }
 }

@@ -17,14 +17,13 @@ namespace RKW\RkwMailer\Utility;
 
 /**
  * TimePeriod
- * Due to the large commonalities, the QueueMail-Model is derived and the other propertys for
- * QueueRecipient specially created
- *
+
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @toDo: write tests
  */
 class TimePeriodUtility
 {

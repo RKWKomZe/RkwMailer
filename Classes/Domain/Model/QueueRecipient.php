@@ -19,7 +19,6 @@ use RKW\RkwMailer\Validation\EmailValidator;
 /**
  * QueueRecipient
  *
- * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
@@ -35,14 +34,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $queueMail;
 
-
-    /**
-     * frontendUser
-     *
-     * @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
-     */
-    protected $frontendUser;
-
+    
     /**
      * email
      *
@@ -50,6 +42,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $email = '';
 
+    
     /**
      * title
      *
@@ -57,6 +50,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $title = '';
 
+    
     /**
      * salutation
      *
@@ -64,6 +58,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $salutation = 99;
 
+    
     /**
      * firstName
      *
@@ -71,6 +66,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $firstName = '';
 
+    
     /**
      * lastName
      *
@@ -78,6 +74,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $lastName = '';
 
+    
     /**
      * subject
      *
@@ -85,6 +82,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $subject = '';
 
+    
     /**
      * marker
      *
@@ -92,34 +90,15 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $marker = '';
 
+    
     /**
      * markerUnserialized
      *
      * @var array
      */
-    protected $markerUnserialized = '';
+    protected $markerUnserialized = [];
 
-    /**
-     * plaintextBody
-     *
-     * @var string
-     */
-    protected $plaintextBody = '';
-
-    /**
-     * htmlBody
-     *
-     * @var string
-     */
-    protected $htmlBody = '';
-
-    /**
-     * calendarBody
-     *
-     * @var string
-     */
-    protected $calendarBody = '';
-
+    
     /**
      * status
      *
@@ -127,21 +106,13 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $status = 0;
 
+    
     /**
      * languageCode
      *
      * @var string
      */
     protected $languageCode = 'de';
-
-
-    /**
-     *
-     * MailBodyCache
-     *
-     * @var \RKW\RkwMailer\Cache\MailBodyCache
-     */
-    protected $mailBodyCache;
 
 
 
@@ -161,38 +132,18 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      */
-    public function setQueueMail($queueMail)
+    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
     }
 
-    /**
-     * Returns the frontendUser
-     *
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
-     */
-    public function getFrontendUser()
-    {
-        return $this->frontendUser;
-    }
-
-    /**
-     * Sets the frontendUser
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
-     * @return void
-     */
-    public function setFrontendUser($frontendUser)
-    {
-        $this->frontendUser = $frontendUser;
-    }
 
     /**
      * Returns the email
      *
      * @return string $email
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -203,7 +154,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $email
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(string $email): void
     {
         $this->email = EmailValidator::cleanUpEmail($email);
     }
@@ -213,7 +164,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $title
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -224,7 +175,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $title
      * @return void
      */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -234,7 +185,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return int $salutation
      */
-    public function getSalutation()
+    public function getSalutation(): int
     {
         return $this->salutation;
     }
@@ -245,7 +196,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $salutation
      */
-    public function getSalutationText()
+    public function getSalutationText(): string
     {
         if ($this->getSalutation() < 99) {
 
@@ -266,7 +217,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param int $salutation
      * @return void
      */
-    public function setSalutation($salutation)
+    public function setSalutation(int $salutation): void
     {
         $this->salutation = $salutation;
     }
@@ -277,7 +228,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $firstName
      */
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -288,7 +239,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $firstName
      * @return void
      */
-    public function setFirstName($firstName)
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
@@ -298,7 +249,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $lastName
      */
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->lastName;
     }
@@ -309,7 +260,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $lastName
      * @return void
      */
-    public function setLastName($lastName)
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -320,7 +271,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $subject
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
@@ -331,7 +282,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $subject
      * @return void
      */
-    public function setSubject($subject)
+    public function setSubject(string $subject): void
     {
         $this->subject = $subject;
     }
@@ -340,122 +291,36 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the marker
      *
-     * @return mixed $marker
+     * @return array $marker
      */
-    public function getMarker()
+    public function getMarker(): array
     {
         if ($this->markerUnserialized) {
             return $this->markerUnserialized;
         }
 
-        return unserialize($this->marker);
+        return ($this->marker ? unserialize($this->marker) : []);
     }
 
     /**
      * Sets the marker
      *
-     * @param mixed $marker
+     * @param array $marker
      * @return void
      */
-    public function setMarker($marker)
+    public function setMarker(array $marker): void
     {
         $this->markerUnserialized = $marker;
         $this->marker = serialize($marker);
     }
-
-    /**
-     * Returns the plaintextBody
-     *
-     * @return string $plaintextBody
-     */
-    public function getPlaintextBody()
-    {
-        if (! empty($this->plaintextBody)) {
-            return $this->plaintextBody;
-            //===
-        }
-
-        return $this->getMailBodyCache()->getPlaintextBody($this);
-        //===
-    }
-
-    /**
-     * Sets the plaintextBody
-     *
-     * @param string $plaintextBody
-     * @return void
-     */
-    public function setPlaintextBody($plaintextBody)
-    {
-        $this->plaintextBody = $plaintextBody;
-        $this->getMailBodyCache()->setPlaintextBody($this, $plaintextBody);
-    }
-
-
-    /**
-     * Returns the htmlBody
-     *
-     * @return string $htmlBody
-     */
-    public function getHtmlBody()
-    {
-        if (! empty($this->htmlBody)) {
-            return $this->htmlBody;
-            //===
-        }
-
-        return $this->getMailBodyCache()->getHtmlBody($this);
-        //===
-    }
-
-
-    /**
-     * Sets the htmlBody
-     *
-     * @param string $htmlBody
-     * @return void
-     */
-    public function setHtmlBody($htmlBody)
-    {
-        $this->htmlBody = $htmlBody;
-        $this->getMailBodyCache()->setHtmlBody($this, $htmlBody);
-    }
-
-
-    /**
-     * Returns the calendarBody
-     *
-     * @return string $calendarBody
-     */
-    public function getCalendarBody()
-    {
-        if (! empty($this->calendarBody)) {
-            return $this->calendarBody;
-            //===
-        }
-
-        return $this->getMailBodyCache()->getCalendarBody($this);
-        //===
-    }
-
-    /**
-     * Sets the calendarBody
-     *
-     * @param string $calendarBody
-     * @return void
-     */
-    public function setCalendarBody($calendarBody)
-    {
-        $this->calendarBody = $calendarBody;
-        $this->getMailBodyCache()->setCalendarBody($this, $calendarBody);
-    }
+    
 
     /**
      * Returns the status
      *
-     * @return integer $status
+     * @return int $status
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -466,7 +331,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param integer $status
      * @return void
      */
-    public function setStatus($status)
+    public function setStatus(int $status): void
     {
         $this->status = $status;
     }
@@ -477,7 +342,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $languageCode
      */
-    public function getLanguageCode()
+    public function getLanguageCode(): string
     {
         return $this->languageCode;
     }
@@ -488,28 +353,10 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $languageCode
      * @return void
      */
-    public function setLanguageCode($languageCode)
+    public function setLanguageCode(string $languageCode): void
     {
         $this->languageCode = $languageCode;
     }
 
-
-    /**
-     * Returns logger instance
-     *
-     * @return \RKW\RkwMailer\Cache\MailBodyCache
-     */
-    protected function getMailBodyCache()
-    {
-
-        if (!$this->mailBodyCache instanceof \TYPO3\CMS\Core\Log\Logger) {
-
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-            $this->mailBodyCache = $objectManager->get('RKW\\RkwMailer\\Cache\\MailBodyCache');        
-        }
-
-        return $this->mailBodyCache;
-        //===
-    }
     
 }

@@ -21,8 +21,9 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated Use rkwMailer:cache.renderCache instead
  */
-abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+abstract class AbstractRenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
     /**
@@ -39,7 +40,14 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected $escapeOutput = false;
 
-
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:cache.renderCache instead.');
+    }
+    
     /**
      * Replaces marker in content
      *
@@ -65,8 +73,8 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
         return $content;
         //===
     }
-    
-    
+
+
 
     /**
      * Returns logger instance
@@ -78,8 +86,8 @@ abstract class AbstractRenderCacheViewHelper extends \TYPO3\CMS\Fluid\Core\ViewH
      */
     protected function getIdentifier(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail = null, $isPlaintext = false, $additionalIdentifier = '')
     {
-       return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
-       //===
+        return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
+        //===
     }
 
 
