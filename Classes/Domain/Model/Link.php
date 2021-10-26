@@ -23,6 +23,7 @@ namespace RKW\RkwMailer\Domain\Model;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated This class is only kept for backwards compatibility with old mails
  */
 class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {

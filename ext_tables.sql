@@ -8,21 +8,20 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
-	sorting int(11) unsigned DEFAULT '0' NOT NULL,
     status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '0',
     pipeline tinyint(1) unsigned DEFAULT '0',
-
+    
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
-	reply_address varchar(255) DEFAULT '' NOT NULL,
+	reply_to_name varchar(255) DEFAULT '' NOT NULL,
+	reply_to_address varchar(255) DEFAULT '' NOT NULL,
 	return_path varchar(255) DEFAULT '' NOT NULL,
+	
 	subject varchar(255) DEFAULT '' NOT NULL,
 	body_text text NOT NULL,
-	attachment blob,
-	attachment_type varchar(255) DEFAULT '' NOT NULL,
-	attachment_name varchar(255) DEFAULT '' NOT NULL,
-
+	attachment_paths text NOT NULL,
+	
 	plaintext_template longtext NOT NULL,
 	html_template longtext NOT NULL,
 	calendar_template longtext NOT NULL,
@@ -40,6 +39,13 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
 	tstamp_send_finish int(11) unsigned DEFAULT '0' NOT NULL,
 
+	mailing_statistics int(11) DEFAULT '0' NOT NULL,
+
+	reply_address varchar(255) DEFAULT '' NOT NULL,
+	attachment blob,
+	attachment_type varchar(255) DEFAULT '' NOT NULL,
+	attachment_name varchar(255) DEFAULT '' NOT NULL,
+    sorting int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
@@ -56,7 +62,6 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	queue_mail int(11) unsigned DEFAULT '0',
-	frontend_user int(11) unsigned DEFAULT '0',
 
 	email varchar(255) DEFAULT '' NOT NULL,
 	salutation tinyint(2) unsigned DEFAULT '0',
@@ -71,6 +76,8 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
+    migrated int(1) DEFAULT '0' NOT NULL,
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
     KEY email (email),
@@ -82,49 +89,90 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 
 
 #
-# Table structure for table 'tx_rkwmailer_domain_model_statisticopening'
+# Table structure for table 'tx_rkwmailer_domain_model_mailingstatistics'
 #
-CREATE TABLE tx_rkwmailer_domain_model_statisticopening (
+CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
-
+	
 	queue_mail int(11) DEFAULT '0' NOT NULL,
-	queue_recipient int(11) DEFAULT '0' NOT NULL,
-	link int(11) DEFAULT '0' NOT NULL,
-	pixel int(11) DEFAULT '0' NOT NULL,
-	click_count int(11) DEFAULT '0' NOT NULL,
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
+	subject varchar(255) DEFAULT '' NOT NULL,
+	status tinyint(2) unsigned DEFAULT '1',
+	type tinyint(2) unsigned DEFAULT '1',
+
+	total_recipients int(11) DEFAULT '0' NOT NULL,
+	total_sent int(11) DEFAULT '0' NOT NULL,
+	delivered int(11) DEFAULT '0' NOT NULL,
+	failed int(11) DEFAULT '0' NOT NULL,
+	deferred int(11) DEFAULT '0' NOT NULL,
+	bounced int(11) DEFAULT '0' NOT NULL,
+	
+    tstamp_fav_sending int(11) unsigned DEFAULT '0' NOT NULL,
+    tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
+    tstamp_finished_sending int(11) unsigned DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY queue_mail (queue_mail),
-	KEY link (link),
-	KEY pixel (pixel),
-
+    UNIQUE KEY `queue_mail` (`queue_mail`),
+    UNIQUE KEY `queue_mail_uid` (`queue_mail_uid`),
+	KEY parent (pid)
 );
 
 #
-# Table structure for table 'tx_rkwmailer_domain_model_link'
+# Table structure for table 'tx_rkwmailer_domain_model_clickstatistics'
 #
-CREATE TABLE tx_rkwmailer_domain_model_link (
+CREATE TABLE tx_rkwmailer_domain_model_clickstatistics (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
+	
 	queue_mail int(11) DEFAULT '0' NOT NULL,
-
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	hash varchar(255) DEFAULT '' NOT NULL,
+	link_hash varchar(255) DEFAULT '' NOT NULL,
 	url text NOT NULL,
+	counter int(11) DEFAULT '1' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
+	comment text NOT NULL,
+
 	PRIMARY KEY (uid),
-    UNIQUE KEY `hash` (`hash`),
+    UNIQUE KEY `hash` (`hash`, `queue_mail`),
 	KEY parent (pid),
 	KEY queue_mail (queue_mail),
+);
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_openingstatistics'
+#
+CREATE TABLE tx_rkwmailer_domain_model_openingstatistics (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
+	queue_recipient int(11) DEFAULT '0' NOT NULL,	
+	hash varchar(255) DEFAULT '' NOT NULL,
+	counter int(11) DEFAULT '1' NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	comment text NOT NULL,
+
+	PRIMARY KEY (uid),
+    UNIQUE KEY `hash` (`hash`, `queue_mail`),
+	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+    KEY queue_recipient (queue_recipient),
 );
 
 
@@ -160,3 +208,54 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
     KEY email_status (email, status),
 
 );
+
+
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_statisticopening'
+# DEPRECATED - can be removed after having executed updateWizard
+CREATE TABLE tx_rkwmailer_domain_model_statisticopening (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+	queue_recipient int(11) DEFAULT '0' NOT NULL,
+	link int(11) DEFAULT '0' NOT NULL,
+	pixel int(11) DEFAULT '0' NOT NULL,
+	click_count int(11) DEFAULT '0' NOT NULL,
+	migrated int(1) DEFAULT '0' NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+	KEY link (link),
+	KEY pixel (pixel),
+
+);
+
+#
+# Table structure for table 'tx_rkwmailer_domain_model_link'
+# DEPRECATED - but has to be kept
+CREATE TABLE tx_rkwmailer_domain_model_link (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	queue_mail int(11) DEFAULT '0' NOT NULL,
+
+	hash varchar(255) DEFAULT '' NOT NULL,
+	url text NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+    UNIQUE KEY `hash` (`hash`),
+	KEY parent (pid),
+	KEY queue_mail (queue_mail),
+);
+
+
