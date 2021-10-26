@@ -15,20 +15,22 @@ namespace RKW\RkwMailer\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Persistence\MarkerReducer;
+use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
-use RKW\RkwMailer\View\MailStandaloneView;
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
 use RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwMailer\Validation\QueueRecipientValidator;
-use RKW\RkwMailer\Validation\EmailValidator;
 
 /**
  * MailService
@@ -40,56 +42,7 @@ use RKW\RkwMailer\Validation\EmailValidator;
  */
 class MailService
 {
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_TO_BEFORE_ATTACH = 'toBeforeAttach';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_RENDER_TEMPLATE_AFTER_MARKERS = 'renderTemplateAfterMarkers';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_RENDER_TEMPLATE_AFTER_RENDER = 'renderTemplateAfterRender';
-
-    /**
-     * Signal name
-     *
-     * @const string
-     */
-    const SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND = 'sendToRecipientBeforeSend';
-
-    /**
-     * Namespace Keyword
-     *
-     * @const string
-     */
-    const NAMESPACE_KEYWORD = 'RKW_MAILER_NAMESPACES';
-
-    /**
-     * Namespace Keyword
-     *
-     * @const string
-     */
-    const NAMESPACE_ARRAY_KEYWORD = 'RKW_MAILER_NAMESPACES_ARRAY';
-
-    /**
-     * Debug switch
-     *
-     * @const string
-     */
-    const DEBUG_TIME = false;
-
+    
 
     /**
      * objectManager
@@ -142,13 +95,12 @@ class MailService
 
 
     /**
-     * BounceMailRepository
+     * MailingStatisticsRepository
      *
-     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      * @inject
      */
-    protected $bounceMailRepository;
-
+    protected $mailingStatisticsRepository;
 
     /**
      * QueueMailValidator
@@ -168,30 +120,13 @@ class MailService
     protected $queueRecipientValidator = null;
 
     /**
-     * Signal-Slot Dispatcher
+     * Mailer
      *
-     * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
+     * @var \RKW\RkwMailer\Mail\Mailer
      * @inject
      */
-    protected $signalSlotDispatcher;
-
-
-    /**
-     * MailStandaloneView
-     *
-     * @var \RKW\RkwMailer\View\MailStandaloneView
-     */
-    protected $view;
-
-
-    /**
-     * MarkerReducer
-     *
-     * @var \RKW\RkwMailer\Persistence\MarkerReducer
-     */
-    protected $markerReducer;
-
-
+    protected $mailer;    
+    
     /**
      * Logger
      *
@@ -199,7 +134,7 @@ class MailService
      */
     protected $logger;
 
-
+    
     /**
      * The normal settings
      *
@@ -222,6 +157,7 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
     }
 
+    
     /**
      * function initializeService
      *
@@ -231,7 +167,7 @@ class MailService
     {
         // set objects if they haven't been injected yet
         if (!$this->objectManager) {
-            $this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
+            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         }
         if (!$this->configurationManager) {
             $this->configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
@@ -245,81 +181,92 @@ class MailService
         if (!$this->queueRecipientRepository) {
             $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
         }
-        if (!$this->bounceMailRepository) {
-            $this->bounceMailRepository = $this->objectManager->get(BounceMailRepository::class);
-        }
         if (!$this->queueMailValidator) {
             $this->queueMailValidator = $this->objectManager->get(QueueMailValidator::class);
         }
         if (!$this->queueRecipientValidator) {
             $this->queueRecipientValidator = $this->objectManager->get(QueueRecipientValidator::class);
         }
-        if (!$this->view) {
-            $this->view = $this->objectManager->get(MailStandaloneView::class);
+        if (!$this->mailer) {
+            $this->mailer = $this->objectManager->get(Mailer::class);
         }
-        if (!$this->markerReducer) {
-            $this->markerReducer = $this->objectManager->get(MarkerReducer::class);
+        if (!$this->mailingStatisticsRepository) {
+            $this->mailingStatisticsRepository = $this->objectManager->get(MailingStatisticsRepository::class);
         }
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': Please use the ObjectManager to load this class.');
+        GeneralUtility::deprecationLog(__CLASS__ . ': Please use the ObjectManager to load this class.');
     }
 
+    
     /**
      * Init and return the queueMail
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @api
      */
     public function getQueueMail()
     {
         if (!$this->queueMail instanceof \RKW\RkwMailer\Domain\Model\QueueMail) {
 
+            // init object
+            $storagePid = intval($this->getSettings('storagePid', 'persistence'));
+            
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail queueMail */
-            $this->queueMail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Domain\\Model\\QueueMail');
-
-            // set storage pidt
-            $this->queueMail->setPid(intval($this->getSettings('storagePid', 'persistence')));
-
-            // set default tstampFavSending and crDate on now
-            $this->queueMail->setTstampFavSending(time());
-            $this->queueMail->setCrdate(time());
-
-            // set status to draft
-            $this->queueMail->setStatus(1);
+            $this->queueMail = QueueMailUtility::initQueueMail($storagePid);
 
             // add and persist
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
             $this->queueMailRepository->add($this->queueMail);
+            $this->persistenceManager->persistAll();
+            
+            // add mailingStatistics - we do it now because before the persist-call we had no uid!
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
+            $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
+            $mailingStatistics->setQueueMail($this->queueMail);
+            $this->mailingStatisticsRepository->add($mailingStatistics);
+
+            $this->queueMail->setMailingStatistics($mailingStatistics);
+            $this->queueMailRepository->update($this->queueMail);
             $this->persistenceManager->persistAll();
         }
 
         return $this->queueMail;
-        //===
     }
 
+    
     /**
      * Sets the queueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \RKW\RkwMailer\Exception
+     * @api
      */
     public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
     {
-        // check QueueMail-object
-        if (!$this->queueMailValidator->validate($queueMail)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('Invalid or missing data in queueMail-object.', 1540186518);
-            //===
-        }
 
         if ($queueMail->_isNew()) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('The queueMail-object has to be persisted before it can be used.', 1540193242);
-            //===
+            throw new \RKW\RkwMailer\Exception (
+                'The queueMail-object has to be persisted before it can be used.', 
+                1540193242
+            );
         }
 
-        $this->queueMail = $queueMail;
+        // add mailingStatistics if not already existent
+        if (! $queueMail->getMailingStatistics()) {
+            
+            /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
+            $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
+            $mailingStatistics->setQueueMail($queueMail);
+            $this->mailingStatisticsRepository->add($mailingStatistics);
 
+            $queueMail->setMailingStatistics($mailingStatistics);
+            $this->queueMailRepository->update($queueMail);
+            $this->persistenceManager->persistAll();
+        }
+        
+        $this->queueMail = $queueMail;
     }
 
 
@@ -329,47 +276,37 @@ class MailService
      *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser|\TYPO3\CMS\Extbase\Domain\Model\BackendUser|array $basicData
      * @param array $additionalData
-     * @param bool  $renderTemplates
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+     * @param bool $renderTemplates
+     * @return boolean
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     * @return boolean
+     * @throws \RKW\RkwMailer\Exception
+     * @api
      */
-    public function setTo($basicData, $additionalData = array(), $renderTemplates = false)
-    {
+    public function setTo(
+        $basicData, 
+        array $additionalData = [],
+        bool $renderTemplates = false
+    ): bool {
 
         self::debugTime(__LINE__, __METHOD__);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = QueueRecipientUtility::initQueueRecipient($basicData, $additionalData);
 
-        // set marker
-        if (isset($additionalData['marker'])) {
-            $queueRecipient->setMarker($this->markerReducer->implodeMarker($additionalData['marker']));
-        }
-
-        // Signal slot
-        $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_TO_BEFORE_ATTACH . ($this->getQueueMail()->getCategory() ? '_' . ucFirst($this->getQueueMail()->getCategory()) : ''), array($this->getQueueMail(), &$queueRecipient));
-
         if ($this->addQueueRecipient($queueRecipient)) {
 
             // render templates right away?
             if ($renderTemplates) {
-                $this->renderTemplates($queueRecipient);
+                $this->mailer->renderTemplates($this->getQueueMail(), $queueRecipient);
             }
 
             self::debugTime(__LINE__, __METHOD__);
             return true;
-            //===
         }
 
         self::debugTime(__LINE__, __METHOD__);
         return false;
-        //===
     }
 
 
@@ -379,38 +316,31 @@ class MailService
      * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @depricated since 2018/10/28 use $this->queueRecipientRepository->findByQueueMail($queueMail) instead
      */
     public function getTo()
     {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': GetTo() method will be removed soon. Use $this->queueRecipientRepository->findByQueueMail($queueMail) instead.');
         return $this->queueRecipientRepository->findByQueueMail($this->getQueueMail());
-        //===
     }
 
 
     /**
-     * function storing data
+     * add queueRecipient to queueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      * @return bool
+     * @api
      */
-    public function addQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
-    {
-
+    public function addQueueRecipient(
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+    ): bool {
         self::debugTime(__LINE__, __METHOD__);
         if (
             ($this->queueRecipientValidator->validate($queueRecipient))
             && (! $this->hasQueueRecipient($queueRecipient))
         ){
-
-            // get queueMail-object
-            $queueMail = $this->getQueueMail();
 
             // add recipient with status "waiting" to queueMail and remove it from object storage
             $queueRecipient->setStatus(2);
@@ -419,18 +349,27 @@ class MailService
             $queueRecipient->setPid(intval($this->getSettings('storagePid', 'persistence')));
 
             // set queueMail
-            $queueRecipient->setQueueMail($queueMail);
+            $queueRecipient->setQueueMail($this->getQueueMail());
 
             // update, add and persist
             $this->queueRecipientRepository->add($queueRecipient);
             $this->persistenceManager->persistAll();
 
+            $this->getLogger()->log(
+                LogLevel::INFO, 
+                sprintf(
+                    'Added recipient with email "%s" (uid %s) to queueMail with uid %s.', 
+                    $queueRecipient->getEmail(), 
+                    $queueRecipient->getUid(),
+                    $this->getQueueMail()->getUid()
+                )
+            );
+            
             self::debugTime(__LINE__, __METHOD__);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Added recipient with email "%s" (uid=%s) to queueMail with uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
-
             return true;
         }
-
+        
+        self::debugTime(__LINE__, __METHOD__);
         return false;
     }
 
@@ -441,176 +380,45 @@ class MailService
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient|string $email
      * @throws \Exception
      * @return bool
+     * @api
      */
-    public function hasQueueRecipient($email)
+    public function hasQueueRecipient($email): bool
     {
+        self::debugTime(__LINE__, __METHOD__);
+
         if ($email instanceof \RKW\RkwMailer\Domain\Model\QueueRecipient){
             $email = $email->getEmail();
         }
-
-        self::debugTime(__LINE__, __METHOD__);
+       
         if ($this->queueRecipientRepository->findOneByEmailAndQueueMail($email, $this->getQueueMail())) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Recipient with email "%s" already exists for queueMail with uid=%s.', $email, $this->getQueueMail()->getUid()));
+            $this->getLogger()->log(
+                LogLevel::INFO, 
+                sprintf(
+                    'Recipient with email "%s" already exists for queueMail with uid %s.', 
+                    $email, 
+                    $this->getQueueMail()->getUid()
+                )
+            );  
+            
+            self::debugTime(__LINE__, __METHOD__);
             return true;
         }
-
+        
+        self::debugTime(__LINE__, __METHOD__);
         return false;
     }
-
-
-
-
-    /**
-     * rendering of templates
-     *
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     */
-    public function renderTemplates(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
-    {
-
-        self::debugTime(__LINE__, __METHOD__);
-
-        // get queueMail-object and check for at least one template!
-        $queueMail = $this->getQueueMail();
-        if ($queueRecipient->_isNew()) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException('The queueRecipient-object has to be persisted before it can be used.', 1540294116);
-            //===
-        }
-
-        // build HTML- or Plaintext- Template if set!
-        $markerArray = array();
-        foreach (
-            array(
-                'html'      => 'html',
-                'plaintext' => 'plaintext',
-                'calendar'  => 'calendar',
-            ) as $property => $template
-        ) {
-
-            $templateGetter = 'get' . ucFirst($template) . 'Template';
-            $propertySetter = 'set' . ucFirst($property) . 'Body';
-            $propertyGetter = 'get' . ucFirst($property) . 'Body';
-            if ($queueMail->$templateGetter()) {
-                if (! $queueRecipient->$propertyGetter()) {
-
-                    // build marker array - but only once!
-                    if (count($markerArray) < 1) {
-
-                        // rebuild lightweight marker. Replace simple references to real extbase objects
-                        $queueRecipientMarker = $queueRecipient->getMarker();
-                        $markerArray = array_merge(
-                            (is_array($queueRecipientMarker) ? $queueRecipientMarker : []),
-                            [
-                                'queueRecipient' => $queueRecipient,
-                            ]
-                        );
-                        $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_MARKERS . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$markerArray));
-                    }
-
-                    // render template
-                    $renderedTemplate = $this->renderSingleTemplate($template, $markerArray);
-
-                    // add to recipient
-                    $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_RENDER_TEMPLATE_AFTER_RENDER . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array($queueMail, &$queueRecipient, &$renderedTemplate));
-                    $queueRecipient->$propertySetter($renderedTemplate);
-
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Added %s-template-property for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
-                } else {
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('%s-template-property is already set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
-                }
-            } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('%s-template is not set for recipient with email "%s" (queueMail uid=%s).', ucFirst($template), $queueRecipient->getEmail(), $queueMail->getUid()));
-            }
-        }
-
-        self::debugTime(__LINE__, __METHOD__);
-    }
-
-
-    /**
-     * Renders single template
-     *
-     * @param string $templateType
-     * @param array $markerArray
-     * @return string
-     * @throws \Exception
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function renderSingleTemplate($templateType, $markerArray = array())
-    {
-
-        // check for type
-        if (!in_array($templateType, [ 'html', 'plaintext', 'calendar'])) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceException('Invalid templateType given.', 1551872053);
-            //===
-        }
-
-        $queueMail = $this->getQueueMail();
-        $templateGetter = 'get' . ucFirst($templateType) . 'Template';
-
-        // check for template
-        if (! $queueMail->$templateGetter()) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceException(sprintf('No valid template for %s set.', $templateType), 1551872053);
-            //===
-        }
-
-        // load EmailStandaloneView with configuration of queueMail
-        /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
-        $emailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            MailStandaloneView::class,
-            $queueMail->getSettingsPid()
-        );
-
-        // set additional layout und partial path
-        if ($queueMail->getLayoutPaths()) {
-            $emailView->addLayoutRootPaths($queueMail->getLayoutPaths());
-        }
-        if ($queueMail->getPartialPaths()) {
-            $emailView->addPartialRootPaths($queueMail->getPartialPaths());
-        }
-        if ($queueMail->getTemplatePaths()) {
-            $emailView->addTemplateRootPaths($queueMail->getTemplatePaths());
-        }
-
-        $emailView->setTemplate($queueMail->$templateGetter());
-
-        // assign markers
-        $finalMarkerArray = array_merge(
-            $markerArray,
-            [
-                'queueMail'            => $queueMail,
-                'queueMailSettingsPid' => $queueMail->getSettingsPid(),
-                'bodyText'             => $queueMail->getBodyText(),
-               // 'settings'             => $queueMail->getSettings(), // is inserted via EmailStandaloneView
-                'mailType'             => ucFirst($templateType),
-            ]
-        );
-
-        $emailView->assignMultiple($finalMarkerArray);
-
-        return $emailView->render();
-        //===
-    }
-
+    
 
     /**
      * function send
      *
      * @return boolean
      * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException
+     * @throws \RKW\RkwMailer\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @api
      */
     public function send()
     {
@@ -618,271 +426,69 @@ class MailService
 
         $queueMail = $this->getQueueMail();
         if (!$this->queueMailValidator->validate($queueMail)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('Invalid or missing data in queueMail-object.', 1540186577);
-            //===
+            throw new \RKW\RkwMailer\Exception(
+                'Invalid or missing data in queueMail-object.', 
+                1540186577
+            );
         }
 
         // only start sending if we are in draft status
         if ($queueMail->getStatus() == 1) {
 
             // find all final recipients of waiting mails!
-            $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, 0)->count();
+            $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting(
+                $queueMail, 
+                0
+            )->count();
+            
             if ($recipientCount > 0) {
 
                 // set status to waiting so the email will be processed
                 $queueMail->setStatus(2);
+                $queueMail->getMailingStatistics()->setTstampFavSending(time());
 
                 // update and persist changes
                 $this->queueMailRepository->update($queueMail);
-
-                // persist all until here
                 $this->persistenceManager->persistAll();
 
                 // reset object
                 $this->unsetVariables();
 
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Marked queueMail with uid=%s for cronjob (%s recipients).', $queueMail->getUid(), $recipientCount));
-
+                $this->getLogger()->log(
+                    LogLevel::INFO, 
+                    sprintf(
+                        'Marked queueMail with uid %s for cronjob (%s recipients).', 
+                        $queueMail->getUid(), 
+                        $recipientCount
+                    )
+                );
+                
+                self::debugTime(__LINE__, __METHOD__);
                 return true;
-                //====
 
             } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s has no recipients.', $queueMail->getUid()));
+                $this->getLogger()->log(
+                    LogLevel::INFO, 
+                    sprintf(
+                        'QueueMail with uid %s has no recipients.', 
+                        $queueMail->getUid()
+                    )
+                );
             }
 
         } else {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('QueueMail with uid=%s is not a draft (status = %s).', $queueMail->getUid(), $queueMail->getStatus()));
+            $this->getLogger()->log(
+                LogLevel::INFO, 
+                sprintf(
+                    'QueueMail with uid %s is not a draft (status %s).', 
+                    $queueMail->getUid(), 
+                    $queueMail->getStatus()
+                )
+            );
         }
 
         self::debugTime(__LINE__, __METHOD__);
-
         return false;
-        //===
-    }
-
-
-    /**
-     * function sendToRecipient
-     * this method is extensively protected via try-catch because it may be used in cronjob-context
-     *
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return boolean
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     */
-    public function sendToRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient)
-    {
-        self::debugTime(__LINE__, __METHOD__);
-        $status = false;
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->getQueueMail();
-
-        // validate queueMail
-        if (!$this->queueMailValidator->validate($queueMail)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('Invalid or missing data in queueMail-object.', 1438249330);
-            //===
-        }
-
-        // validate queueRecipient
-        if (!$this->queueRecipientValidator->validate($queueRecipient)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException('Invalid or missing data in queueRecipient-object.', 1438249113);
-            //===
-        }
-        if ($queueRecipient->_isNew()) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException('The queueMailRecipient-object has to be persisted before it can be used.', 1540187277);
-            //===
-        }
-
-
-        // check if email of recipient has bounced recently - but only for pipeline mailings
-        if (
-            ($this->bounceMailRepository->countByEmailAndType($queueRecipient->getEmail()) < 3)
-            || (! $this->queueMail->getPipeline())
-        ){
-
-            // render templates
-            $this->renderTemplates($queueRecipient);
-
-            // try to send message
-            try {
-
-                /** @var  \TYPO3\CMS\Core\Mail\MailMessage $message */
-                $message = $this->prepareEmailForRecipient($queueRecipient);
-                $this->getSignalSlotDispatcher()->dispatch(__CLASS__, self::SIGNAL_SEND_TO_RECIPIENT_BEFORE_SEND . ($queueMail->getCategory() ? '_' . ucFirst($queueMail->getCategory()) : ''), array(&$queueMail, &$queueRecipient));
-
-                // add mailing list header if it is a pipeline
-                if ($this->queueMail->getPipeline()) {
-                    $message->getHeaders()->addTextHeader('List-Unsubscribe', $queueMail->getFromAddress());
-                }
-
-                $message->send();
-                $status = true;
-
-                // set recipient status 4 for "sent" and remove marker
-                $queueRecipient->setStatus(4);
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Successfully sent e-mail to "%s" (recipient-uid=%s) for queueMail id=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
-
-
-            } catch (\Exception $e) {
-
-                $status = false;
-                $errorMessage = str_replace(array("\n", "\r"), '', $e->getMessage());
-
-                // set recipient status to error
-                $queueRecipient->setStatus(99);
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to "%s" (recipient-uid=%s). Message: %s', $queueRecipient->getEmail(), $queueRecipient->getUid(), $errorMessage));
-            }
-
-        } else {
-
-            // set status to deferred - we don't sent an email to this address again
-            $queueRecipient->setStatus(97);
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('E-mail "%s" (recipient-uid=%s) blocked for further mailings because of bounces detected during processing of queueMail width uid=%s.', $queueRecipient->getEmail(), $queueRecipient->getUid(), $queueMail->getUid()));
-
-        }
-
-        // User has to be updated no matter what!
-        $this->queueRecipientRepository->update($queueRecipient);
-
-        // persist
-        $this->persistenceManager->persistAll();
-
-        self::debugTime(__LINE__, __METHOD__);
-
-        return $status;
-        //===
-    }
-
-    /**
-     * prepareEmailForRecipient
-     *
-     * prepares email object for given recipient user
-     *
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return null |\TYPO3\CMS\Core\Mail\MailMessage
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException
-     * @throws \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     */
-    public function prepareEmailForRecipient ($queueRecipient) {
-
-        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-        $queueMail = $this->getQueueMail();
-
-        // validate queueMail
-        if (!$this->queueMailValidator->validate($queueMail)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueMailException('Invalid or missing data in queueMail-object.', 1438249330);
-            //===
-        }
-        // validate queueRecipient
-        if (!$this->queueRecipientValidator->validate($queueRecipient)) {
-            throw new \RKW\RkwMailer\Service\Exception\MailServiceQueueRecipientException('Invalid or missing data in queueRecipient-object.', 1552485792);
-            //===
-        }
-
-        // render templates
-        $this->renderTemplates($queueRecipient);
-
-        if ($queueRecipient->getStatus() < 4) {
-
-            /** @var \TYPO3\CMS\Core\Mail\MailMessage $message */
-            $message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
-
-            // Set message parts based on queueRecipient
-            if (
-                $queueRecipient->getPlaintextBody()
-                || $queueRecipient->getHtmlBody()
-            ) {
-
-                // build e-mail
-                foreach (
-                    array(
-                        'html'     => 'html',
-                        'plain'    => 'plaintext',
-                    ) as $shortName => $longName
-                ) {
-
-                    $getter = 'get' . ucFirst($longName) . 'Body';
-                    if ($queueRecipient->$getter()) {
-
-                        $message->addPart($queueRecipient->$getter(), 'text/' . $shortName);
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting %s-body for recipient with uid=%s in queueMail with uid=%s.', $longName, $queueRecipient->getUid(), $queueMail->getUid()));
-                    }
-                }
-
-            // set raw body-text from queueMail
-            } else {
-
-                $emailBody = $queueMail->getBodyText();
-                $message->setBody($emailBody, 'text/plain');
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting default body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
-            }
-
-            // set calendar attachment
-            if ($queueRecipient->getCalendarBody()) {
-
-                // replace line breaks according to RFC 5545 3.1.
-                $emailString = preg_replace('/\n/', "\r\n", $queueRecipient->getCalendarBody());
-                $attachment = \Swift_Attachment::newInstance($emailString, 'meeting.ics', 'text/calendar');
-                $message->attach($attachment);
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, sprintf('Setting calendar-body for recipient with uid=%s in queueMail with uid=%s.', $queueRecipient->getUid(), $queueMail->getUid()));
-            }
-
-            // add attachment if set
-            if (
-                $queueMail->getAttachment()
-                || is_array(json_decode($queueMail->getAttachment(), true))
-            ) {
-
-                $attachments = json_decode($queueMail->getAttachment(), true);
-
-                foreach ($attachments as $attachment) {
-                    $file = \Swift_Attachment::fromPath($attachment['path']);
-                    $message->attach($file);
-                }
-
-            }
-
-            // ====================================================
-            // Send mail
-            // set status 3 for "sending" (pro forma since no persistence here)
-            $queueRecipient->setStatus(3);
-
-            // build message based on given data
-            $recipientAddress = EmailValidator::cleanUpEmail($queueRecipient->getEmail());
-            $recipientName = trim(ucfirst($queueRecipient->getFirstName()) . ' ' . ucfirst($queueRecipient->getLastName()));
-            if (trim($recipientName)) {
-                $recipientAddress = [EmailValidator::cleanUpEmail($queueRecipient->getEmail()) => $recipientName];
-            }
-
-            $message->setFrom(array($queueMail->getFromAddress() => $queueMail->getFromName()))
-                ->setReplyTo(EmailValidator::cleanUpEmail($queueMail->getReplyAddress()))
-                ->setTo($recipientAddress)
-                ->setSubject($queueRecipient->getSubject() ? $queueRecipient->getSubject() : $queueMail->getSubject())
-                ->setPriority(intval($queueMail->getPriority()))
-                ->setReturnPath($queueMail->getReturnPath());
-
-
-            return $message;
-            //===
-        }
-
-        return null;
-        //===
-
     }
 
 
@@ -895,43 +501,7 @@ class MailService
     {
         unset($this->queueMail);
     }
-
-
-    /**
-     * Returns SignalSlotDispatcher
-     *
-     * @return \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
-     */
-    protected function getSignalSlotDispatcher()
-    {
-
-        if (!$this->signalSlotDispatcher) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-            $this->signalSlotDispatcher = $objectManager->get('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
-        }
-
-        return $this->signalSlotDispatcher;
-        //===
-    }
-
-
-    /**
-     * Returns logger instance
-     *
-     * @return \TYPO3\CMS\Core\Log\Logger
-     */
-    protected function getLogger()
-    {
-
-        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
-        }
-
-        return $this->logger;
-        //===
-    }
     
-
 
     /**
      * Gets TypoScript framework settings
@@ -940,7 +510,7 @@ class MailService
      * @param string $type
      * @return mixed
      */
-    private function getSettings($param = '', $type = 'settings')
+    protected function getSettings(string $param = '', string $type = 'settings')
     {
 
         if (!$this->settings) {
@@ -956,16 +526,26 @@ class MailService
 
             if ($this->settings[$type][$param . '.']) {
                 return $this->settings[$type][$param . '.'];
-                //===
             }
 
             return $this->settings[$type][$param];
-            //===
-
         }
 
         return $this->settings[$type];
-        //===
+    }
+    
+
+    /**
+     * Returns logger instance
+     *
+     * @return \TYPO3\CMS\Core\Log\Logger
+     */
+    protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
+    {
+        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        }
+        return $this->logger;
     }
 
 
@@ -975,12 +555,10 @@ class MailService
      * @param integer $line
      * @param string  $function
      */
-    private static function debugTime($line, $function)
+    protected static function debugTime(int $line, string $function): void
     {
-
-        if (self::DEBUG_TIME) {
-
-            $path = PATH_site . '/typo3temp/tx_rkwmailer_runtime.txt';
+        if (GeneralUtility::getApplicationContext()->isDevelopment()) {
+            $path = PATH_site . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
             file_put_contents($path, microtime() . ' ' . $line . ' ' . $function . "\n", FILE_APPEND);
         }
     }

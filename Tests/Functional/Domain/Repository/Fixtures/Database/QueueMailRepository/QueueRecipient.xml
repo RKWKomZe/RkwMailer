@@ -6,7 +6,6 @@
         <uid>1</uid>
         <pid>1</pid>
         <queue_mail>1</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -23,7 +22,6 @@
         <uid>2</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -39,7 +37,6 @@
         <uid>3</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -55,7 +52,6 @@
         <uid>4</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient3@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -71,7 +67,6 @@
         <uid>5</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient4@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -87,7 +82,6 @@
         <uid>6</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient5@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -103,7 +97,6 @@
         <uid>7</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient6@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -119,7 +112,6 @@
         <uid>8</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient7@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -135,7 +127,6 @@
         <uid>9</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient6@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -151,7 +142,6 @@
         <uid>10</uid>
         <pid>1</pid>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>recipient8@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>

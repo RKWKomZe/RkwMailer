@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use RKW\RkwBasics\Domain\Repository\PagesRepository;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwRegistration\Domain\Model\Title;
@@ -24,6 +25,7 @@ use RKW\RkwRegistration\Domain\Model\FrontendUser as FrontendUserRkw;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use RKW\RkwRegistration\Domain\Model\BackendUser as BackendUserRkw;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * QueueRecipientUtilityTest
@@ -57,9 +59,20 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
     protected $coreExtensionsToLoad = [ ];
 
     /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    private $objectManager;
+
+    
+    /**
      * @var \RKW\RkwMailer\Utility\QueueRecipientUtility
      */
     private $subject;
+
+    /**
+     * @var \RKW\RkwBasics\Domain\Repository\PagesRepository
+     */
+    private $pagesRepository;
 
     /**
      * Setup
@@ -67,27 +80,46 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
      */
     protected function setUp()
     {
-
+       
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
+        
         $this->subject = GeneralUtility::makeInstance(QueueRecipientUtility::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->pagesRepository = $this->objectManager->get(PagesRepository::class);
 
     }
 
 
     //=============================================
 
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientReturnsQueueRecipientObject()
+    {
+        /**
+         * Scenario:
+         *
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         */
+
+        $result = $this->subject->initQueueRecipient();
+        self::assertInstanceOf(QueueRecipient::class, $result);
+    }
 
 
     /**
@@ -114,7 +146,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);        
     }
 
     /**
@@ -140,7 +172,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $frontendUser->setUsername('lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -168,7 +200,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -209,7 +241,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -254,7 +286,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $frontendUser->setTxRkwregistrationTitle($title);
         $frontendUser->setTxRkwregistrationGender(0);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
-
+        
         $expected->setEmail('lauterbach@spd.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Karl');
@@ -263,7 +295,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('fr');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -274,10 +306,10 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
     {
         /**
          * Scenario:
-         *
+         * 
          * Given an additionalData-Array
          * Given that additionalData-Array has an username-key set
-         * Given that username is a valid email-address
+         * Given that username is a valid email-address 
          * Given that additionalData-Array has an email-key set
          * Given that additionalData-Array has a title-key set
          * Given that additionalData-Array has a firstName-key set
@@ -311,7 +343,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -330,7 +362,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
          * Given that additionalData-Array has a firstName-key set
          * Given that additionalData-Array has a lastName-key set
          * Given that additionalData-Array has the txRkwregistrationGender-key set
-         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set
+         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set 
          * Given an RkwRegistration-FrontendUser-Object
          * Given that FrontendUser-Object has the email-property set
          * Given that FrontendUser-Object has the lastName-property set
@@ -341,7 +373,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
          * Then the firstName-property of this object is set to the value of the firstName-key of the additionalData-Array
          * Then the lastName-property of this object is set to the value of the lastName-property of the FrontendUser-Object
          * Then the salutation-property of this object is set to the value of the txRkwregistrationGender-key of the additionalData-Array
-         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array
+         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array 
          */
         $expected = new QueueRecipient();
         $frontendUser = new FrontendUserRkw();
@@ -367,11 +399,11 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
         $expected->setSalutation(1);
         $expected->setLanguageCode('fr');
-
+        
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
-
+    
     //=============================================
 
     /**
@@ -393,11 +425,11 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
         $additionalData = [];
         $backendUser->setEmail('lauterbach@spd.de');
-
+        
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -428,7 +460,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -462,7 +494,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -497,7 +529,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -538,7 +570,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -575,7 +607,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         ];
         $backendUser->setRealName('Prof. Karl Lauterbach');
         $backendUser->setLang('ru');
-
+        
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Prof.');
         $expected->setFirstName('Karl');
@@ -583,7 +615,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('ru');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
 
@@ -621,13 +653,13 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
             'salutation' => 1,
             'firstName' => 'Angela',
         ];
-
+        
         $additionalData = [
             'firstName' => 'Dorothea',
             'lastName' => 'Bär',
             'languageCode' => 'ru'
         ];
-
+        
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Angela');
@@ -636,9 +668,75 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLanguageCode('ru');
 
         $result = $this->subject::initQueueRecipient($basicData, $additionalData);
-        static::assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientIgnoresMarkerIfNotAnArray()
+    {
+        /**
+         * Scenario:
+         *
+         * Given an additionalData-array with a marker-key as string
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         * Then the marker-property is not set
+         */
+
+        $result = $this->subject->initQueueRecipient([], ['marker' => 'test']);
+        self::assertInstanceOf(QueueRecipient::class, $result);
+        self::assertEmpty($result->getMarker());
+
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function initQueueRecipientAddsAndImplodesMarker()
+    {
+        /**
+         * Scenario:
+         *
+         * Given an additionalData-array with a marker-key as array
+         * Given this marker-key contains an array with two keys
+         * Given the value of first key of the marker-array is a persisted object in the database
+         * Given the value of second key of the marker-array is a string
+         * When the method is called
+         * Then a QueueRecipient-object is returned
+         * Then the marker-property contains two keys
+         * Then the value of the first key reduced to object-placeholders consisting of namespace and the uid
+         * Then the value of the second key is a string
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+
+        /** @var \RKW\RkwBasics\Domain\Model\Pages $entityOne */
+        $entityOne = $this->pagesRepository->findByIdentifier(1);
+
+        $initMarker = [
+            'test1' => $entityOne,
+            'test2' => 'A string is string'
+        ];
+
+        $expected = [
+            'test1' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
+            'test2' => 'A string is string',
+        ];
+        
+        $result = $this->subject->initQueueRecipient([], ['marker' => $initMarker]);
+        self::assertInstanceOf(QueueRecipient::class, $result);
+
+        $marker = $result->getMarker();
+        self::assertCount(2, $marker);
+        self::assertEquals($expected['test1'], $marker['test1']);
+        self::assertEquals($expected['test2'], $marker['test2']);
+
+    }
+    
     /**
      * TearDown
      */

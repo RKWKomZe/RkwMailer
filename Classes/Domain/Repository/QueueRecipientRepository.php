@@ -15,6 +15,9 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * QueueRecipientRepository
  *
@@ -36,20 +39,17 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
 
     /**
-     * findAllByMailWithStatusSending
-     * TypoScript status-settings:
-     * draft = 1
-     * waiting = 2
-     * sending = 3
-     * sent = 4
+     * findAllByQueueMailWithStatusWaiting
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @param integer $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
-     * @todo: Write Testing
+     * @comment implicitly tested
      */
-    public function findAllByQueueMailWithStatusWaiting(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail, $limit = 25)
-    {
+    public function findAllByQueueMailWithStatusWaiting(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail, 
+        $limit = 25
+    ) {
 
         $query = $this->createQuery();
         $query->matching(
@@ -64,19 +64,21 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         }
 
         return $query->execute();
-        //====
     }
 
 
     /**
-     *  findOneByUidAndQueueMai
+     *  findOneByUidAndQueueMail
      *
      * @param int $uid
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
-     * @todo: Write Testing
+     * @comment implicitly tested
      */
-    public function findOneByUidAndQueueMail($uid, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function findOneByUidAndQueueMail(
+        int $uid, 
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    )
     {
 
         $query = $this->createQuery();
@@ -86,10 +88,8 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 $query->equals('queueMail', intval($queueMail->getUid()))
             )
         );
-
-
+        
         return $query->execute()->getFirst();
-        //====
     }
 
     /**
@@ -98,10 +98,12 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param string $email
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
-     * @todo: Write Testing
+     * @comment implicitly tested
      */
-    public function findOneByEmailAndQueueMail($email, \RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
-    {
+    public function findOneByEmailAndQueueMail(
+        string $email, 
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ) {
 
         $query = $this->createQuery();
         $query->matching(
@@ -114,11 +116,160 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         return $query->execute()->getFirst();
     }
 
+
+    /**
+     * countTotalRecipientsByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countTotalRecipientsByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->greaterThanOrEqual('status', 2)
+            )
+        );
+
+        return $query->execute()->count();
+    }
+
+    
+    /**
+     * countTotalSentByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countTotalSentByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->greaterThanOrEqual('status', 4),
+                $query->logicalNot(
+                    $query->equals('status', 97)
+                )
+            )
+        );
+
+        return $query->execute()->count();
+    }
+
+
+    /**
+     * countDeliveredByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countDeliveredByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->equals('status', 4)
+            )
+        );
+
+        return $query->execute()->count();
+    }
+
+    
+    /**
+     * countFailedByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countFailedByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->equals('status', 99)
+            )
+        );
+
+        return $query->execute()->count();
+    }
+
+    /**
+     * countDeferredByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countDeferredByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->equals('status', 97)
+            )
+        );
+
+        return $query->execute()->count();
+    }
+
+
+    /**
+     * countBouncedByQueueMail
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @comment implicitly tested
+     */
+    public function countBouncedByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $query = $this->createQuery();
+        $query->matching(
+            $query->logicalAnd(
+                $query->equals('queueMail', $queueMail),
+                $query->equals('status', 98)
+            )
+        );
+
+        return $query->execute()->count();
+    }
+    
+    
     /**
      * findAllLastBounced
      *
      * @param int $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     * @toDo: rework
+     * @toDo: write tests
      */
     public function findAllLastBounced($limit = 100)
     {
@@ -144,9 +295,33 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             LIMIT ' . intval ($limit) . '
         ');
 
-
         return $query->execute();
-        //====
+    }
+
+
+    /**
+     * deleteByQueueMail
+     * We use a straight-forward approach here because it may be a lot of data to delete!
+     *
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @return int
+     * @comment implicitly tested
+     */
+    public function deleteByQueueMail(
+        \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+    ): int {
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_rkwmailer_domain_model_queuerecipient');
+        
+        return $queryBuilder
+            ->delete('tx_rkwmailer_domain_model_queuerecipient')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'queue_mail',
+                    $queryBuilder->createNamedParameter($queueMail->getUid(), \PDO::PARAM_INT))
+            )
+            ->execute();
     }
 
 }

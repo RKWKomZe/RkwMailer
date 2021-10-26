@@ -237,8 +237,8 @@
                 <target>Löschen</target>
             </trans-unit>
             <trans-unit id="templates_backend_list.deleteConfirm">
-                <source>Do you really want to delete the selected e-mail? This will also delete the statistics. All redirect-links of this e-mail will stop working.</source>
-                <target>Möchten Sie die ausgewählte E-Mail wirklich löschen? Dies löscht auch die Statistik für diese E-Mail. Alle Redirect-Links in dieser E-Mail werden damit ungültig.</target>
+                <source>Do you really want to delete the selected e-mail? This will also delete the statistics.</source>
+                <target>Möchten Sie die ausgewählte E-Mail wirklich löschen? Dies löscht auch die Statistik für diese E-Mail.</target>
             </trans-unit>
 
             <!-- =================================================== -->

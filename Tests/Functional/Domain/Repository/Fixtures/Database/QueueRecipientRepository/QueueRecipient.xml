@@ -8,7 +8,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>1</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -27,7 +26,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -47,7 +45,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>2</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -67,7 +64,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>3</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing3@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -86,7 +82,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>3</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing4@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -105,7 +100,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>3</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing5@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -124,7 +118,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>3</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>match1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -143,7 +136,6 @@
         <crdate>1000</crdate>
         <tstamp>1050</tstamp>
         <queue_mail>3</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>match2@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -162,7 +154,6 @@
         <crdate>1010</crdate>
         <tstamp>1060</tstamp>
         <queue_mail>4</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>match1@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>
@@ -180,7 +171,6 @@
         <crdate>1010</crdate>
         <tstamp>1060</tstamp>
         <queue_mail>4</queue_mail>
-        <frontend_user>0</frontend_user>
         <email>nothing6@rkw.de</email>
         <first_name>Karl</first_name>
         <last_name>Napp</last_name>

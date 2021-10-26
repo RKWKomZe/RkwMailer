@@ -17,14 +17,10 @@ namespace RKW\RkwMailer\UriBuilder;
 
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwBasics\Utility\GeneralUtility;
-use RKW\RkwMailer\Domain\Model\Link;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwMailer\Domain\Repository\LinkRepository;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * FrontendUriBuilder
@@ -34,6 +30,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @comment implicitly tested
  */
 class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 {
@@ -74,27 +71,19 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      */
     public function initializeObject(): void
     {
-
-        // init frontend wit defaults
+        // init frontend with defaults
         FrontendSimulatorUtility::simulateFrontendEnvironment();
-
-        // set url scheme
+        
+        // set url scheme based on settings
         $this->settings = $this->getSettings();
-        $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
-
+        if (isset($this->settings['baseUrl'])) {
+            $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
+        }
+        
         parent::initializeObject();
     }
 
-
-    /**
-     * Override the normal EnvironmentService with own
-     */
-    public function injectEnvironmentServiceOverride(): void
-    {
-        $this->environmentService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\RKW\RkwMailer\Service\EnvironmentService::class);
-    }
-
-
+    
     /**
      * Uid of the target page
      *
@@ -119,7 +108,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @param boolean $useRedirectLink
      * @return $this the current UriBuilder to allow method chaining
      */
-    public function setUseRedirectLink($useRedirectLink)
+    public function setUseRedirectLink(bool $useRedirectLink): FrontendUriBuilder
     {
         $this->useRedirectLink = (boolean) $useRedirectLink;
         return $this;
@@ -221,7 +210,7 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     public function getRedirectPid(): int
     {
         if (!$this->redirectPid) {
-            $this->redirectPid = $this->settings['redirectPid'];
+            $this->redirectPid = intval($this->settings['redirectPid']);
         }
         return $this->redirectPid;
     }
@@ -288,47 +277,24 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         ) {
 
             if ($this->getRedirectPid()) {
-
-                // generate link object and save it
-                /** @var \RKW\RkwMailer\Domain\Model\Link $link */
-                $link = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Link::class);
-                if ($this->getRedirectLink()) {
-                    $link->setUrl($this->getRedirectLink());
-                } else {
-                    $link->setUrl($this->buildFrontendUri());
-                }
-
-                // set QueueMail
-                $link->setQueueMail($this->getQueueMail());
-
-                // unique is build via mail-id and link only - NOT with user-id included!!!
-                // this way a link used twice in a mail is only saved once
-                $link->setHash(sha1($this->getQueueMail()->getUid() . $link->getUrl()));
-
-                /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
-
-                /** @var \RKW\RkwMailer\Domain\Repository\LinkRepository $linkRepository */
-                $linkRepository = $objectManager->get(LinkRepository::class);
-
-                if (!$linkRepository->findOneByHash($link->getHash())) {
-                    $linkRepository->add($link);
-
-                    /** @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager */
-                    $persistenceManager = $objectManager->get(PersistenceManager::class);
-                    $persistenceManager->persistAll();
-                }
-
+                
                 // reset and unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
                 $this->reset();
                 $this->setUseRedirectLink(false);
+                
+                // get url
+                $url = $this->buildFrontendUri();
+                if ($this->getRedirectLink()) {
+                    $url = $this->getRedirectLink();
+                } 
 
                 // set params
                 $arguments = [
-                    'tx_rkwmailer_rkwmailer[hash]' => $link->getHash(),
+                    'tx_rkwmailer_rkwmailer[url]' => $url,
                     'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
                 ];
+                
                 if ($this->getQueueRecipient()) {
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
@@ -345,7 +311,13 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                $url = $this->uriFor('redirect', array(), 'Link', 'rkwmailer', 'Rkwmailer');
+                $url = $this->uriFor(
+                    'redirect', 
+                    [], 
+                    'Tracking', 
+                    'rkwmailer', 
+                    'Rkwmailer'
+                );
 
                 // reset frontend
                 FrontendSimulatorUtility::resetFrontendEnvironment();
@@ -368,19 +340,6 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         return $url;
     }
 
-    /**
-     * Resets all UriBuilder options to their default value
-     *
-     * @return \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder the current UriBuilder to allow method chaining
-     * @api
-     */
-    public function reset()
-    {
-        // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
-
-        return parent::reset();
-    }
 
     
     /**

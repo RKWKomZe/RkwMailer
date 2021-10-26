@@ -15,9 +15,12 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Statistics\BounceMailAnalyser;
-use \RKW\RkwMailer\Validation\QueueMailValidator;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -73,7 +76,34 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $bounceMailRepository;
 
+    
+    /**
+     * mailingStatisticsAnalyser
+     *
+     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser
+     * @inject
+     */
+    protected $mailingStatisticsAnalyser;
 
+
+    /**
+     * mailer
+     *
+     * @var \RKW\RkwMailer\Mail\Mailer
+     * @inject
+     */
+    protected $mailer;
+
+
+    /**
+     * cleaner
+     *
+     * @var \RKW\RkwMailer\Persistence\Cleaner
+     * @inject
+     */
+    protected $cleaner;
+
+    
     /**
      * configurationManager
      */
@@ -85,6 +115,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $logger;
 
+    
     /**
      * The settings.
      *
@@ -92,62 +123,6 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      */
     protected $settings = array();
 
-
-    /**
-     * Creates test-emails
-     *
-     * @param int $numberOfTestMails Number of test-mails to generate
-     * @param string $emails Comma-separated list of email-addresses to write to
-     * @param int $settingsPid Pid to fetch TypoScript-settings from
-     * @param int $linkPid Pid to link to
-     * @throws \Exception
-     * @throws \RKW\RkwMailer\Exception
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
-     */
-    public function createTestEmailsCommand($numberOfTestMails = 1, $emails = '', $settingsPid = 0, $linkPid = 1)
-    {
-
-        // simulate frontend
-        FrontendSimulatorUtility::simulateFrontendEnvironment($settingsPid);
-
-        /** @var \RKW\RkwMailer\Service\MailService $mailService */
-        $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
-
-        $emailArray = explode(',', str_replace(' ', '', $emails));
-
-        if (count($emailArray)) {
-            foreach (range(1, $numberOfTestMails) as $mailCounter) {
-
-                foreach ($emailArray as $email) {
-                    $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Eins', 'lastName' => 'Mustermann'),
-                        array(
-                            'marker' => array(
-                                'pageUid' => intval($linkPid),
-                            ),
-                        )
-                    );
-                    $mailService->setTo(array('email' => trim($email), 'firstName' => 'Max Zwei', 'lastName' => 'Mustermann'),
-                        array(
-                            'marker' => array(
-                                'pageUid' => intval($linkPid),
-                            ),
-                        )
-                    );
-                }
-
-                $mailService->getQueueMail()->setSettingsPid(intval($settingsPid));
-                $mailService->getQueueMail()->setSubject('Test ' . $mailCounter);
-                $mailService->getQueueMail()->setPlaintextTemplate('Email/Example');
-                $mailService->getQueueMail()->setHtmlTemplate('Email/Example');
-                $mailService->send();
-            }
-        }
-
-        // reset frontend
-        FrontendSimulatorUtility::resetFrontendEnvironment();
-    }
 
 
     /**
@@ -159,145 +134,81 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param float $sleep how many seconds the script should sleep after each e-mail sent
      * @return void
      */
-    public function sendEmailsCommand($emailsPerJob = 5, $emailsPerInterval = 10, $settingsPid = 0, $sleep = 0.0)
-    {
-
+    public function sendEmailsCommand(
+        int $emailsPerJob = 5, 
+        int $emailsPerInterval = 10, 
+        int $settingsPid = 0, 
+        float $sleep = 0.0
+    ): void {
         try {
 
-            // security check
-            if (!$this->securityCheck()) {
-                throw new \RKW\RkwMailer\Exception('Cache directory is not secure. Please fix this first');
-            }
-
-            /** @var \RKW\RkwMailer\Validation\QueueMailValidator $sendMailHelper */
-            $queueMailValidator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(QueueMailValidator::class);
-
-            /** @var \RKW\RkwMailer\Service\MailService $mailService */
-            $mailService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('RKW\\RkwMailer\\Service\\MailService');
-
-            // ====================================================
-            // Get QueueMail and send mails to associated recipients
-            // send mails so long until the input requirement is reached
-            $queueMailCount = 0;
-
-            // get mails with status "waiting" (2) or "sending" (3)
-            /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
-            $queueMails = $this->queueMailRepository->findByStatusWaitingOrSending($emailsPerJob);
-            foreach ($queueMails as $queueMail) {
-
-                try {
-
-                    // if there is no configuration set, we use the one given as param
-                    if (!$queueMail->getSettingsPid()) {
-                        $queueMail->setSettingsPid(intval($settingsPid));
-                    }
-
-                    // simulate frontend - based on PID set in queueMail
-                    FrontendSimulatorUtility::simulateFrontendEnvironment($queueMail->getSettingsPid());
-
-                    // set status to sending and set sending time (if not already set)
-                    $queueMail->setStatus(3);
-                    if (!$queueMail->getTstampRealSending()) {
-                        $queueMail->setTstampRealSending(time());
-                    }
-
-                    // validate queueMail
-                    if (!$queueMailValidator->validate($queueMail)) {
-
-                        $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Mail sending aborted because of invalid data in queueMail (queueMail uid "%s").', $queueMail->getUid()));
-                        $queueMail->setStatus(99);
-                        $this->queueMailRepository->update($queueMail);
-                        continue;
-                        //===
-                    }
-
-                    // get recipients of mail with status waiting
-                    $queueRecipients = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting($queueMail, $emailsPerInterval);
-                    if (count($queueRecipients) > 0) {
-
-                        // send mails
-                        $mailService->setQueueMail($queueMail);
-                        foreach ($queueRecipients as $recipient) {
-
-                            try {
-                                $mailService->sendToRecipient($recipient);
-                                usleep(intval($sleep * 1000000));
-                            }catch (\Exception $e) {
-                                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, sprintf('An error occurred while trying to send an e-mail to queueRecipient with uid = %s. Error: %s.', $recipient->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
-                            }
-                        }
-
-                    // ====================================================
-                    // Set QueueMail status as "sent" (4), if there are no more recipients
-                    // except for the queueMail is used as pipeline
-                    } else {
-
-                        if (!$queueMail->getPipeline()) {
-                            $queueMail->setStatus(4);
-                            $queueMail->setTstampSendFinish(time());
-                            $this->getLogger()->log(\TYPO3\CMS\Core \Log\LogLevel::INFO, sprintf('Successfully finished queueMail with uid = %s.', $queueMail->getUid()));
-                        } else {
-                            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Currently no recipients for queueMail with uid = %s, but marked for pipeline-usage.', $queueMail->getUid()));
-                        }
-                    }
-
-                    // set counter
-                    $queueMailCount++;
-                    $this->queueMailRepository->update($queueMail);
-                    $this->persistenceManager->persistAll();
-
-                    // reset frontend
-                    FrontendSimulatorUtility::resetFrontendEnvironment();
-
-                // try to catch error and set status to 99
-                } catch (\Exception $e) {
-
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to send e-mails. Mail with id %s has been canceled. Error: %s.', $queueMail->getUid(), str_replace(array("\n", "\r"), '', $e->getMessage())));
-
-                    $queueMail->setStatus(99);
-                    $this->queueMailRepository->update($queueMail);
-                    $this->persistenceManager->persistAll();
-                    continue;
-                }
-            }
+            $this->mailer->processQueueMails($emailsPerJob, $emailsPerInterval, $settingsPid, $sleep);
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to send e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
-            $this->persistenceManager->persistAll();
+            $this->getLogger()->log(
+                LogLevel::ERROR, 
+                sprintf('An unexpected error occurred while trying to send e-mails: %s', 
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
+    }
 
 
+
+    /**
+     * Processes queued mails and analyses their statistics
+     *
+     * @param int $daysAfterSendingStarted Defines how many days after sending has been started the statistics should be updated (default: 30 days)
+     * @return void
+     */
+    public function analyseStatisticsCommand(
+        int $daysAfterSendingStarted = 30
+    ): void {
+        try {
+            
+            $this->mailingStatisticsAnalyser->analyse($daysAfterSendingStarted);
+            
+        } catch (\Exception $e) {
+            $this->getLogger()->log(
+                LogLevel::ERROR,
+                sprintf('An unexpected error occurred while trying to update the statistics of e-mails: %s',
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
+        }
     }
 
 
     /**
-     * Clean up for mailings
+     * Clean up for mails and statistics
      *
-     * @param integer $daysFromNow Defines which old mails should be deleted (send date is reference)
-     * @param string $types Defines which types of mails the cleanup should look for (comma-separated). Default: only type "0"
+     * @param int $daysAfterSendingFinished  Defines how many days after its sending has been finished an queueMail and their corresponding data will be deleted (default: 30 days)
+     * @param string $types Defines which types of mails the cleanup should look for (comma-separated) (Default: only type "0")
+     * @param int $includingStatistics Defines whether the statistics should be deleted too (Default: 0)
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    public function cleanupCommand($daysFromNow = 8760, $types = '0')
-    {
+    public function cleanupCommand(
+        int $daysAfterSendingFinished = 30, 
+        string $types = '0',
+        int $includingStatistics = 0
+    ): void {
+        
+        try {
 
-        if ($cleanupTimestamp = time() - (intval($daysFromNow) * 24 * 60 * 60)) {
-            if (
-                ($queueMails = $this->queueMailRepository->findAllOldMails($cleanupTimestamp, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $types, true)))
-                && (count($queueMails))
-            ) {
+            $this->cleaner->cleanup(
+                $daysAfterSendingFinished,
+                GeneralUtility::trimExplode(',', $types, true),
+                boolval($includingStatistics)
+            );
 
-                // delete it. dependent objects are deleted by cascade
-                foreach ($queueMails as $queueMail) {
-                    $this->queueMailRepository->remove($queueMail);
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Deleted queueMail with uid=%s.', $queueMail->getUid()));
-                }
-
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Successfully cleaned up database.');
-            } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, 'Nothing to cleanup in database.');
-            }
+        } catch (\Exception $e) {
+            $this->getLogger()->log(
+                LogLevel::ERROR,
+                sprintf('An unexpected error occurred while trying to cleanup the database: %s',
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
     }
 
@@ -315,11 +226,11 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @param string $deleteBefore If set, all mails before the given date will be deleted (format: yyyy-mm-dd)
      * @param int $maxEmails
      * @return void
+     * @toDo: rework
      */
     public function analyseBouncedMailsCommand($username, $password, $host, $usePop3 = false, $port = 143, $tlsMode = 'notls', $inboxName = 'INBOX', $deleteBefore = '', $maxEmails = 100)
     {
-
-
+        
         try {
 
             $params = [
@@ -339,7 +250,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
             $bounceMailAnalyser->analyseMails($maxEmails);
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(LogLevel::ERROR, sprintf('An unexpected error occurred while trying to analyse bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
         }
     }
 
@@ -351,6 +262,7 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @toDo: rework
      */
     public function processBouncedMailsCommand($maxMails = 100)
     {
@@ -373,19 +285,35 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
                         $this->bounceMailRepository->update($bounceMail);
                     }
 
-                    $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, sprintf('Setting bounced status for queueRecipient id=%, email=%s.', $queueRecipient->getUid(), $queueRecipient->getEmail()));
+                    $this->getLogger()->log(
+                        LogLevel::INFO, 
+                        sprintf(
+                            'Setting bounced status for queueRecipient id=%, email=%s.', 
+                            $queueRecipient->getUid(), 
+                            $queueRecipient->getEmail()
+                        )
+                    );
                 }
 
             } else {
-                $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, ('No bounced mails processed.'));
+                $this->getLogger()->log(
+                    LogLevel::DEBUG, 
+                    'No bounced mails processed.'
+                );
             }
 
         } catch (\Exception $e) {
-            $this->getLogger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('An unexpected error occurred while trying to process bounced e-mails: %s.', str_replace(array("\n", "\r"), '', $e->getMessage())));
+            $this->getLogger()->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'An unexpected error occurred while trying to process bounced e-mails: %s.', 
+                    str_replace(array("\n", "\r"), '', $e->getMessage())
+                )
+            );
         }
     }
-
-
+    
+    
     /**
      * Returns logger instance
      *
@@ -395,54 +323,11 @@ class MailerCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;
     }
 
-
-    /**
-     * .htaccess-based protection for SimpleFileBackend-Cache
-     *
-     * @return bool
-     */
-    protected function securityCheck() {
-
-
-        /** @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend $cache */
-        $cache = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('rkw_mailer');
-        if (
-            ($cacheBackend = $cache->getBackend())
-            && ($cacheBackend instanceof \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend)
-        ){
-            $pathToFile =  $cacheBackend->getCacheDirectory() . '.htaccess';
-
-            // create .htaccess if there is none!
-            if (file_exists($pathToFile)) {
-                return true;
-            }
-
-            $htaccessContent = '
-# This file is automatically generated. Please to not modify it manually because all changes may be lost.
-
-# Apache < 2.3
-<IfModule !mod_authz_core.c>
-Order allow,deny
-Deny from all
-Satisfy All
-</IfModule>
-
-# Apache ≥ 2.3
-<IfModule mod_authz_core.c>
-Require all denied
-</IfModule>
-            ';
-
-            return (bool) file_put_contents($pathToFile, $htaccessContent);
-        }
-
-        return true;
-    }
 
 }

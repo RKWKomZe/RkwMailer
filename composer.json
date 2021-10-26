@@ -4,7 +4,7 @@
     "description": "Extension sending e-mails and bulk-mailings",
     "homepage": "https://www.rkw-kompetenzzentrum.de",
     "license": ["GPL-2.0+"],
-    "keywords": ["TYPO3 CMS", "RKW", "E-Mails", "Newsletter"],
+    "keywords": ["TYPO3 CMS", "RKW", "E-Mails", "Newsletter", "Queue"],
     "support": {
         "email": "developer@steffenkroggel.de"
     },
@@ -23,10 +23,11 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.2",
         "ext-json" : "*",
-        "typo3/cms-core": "~8.7.0 || ~8.7.0",
-        "rkw/rkw-basics": "~8.7.12",
+        "ext-fileinfo" : "*",
+        "typo3/minimal": "~8.7.0 || ~9.5.0",
+        "rkw/rkw-basics": "~8.7.76",
         "voku/bounce-mail-handler": "^5.5"
     },
     "autoload": {

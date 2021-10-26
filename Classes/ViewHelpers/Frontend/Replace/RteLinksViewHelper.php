@@ -17,9 +17,10 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Replace;
 
 use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
 use RKW\RkwMailer\ViewHelpers\Frontend\Uri\TypolinkViewHelper;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
@@ -60,7 +61,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
      **
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
-     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
@@ -137,7 +138,13 @@ class RteLinksViewHelper extends TypolinkViewHelper
         } catch (\Exception $e) {
             
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger()->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, sprintf('Error while trying to replace links: %s', $e->getMessage()));
+            $logger->log(
+                LogLevel::ERROR, 
+                sprintf(
+                    'Error while trying to replace links: %s', 
+                    $e->getMessage()
+                )
+            );
         }
 
         return $value;
