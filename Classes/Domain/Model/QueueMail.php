@@ -536,6 +536,19 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
+     * Sets the replyAddress
+     *
+     * @param string $replyAddress
+     * @return void
+     * @deprecated This method is deprecated. Please use setReplyToAddress() instead.
+     */
+    public function setReplyAddress(string $replyAddress)
+    {
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This method is deprecated. Please use setReplyToAddress() instead.');
+        $this->setReplyToAddress($replyAddress);
+    }
+    
+    /**
      * Returns the returnPath
      *
      * @return string $returnPath
