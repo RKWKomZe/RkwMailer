@@ -278,9 +278,9 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
             if ($this->getRedirectPid()) {
                 
-                // reset and unset redirect to avoid an infinite loop since uriFor() calls build()!
+                // unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
-                $this->reset();
+                //$this->reset();
                 $this->setUseRedirectLink(false);
                 
                 // get url

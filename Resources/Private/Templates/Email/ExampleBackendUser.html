@@ -1,4 +1,7 @@
-{namespace rkwMailer=RKW\RkwMailer\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
+	data-namespace-typo3-fluid="true">
+
 <f:layout name="Email/{mailType}" />
 
 <!-- PLAINTEXT -->
@@ -32,3 +35,5 @@
 		<a href="<rkwMailer:frontend.link action='optIn' controller='Service' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='TRUE' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_no: tokenNo, service: serviceSha1}}'  />"><rkwMailer:frontend.translate key="templates_email_serviceOptInAdminRequest.textOptOutLinkLabel" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/></a>
 	</p>
 </f:section>
+
+</html>
