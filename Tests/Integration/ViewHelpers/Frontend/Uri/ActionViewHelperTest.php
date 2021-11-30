@@ -266,6 +266,7 @@ class ActionViewHelperTest extends FunctionalTestCase
          * Then the redirect link calls the redirect plugin of rkw_mailer
          * Then the redirect link contains the queueMailUid
          * Then the redirect link contains an url-attribute
+         * Then the url-attribute contains the absolute link to the given pageUid
          * Then no cHash is used
          * Then a noCache-parameter is set
          */
@@ -285,13 +286,14 @@ class ActionViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->setTemplate('Check30.html');
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
         $result = $this->standAloneViewHelper->render();
-        
+
         self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
         self::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
         self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
         self::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
+        self::assertContains('http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2F', $result);
         self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
+        self::assertContains('/nc/', $result);       
 
 
     }

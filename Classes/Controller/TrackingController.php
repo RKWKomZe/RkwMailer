@@ -74,8 +74,9 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {
-                $this->redirectToUri($url);
-                return;
+                /** @toDo currently not working with subscription-edit redirect to mein.rkw.de - don't know why! */
+                // $this->redirectToUri($url); 
+                // exit();
             }
 
             $this->addFlashMessage(
