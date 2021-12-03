@@ -165,7 +165,7 @@ class MarkerReducer
                             
                             if (! count($value)) {
                                 $this->getLogger()->log(
-                                    LogLevel::INFO,
+                                    LogLevel::DEBUG,
                                     sprintf(
                                         'Object of class %s in marker-array is empty and will be stored as serialized object in the database.',
                                         get_class($value)

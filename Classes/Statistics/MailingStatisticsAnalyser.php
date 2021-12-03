@@ -113,7 +113,7 @@ class MailingStatisticsAnalyser
             $this->analyseQueueMail($queueMail);
 
             $this->getLogger()->log(
-                LogLevel::INFO,
+                LogLevel::DEBUG,
                 sprintf(
                     'Statistical analysis for queueMail with uid %s finished successfully.',
                     $queueMail->getUid()
@@ -145,14 +145,14 @@ class MailingStatisticsAnalyser
             $mailingStatistics->setTstampFavSending($queueMail->getTstampFavSending());
             $mailingStatistics->setTstampRealSending($queueMail->getTstampRealSending());
             $mailingStatistics->setTstampFinishedSending($queueMail->getTstampSendFinish());
+            $mailingStatistics->setSubject($queueMail->getSubject());
+            $mailingStatistics->setType($queueMail->getType());
            
             $queueMail->setMailingStatistics($mailingStatistics);
         }
         
         // set current values
         $mailingStatistics->setStatus($queueMail->getStatus());
-        $mailingStatistics->setSubject($queueMail->getSubject());
-        $mailingStatistics->setType($queueMail->getType());
 
         $mailingStatistics->setTotalRecipients(
             $this->queueRecipientRepository->countTotalRecipientsByQueueMail($queueMail)

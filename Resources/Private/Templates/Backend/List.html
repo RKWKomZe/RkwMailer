@@ -12,6 +12,7 @@
 			<f:render partial="Backend/Datepicker" arguments="{timeFrame:timeFrame}"/>
 			<f:render partial="Backend/MailTypePicker" arguments="{mailTypeList:mailTypeList, mailType:mailType}"/>
 		</f:form>
+		
 		<f:be.widget.paginate objects="{queueMailList}" as="queueMailListSub" configuration="{itemsPerPage: 25}">
 	
 			<table class="tx_rkwmailer" border="1" >
@@ -69,10 +70,10 @@
 									<f:link.action action="pause" arguments="{queueMail:queueMail}">&gt; <f:translate key="templates_backend_list.pause" /></f:link.action>
 								</f:if>
 							</f:if>
-							<f:if condition="{queueMail..status} >= 3">
+							<f:if condition="{queueMail.status} >= 3">
 								<f:link.action action="reset" arguments="{queueMail:queueMail}" onclick="return confirm('{f:translate(key:\"templates_backend_list.resetConfirm\")}')">&gt; <f:translate key="templates_backend_list.reset" /></f:link.action>
 							</f:if>
-							<f:if condition="{queueMail..status} == 1">
+							<f:if condition="{queueMail.status} == 1">
 								<f:link.action action="continue" arguments="{queueMail:queueMail}">&gt; <f:translate key="templates_backend_list.continue" /></f:link.action>
 							</f:if>
 							<f:link.action action="delete" arguments="{queueMail:queueMail}" onclick="return confirm('{f:translate(key:\"templates_backend_list.deleteConfirm\")}')">&gt; <f:translate key="templates_backend_list.delete" /></f:link.action>
