@@ -219,7 +219,11 @@ class Mailer
                 if (!$queueMail->getSettingsPid()) {
                     $queueMail->setSettingsPid($settingsPid);
                 }
-
+                
+                // set important default values for statistics
+                $queueMail->getMailingStatistics()->setSubject($queueMail->getSubject());
+                $queueMail->getMailingStatistics()->setType($queueMail->getType());
+                
                 // set status to sending and set sending time
                 if ($queueMail->getStatus() != 3) {
                     $queueMail->setStatus(3);

@@ -199,8 +199,8 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->setOrderings(
             array(
                 'status' => QueryInterface::ORDER_ASCENDING,
-                'tstampFavSending' => QueryInterface::ORDER_DESCENDING,
-                'tstampRealSending' => QueryInterface::ORDER_DESCENDING,
+                'mailingStatistics.tstampFavSending' => QueryInterface::ORDER_DESCENDING,
+                'mailingStatistics.tstampFavSending' => QueryInterface::ORDER_DESCENDING,
             )
         );
 

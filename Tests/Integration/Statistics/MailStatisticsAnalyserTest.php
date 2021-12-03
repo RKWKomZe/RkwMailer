@@ -375,6 +375,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          * Given this queueMail-object has the tstampFavSending-property set
          * Given this queueMail-object has the tstampRealSending-property set
          * Given this queueMail-object has the tstampSendFinished-property set
+         * Given this queueMail-object has a subject set
+         * Given this queueMail-object has a type-value of 1
          * Given this queueMail-object has four queueRecipients
          * Given one of this queueRecipients has the status draft
          * Given one of this queueRecipients has the status finished
@@ -383,6 +385,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          * When the method is called
          * Then a mailingStatistics-object is added to the database
          * Then this mailingStatistics-object has the queueMail-property set to the uid of the given queueMail
+         * Then this mailingStatistics-object has the subject-property set to the subject of the queueMail
+         * Then this mailingStatistics-object has the type-property set to the type of the queueMail
          * Then the totalRecipients-property of the mailingStatistics-object is set to the value three
          * Then the totalSent-property of the mailingStatistics-object is set to the value two
          * Then the delivered-property of the mailingStatistics-object is set to the value one
@@ -415,6 +419,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals(111, $mailingStatistics->getTstampFavSending());
         self::assertEquals(222, $mailingStatistics->getTstampRealSending());
         self::assertEquals(333, $mailingStatistics->getTstampFinishedSending());
+        self::assertEquals($queueMail->getSubject(), $mailingStatistics->getSubject());
+        self::assertEquals($queueMail->getType(), $mailingStatistics->getType());
     }
 
     /**
@@ -532,15 +538,11 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          *
          * Given one queueMail-objects in database
          * Given the queueMail-object has the status finished
-         * Given the queueMail-object has a subject set         
-         * Given the queueMail-object has a type set 
          * Given the queueMail-object has a mailingStatistics-object linked
          * Given this mailingStatistics-object has a tstampRealSending that is not older than 30 days
          * When the method is called
          * Then the mailingStatistics-object is persisted
          * Then the mailingStatistics-object of the queueMail has the status-property set to finished
-         * Then the mailingStatistics-object of the queueMail has the subject-property set to the subject of the queueMail
-         * Then the mailingStatistics-object of the queueMail has the type-property set to the type of the queueMail
          */
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check100.xml');
@@ -559,9 +561,6 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $queueMail->getMailingStatistics();
         self::assertEquals($queueMail->getStatus(), $mailingStatistics->getStatus());
-        self::assertEquals($queueMail->getSubject(), $mailingStatistics->getSubject());
-        self::assertEquals($queueMail->getType(), $mailingStatistics->getType());
-
     }
 
 

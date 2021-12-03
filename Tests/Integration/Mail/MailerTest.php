@@ -652,6 +652,47 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(4, $queueMailDb->getMailingStatistics()->getStatus());
 
     }
+
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function processQueueMailsUpdatesTypeAndSubject()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a queueMail-objects in the database
+         * Given this queueMail-object has the status waiting
+         * Given this queueMail-object has only one queueRecipient
+         * Given this queueMail-object has a subject
+         * Given this queueMail-object has a type-value of 1
+         * When the method is called
+         * Then one queueMail-object is returned
+         * Then the corresponding mailingStatistics-object has the subject set
+         * Then the corresponding mailingStatistics-object has the type-value set
+         * Then this mailingStatistics is persisted
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check440.xml');
+
+        $result = $this->subject->processQueueMails();
+        self::assertCount(1, $result);
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $result[0];
+        self::assertInstanceOf(QueueMail::class, $queueMail);
+        self::assertEquals($queueMail->getSubject(), $queueMail->getMailingStatistics()->getSubject());
+        self::assertEquals($queueMail->getType(), $queueMail->getMailingStatistics()->getType());
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
+        $queueMailDb = $this->queueMailRepository->findByIdentifier(440);
+        self::assertEquals($queueMail->getSubject(), $queueMailDb->getMailingStatistics()->getSubject());
+        self::assertEquals($queueMail->getType(), $queueMailDb->getMailingStatistics()->getType());
+
+    }
     //=============================================
 
 
