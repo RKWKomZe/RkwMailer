@@ -230,7 +230,7 @@
             </trans-unit>
             <trans-unit id="templates_backend_list.resetConfirm">
                 <source>Do you really want to reset the selected e-mail? This will also reset the statistics. ALl recipients will be contacted again.</source>
-                <target>Möchten Sie die ausgewählte E-Mail wirklich zurücksetzen? Dies setzt auch die Statistik für diese E-Mail zurück. Alle Empfänger werden erneut angeschrieben.</target>
+                <target>Möchten Sie die ausgewählte E-Mail wirklich zurücksetzen? Dies setzt auch die Statistik für diese E-Mail zurück. Alle Empfangenden werden erneut angeschrieben.</target>
             </trans-unit>
             <trans-unit id="templates_backend_list.delete">
                 <source>Delete</source>
