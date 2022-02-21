@@ -17,6 +17,7 @@ namespace RKW\RkwMailer\Utility;
 
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Persistence\MarkerReducer;
+use RKW\RkwMailer\Validation\EmailValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
@@ -209,7 +210,7 @@ class QueueRecipientUtility
                     
                     // only if value is valid email
                     if ($propertyTarget == 'email') {
-                        if (GeneralUtility::validEmail($value)) {
+                        if (EmailValidator::validateEmail($value)) {
                             $queueRecipient->$setter($value);
                         }
                     } elseif ($propertyTarget == 'marker'){
@@ -231,7 +232,7 @@ class QueueRecipientUtility
                 ){
                     // only if value is valid email
                     if ($propertyTarget == 'email') {
-                        if (GeneralUtility::validEmail($value)) {
+                        if (EmailValidator::validateEmail($value)) {
                             $queueRecipient->$setter($value);
                         }
                     } elseif ($propertyTarget == 'marker'){
@@ -258,7 +259,7 @@ class QueueRecipientUtility
      * @param $additionalData
      * @return void
      */
-    protected static function explodeNameToAdditionalData($name, &$additionalData)
+    protected static function explodeNameToAdditionalData(string $name, array &$additionalData)
     {
 
         // split name 

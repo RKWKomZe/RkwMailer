@@ -384,6 +384,60 @@ class MailServiceTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
+    public function setToGivenNewEmailAsTypolinkReturnsTrue()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a queueMail-object
+         * Given this queueMail-object has templates and paths to the templates set
+         * Given this queueMail-object is set to the mailService
+         * Given a frontendUser-object
+         * Given that frontendUser-object has a valid email set as Typolink with "mailto:"-prefix
+         * Given that frontendUser-object has a first name
+         * Given that frontendUser-object has a last name
+         * Given this e-mail-address has not been added as recipient to the queueMail before
+         * When the method is called
+         * Then true is returned
+         * Then a new queueRecipient-object is added to the database
+         * Then the given data is added as property-values to the queueRecipient-object in the database
+         * Then this queueRecipient-object is added to the current queueMail-object
+         * Then no templates are rendered
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(10);
+        $this->subject->setQueueMail($queueMail);
+
+        /** @var \RKW\RkwRegistration\Domain\Model\FrontendUser $feUser */
+        $feUser = GeneralUtility::makeInstance(FrontendUser::class);
+        $feUser->setEmail('mailto: lauterbach@spd.de');
+        $feUser->setFirstName('Karl');
+        $feUser->setLastName('Lauterbach');
+
+        self::assertTrue($this->subject->setTo($feUser, []));
+        self::assertCount(1, $this->queueRecipientRepository->findAll());
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = $this->queueRecipientRepository->findAll()->getFirst();
+
+        self::assertEquals('lauterbach@spd.de', $queueRecipient->getEmail());
+        self::assertEquals('Karl', $queueRecipient->getFirstname());
+        self::assertEquals('Lauterbach', $queueRecipient->getLastname());
+
+        self::assertEquals($this->subject->getQueueMail(), $queueRecipient->getQueueMail());
+
+        self::assertEmpty($this->mailCache->getHtmlBody($queueRecipient));
+        self::assertEmpty($this->mailCache->getPlaintextBody($queueRecipient));
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
     public function setToGivenNewEmailRendersTemplates()
     {
 
