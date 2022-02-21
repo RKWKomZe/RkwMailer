@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\Validation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * EmailValidationUtility
  *
@@ -27,9 +29,26 @@ namespace RKW\RkwMailer\Validation;
 class EmailValidator
 {
 
+    /**
+     * @param string $email
+     * @return string
+     */
     public static function cleanUpEmail($email)
     {
-        return str_replace('mailto:', '', $email);
+        return trim(str_replace('mailto:', '', $email));
+    }
+
+
+    /**
+     * Validates email
+     *
+     * @param string $email
+     * @return bool
+     */
+    public static function validateEmail(string $email): bool
+    {
+        $email = self::cleanUpEmail($email);
+        return GeneralUtility::validEmail($email);
     }
 
 }

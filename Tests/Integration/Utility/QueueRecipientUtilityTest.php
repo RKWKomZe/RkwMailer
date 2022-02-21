@@ -673,6 +673,41 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
     /**
      * @test
+     */
+    public function initQueueRecipientGivenTypolinkSetsEmail()
+    {
+        /**
+         * Scenario:
+         *
+         * Given a basicData-Array
+         * Given that basicData-Array has an email-key as Typolink with "mailto:"-prefix set
+         * Given that basicData-Array has a title-key set
+         * Given that basicData-Array has a salutation-key set
+         * Given that basicData-Array has a firstName-key set
+         * When the method is called
+         * Then the queueRecipient-object is returned
+         * Then the email-property of this object is set to the value of the email-key of the basicData-Array
+         * Then the title-property of this object is set to the value of the title-key of the basicData-Array
+         * Then the salutation-property of this object is set to the value of the salutation-key of the basicData-Array
+         * Then the firstName-property of this object is set to the value of the firstName-key of the basicData-Array
+         */
+        $expected = new QueueRecipient();
+
+        $basicData = [
+            'email' => 'mailto: merkel@cdu.de',
+        ];
+
+        $additionalData = [];
+
+        $expected->setEmail('merkel@cdu.de');
+
+        $result = $this->subject::initQueueRecipient($basicData, $additionalData);
+        self::assertEquals($expected, $result);
+    }
+    
+
+    /**
+     * @test
      * @throws \Exception
      */
     public function initQueueRecipientIgnoresMarkerIfNotAnArray()
