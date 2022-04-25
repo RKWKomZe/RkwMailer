@@ -15,6 +15,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -48,14 +49,14 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public function findAllByQueueMailWithStatusWaiting(
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail, 
-        $limit = 25
+        int $limit = 25
     ) {
 
         $query = $this->createQuery();
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', intval($queueMail->getUid())),
-                $query->equals('status', '2')
+                $query->equals('status', QueueRecipientUtility::STATUS_WAITING)
             )
         );
 
@@ -133,7 +134,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->greaterThanOrEqual('status', 2)
+                $query->greaterThanOrEqual('status', QueueRecipientUtility::STATUS_WAITING)
             )
         );
 
@@ -157,9 +158,9 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->greaterThanOrEqual('status', 4),
+                $query->greaterThanOrEqual('status', QueueRecipientUtility::STATUS_FINISHED),
                 $query->logicalNot(
-                    $query->equals('status', 97)
+                    $query->equals('status', QueueRecipientUtility::STATUS_DEFERRED)
                 )
             )
         );
@@ -184,7 +185,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->equals('status', 4)
+                $query->equals('status', QueueRecipientUtility::STATUS_FINISHED)
             )
         );
 
@@ -208,7 +209,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->equals('status', 99)
+                $query->equals('status', QueueRecipientUtility::STATUS_ERROR)
             )
         );
 
@@ -231,7 +232,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->equals('status', 97)
+                $query->equals('status', QueueRecipientUtility::STATUS_DEFERRED)
             )
         );
 
@@ -255,7 +256,7 @@ class QueueRecipientRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query->matching(
             $query->logicalAnd(
                 $query->equals('queueMail', $queueMail),
-                $query->equals('status', 98)
+                $query->equals('status', QueueRecipientUtility::STATUS_BOUNCED)
             )
         );
 

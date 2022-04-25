@@ -244,7 +244,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail();
         self::assertInstanceOf(QueueMail::class, $result);
-        self::assertEquals(1, $result->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_DRAFT, $result->getStatus());
 
     }
     

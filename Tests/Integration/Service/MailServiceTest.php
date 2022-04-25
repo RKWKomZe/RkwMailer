@@ -24,9 +24,12 @@ use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Service\MailService;
+use RKW\RkwMailer\Utility\QueueMailUtility;
+use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwRegistration\Domain\Model\FrontendUser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * MailServiceTest
@@ -157,7 +160,7 @@ class MailServiceTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $queueMail);
         
         self::assertEquals(9999, $queueMail->getPid());
-        self::assertEquals($queueMail->getStatus(), 1);
+        self::assertEquals($queueMail->getStatus(), QueueMailUtility::STATUS_DRAFT);
         self::assertEquals(1, $queueMail->getSettingsPid());
 
         self::assertEquals('RKW', $queueMail->getFromName());
@@ -651,7 +654,7 @@ class MailServiceTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findAll()->getFirst();
-        self::assertEquals(2, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_WAITING, $queueRecipientDb->getStatus());
         self::assertEquals(9999, $queueRecipientDb->getPid());
         
         $queueMail = $this->subject->getQueueMail();
@@ -818,7 +821,7 @@ class MailServiceTest extends FunctionalTestCase
 
         $this->subject->setQueueMail($queueMail);
         self::assertFalse($this->subject->send());
-        self::assertEquals(2, $queueMail->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_WAITING, $queueMail->getStatus());
 
     }
 
@@ -848,7 +851,7 @@ class MailServiceTest extends FunctionalTestCase
 
         $this->subject->setQueueMail($queueMail);
         self::assertFalse($this->subject->send());
-        self::assertEquals(1, $queueMail->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_DRAFT, $queueMail->getStatus());
         
     }
 
@@ -878,7 +881,7 @@ class MailServiceTest extends FunctionalTestCase
 
         $this->subject->setQueueMail($queueMail);
         self::assertFalse($this->subject->send());
-        self::assertEquals(1, $queueMail->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_DRAFT, $queueMail->getStatus());
 
     }
 
@@ -900,7 +903,7 @@ class MailServiceTest extends FunctionalTestCase
          * Then the status of the queueMail-object is changed to waiting
          * Then mailingStatistics-property of this queueMail-object contains a MailingStatistics-object
          * Then this mailingStatistics-object has the tstampFavSending-property set to the current time
-         * Then the queueMail-object of the mailService is reset
+         * // Then the queueMail-object of the mailService is reset
          */
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check60.xml');
@@ -913,14 +916,88 @@ class MailServiceTest extends FunctionalTestCase
         $this->subject->setQueueMail($queueMail);
         
         self::assertTrue($this->subject->send());
-        self::assertEquals(2, $queueMail->getStatus());
-        self::assertNotEquals($this->subject->getQueueMail(), $queueMail);
+        self::assertEquals(QueueMailUtility::STATUS_WAITING, $queueMail->getStatus());
+        // self::assertNotEquals($this->subject->getQueueMail(), $queueMail);
         
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());
         self::assertGreaterThanOrEqual($timeMin, $queueMail->getMailingStatistics()->getTstampFavSending());
         self::assertLessThanOrEqual(time(), $queueMail->getMailingStatistics()->getTstampFavSending());
     }
 
+    //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function startPipeliningSetsPipelineProperty ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-object
+         * When the method is called
+         * Then the pipeline-property of the queueMail-object is set to true
+         * Then the status of the queueMail-object is set to one
+         * Then the values are persisted
+         */
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check90.xml');
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(90);
+
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->startPipelining();
+
+        // force TYPO3 to load objects new from database
+        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $persistenceManager->clearState();
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMailDb = $this->queueMailRepository->findByIdentifier(90);
+
+        self::assertEquals(QueueMailUtility::STATUS_DRAFT, $queueMailDb->getStatus());
+        self::assertEquals(true, $queueMailDb->getPipeline());
+    }
+
+    //=============================================
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function stopPipeliningSetsPipelineProperty ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid queueMail-object
+         * When the method is called
+         * Then the pipeline-property of the queueMail-object is set to false
+         * Then the value is persisted
+         */
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check90.xml');
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = $this->queueMailRepository->findByIdentifier(90);
+
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->stopPipelining();
+
+        // force TYPO3 to load objects new from database
+        $persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $persistenceManager->clearState();
+        
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMailDb = $this->queueMailRepository->findByIdentifier(90);
+
+        self::assertEquals(false, $queueMailDb->getPipeline());
+    }
+    
     //=============================================
 
     /**

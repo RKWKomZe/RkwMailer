@@ -15,7 +15,6 @@ namespace RKW\RkwMailer\Domain\Model;
  * The TYPO3 project - inspiring people to share!
 */
 
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Validation\EmailValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

@@ -2,10 +2,14 @@
     xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
-    <rkwMailer:frontend.uri.action 
-        pageUid="2" 
+    <rkwMailer:frontend.uri.action
+        pageUid="2"
+        queueMail="{queueMail}" 
+        queueRecipient="{queueRecipient}" 
         action="list" 
         controller="MediaSources" 
         extensionName="rkwBasics" 
-        pluginName="Rkwmediasources" />
+        pluginName="Rkwmediasources"
+        pageType="98" />
+
 </html>

@@ -932,7 +932,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
          */
         static::expectException(\RKW\RkwMailer\Exception::class);
         static::expectExceptionCode(1633088157);
-        
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $this->subject->setQueueMail($queueMail);
         $this->subject->setTemplateType('test');
@@ -960,6 +961,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * Then the templateType-property of subject is set to the given type-string
          * Then the templateType-property is transformed to lower case letters only
          */
+        
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $queueMail->setPlaintextTemplate(
             'EXT:rkw_mailer/Tests/Integration/View/MailStandaloneViewTest/Fixtures/Frontend/Templates/Testing/Test'
@@ -1060,6 +1063,193 @@ class MailStandaloneViewTest extends FunctionalTestCase
         
     }
 
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleMergesSettings()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a settings-key
+         * Given that settings-key contains a multidimensional array
+         * When the method is called
+         * Then the existing keys are kept
+         * Then the existing settings-array is merged with the settings-array of RkwMailer
+         */
+
+        $values = [
+            'hello' => 'string',
+            'page' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
+            'settings' => [
+                'test' => [
+                    'testen' => 'deep'
+                ]
+            ]       
+        ];
+
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        $settings = $this->subject->getSettings();
+        $expected = array_merge($values['settings'], $settings['settings']);
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('page', $variables);
+        self::assertArrayHasKey('settings', $variables);
+        self::assertInternalType('array', $variables['settings']);
+        self::assertEquals($expected, $variables['settings']);
+
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleMergesSettingsOnMultipleCalls()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a settings-key
+         * Given that settings-key contains a multidimensional array
+         * Given the method was called before
+         * When the method is called again witch a different settings-array
+         * Then the existing keys are kept
+         * Then the existing settings-array is merged with the new settings-array 
+         * Then both settings-arrays are merged with the settings-array of RkwMailer
+         */
+        $values = [
+            'hello' => 'string',
+            'settings' => [
+                'test' => [
+                    'test1' => 'deep1',
+                    'testen1' => 'deep1'
+                ]
+            ]
+        ];
+
+        $values2 = [
+            'settings' => [
+                'test2' => [
+                    'testen2' => 'deep2',
+                ],
+                'test' => [
+                    'testen2' => 'deep2'
+                ]
+            ]
+        ];
+
+        $this->subject->assignMultiple($values);
+        $this->subject->assignMultiple($values2);
+        
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        $expected = [
+            'test'  => [
+                'testen2' => 'deep2'
+            ], 
+            'privacyPid' => '{$module.tx_rkwmailer.settings.privacyPid}',
+            'redirectPid' => '9999', 
+            'redirectDelay' => '5',
+            'baseUrl' => 'http://www.example.de',
+            'basePathImages' => 'EXT:rkw_mailer/Resources/Public/Images', 
+            'basePathLogo' => 'EXT:rkw_mailer/Resources/Public/Images/logo.png', 
+            'types' => [
+                0 => 'Message',
+                1 => 'Newsletter', 
+                2 =>  'Alert'
+            ], 
+            'arraySettings' =>[
+                'test'=> 'Wonderful!'
+            ],
+            'test2'=> [
+                'testen2' => 'deep2'
+            ],
+            'counterPixelPid' => '9998'
+        ];
+  
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('settings', $variables);
+        self::assertInternalType('array', $variables['settings']);
+        self::assertEquals($expected, $variables['settings']);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleKeepsSettingsOnMultipleCalls()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a settings-key
+         * Given that settings-key contains a multidimensional array
+         * Given the method was called before
+         * When the method is called again without a settings-array
+         * Then the existing keys are kept
+         * Then the existing settings-array is kept
+         * Then the settings-arrays is merged with the settings-array of RkwMailer
+         */
+        $values = [
+            'hello' => 'string',
+            'settings' => [
+                'test' => [
+                    'test1' => 'deep1',
+                    'testen1' => 'deep1'
+                ]
+            ]
+        ];
+
+
+        $this->subject->assignMultiple($values);
+        $this->subject->assignMultiple([]);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        $expected = [
+            'test'  => [
+                'test1' => 'deep1',
+                'testen1' => 'deep1'
+            ],
+            'privacyPid' => '{$module.tx_rkwmailer.settings.privacyPid}',
+            'redirectPid' => '9999',
+            'redirectDelay' => '5',
+            'baseUrl' => 'http://www.example.de',
+            'basePathImages' => 'EXT:rkw_mailer/Resources/Public/Images',
+            'basePathLogo' => 'EXT:rkw_mailer/Resources/Public/Images/logo.png',
+            'types' => [
+                0 => 'Message',
+                1 => 'Newsletter',
+                2 =>  'Alert'
+            ],
+            'arraySettings' =>[
+                'test'=> 'Wonderful!'
+            ],
+            'counterPixelPid' => '9998'
+        ];
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('settings', $variables);
+        self::assertInternalType('array', $variables['settings']);
+        self::assertEquals($expected, $variables['settings']);
+    }
+
+
     /**
      * @test
      * @throws \Exception
@@ -1082,7 +1272,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $values = [
             'hello' => 'string',
         ];
-        
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $this->subject->setQueueMail($queueMail);
         
@@ -1094,7 +1285,54 @@ class MailStandaloneViewTest extends FunctionalTestCase
         self::assertArrayHasKey('hello', $variables);
         self::assertArrayHasKey('queueMail', $variables);
         self::assertInstanceOf(QueueMail::class , $variables['queueMail']);
+    }
 
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleOverridesQueueMailInValues()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a queueMail-key
+         * Given that queueMail-key contains a queueMail-object A
+         * Given a queueMail-object B has been set to the subject via setQueueMail() before
+         * When the method is called
+         * Then the existing keys are kept
+         * Then a queueMail-key exists
+         * Then this queueMail-key contains an queueMail-object
+         * Then the queueMail-key is overridden by queueMail B
+         */
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = new QueueMail();
+        $queueMail->setPid(1);
+        
+        $values = [
+            'hello' => 'string',
+            'queueMail' => $queueMail
+        ];
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail2 */
+        $queueMail2 = new QueueMail();
+        $queueMail2->setPid(2);
+        
+        $this->subject->setQueueMail($queueMail2);
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('queueMail', $variables);
+        self::assertInstanceOf(QueueMail::class , $variables['queueMail']);
+        self::assertEquals(2, $variables['queueMail']->getPid());
     }
 
     /**
@@ -1120,6 +1358,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
             'hello' => 'string',
         ];
 
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = new QueueRecipient();
         $this->subject->setQueueRecipient($queueRecipient);
 
@@ -1131,6 +1370,53 @@ class MailStandaloneViewTest extends FunctionalTestCase
         self::assertArrayHasKey('hello', $variables);
         self::assertArrayHasKey('queueRecipient', $variables);
         self::assertInstanceOf(QueueRecipient::class , $variables['queueRecipient']);
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleOverridesQueueRecipientInValues()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a queueRecipient-key
+         * Given that queueRecipient-key contains a queueRecipient-object A
+         * Given a queueRecipient-object B has been set to the subject via setQueueRecipient() before
+         * When the method is called
+         * Then the existing keys are kept
+         * Then a queueRecipient-key exists
+         * Then this queueRecipient-key contains an queueRecipient-object
+         * Then the queueRecipient-key is overridden by queueRecipient B
+         */
+        
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient = new QueueRecipient();
+        $queueRecipient->setPid(1);
+        $values = [
+            'hello' => 'string',
+            'queueRecipient' => $queueRecipient
+        ];
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
+        $queueRecipient2 = new QueueRecipient();
+        $queueRecipient2->setPid(2);
+        $this->subject->setQueueRecipient($queueRecipient2);
+
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('queueRecipient', $variables);
+        self::assertInstanceOf(QueueRecipient::class , $variables['queueRecipient']);
+        self::assertEquals(2, $variables['queueRecipient']->getPid());
+
 
     }
 
@@ -1162,6 +1448,55 @@ class MailStandaloneViewTest extends FunctionalTestCase
             'hello' => 'string',
         ];
 
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
+        $queueMail = new QueueMail();
+        $this->subject->setQueueMail($queueMail);
+        $this->subject->setTemplateType('plaintext');
+        $this->subject->assignMultiple($values);
+
+        $variableProvider = $this->subject->getRenderingContext()->getVariableProvider();
+        $variables = $variableProvider->getAll();
+
+        self::assertArrayHasKey('hello', $variables);
+        self::assertArrayHasKey('mailType', $variables);
+        self::assertEquals('Plaintext', $variables['mailType']);
+        self::assertArrayHasKey('templateType', $variables);
+        self::assertEquals('Plaintext', $variables['templateType']);
+
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function assignMultipleOverridesMailTypeAndTemplateTypeInValues()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given an array of values
+         * Given that array contains a mailType-key
+         * Given that array contains a templateType-key
+         * Given a queueMail-object has been set to the subject via setQueueMail() before
+         * Given setTemplateType() of the subject has been called before successfully
+         * When the method is called
+         * Then the existing keys are kept
+         * Then a mailTypeType-key exists in the values
+         * Then the mailType-key contains the type that was given to setTemplateType()
+         * Then the first letter of the mailType-key is uppercase
+         * Then a templateType-key exists in the the values
+         * Then this templateType-key contains the type that was given to setTemplateType()
+         * Then the first letter of the templateType-key is uppercase
+         */
+        $values = [
+            'hello' => 'string',
+            'mailType' => 'html',
+            'templateType' => 'html'
+        ];
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $this->subject->setQueueMail($queueMail);
         $this->subject->setTemplateType('plaintext');
@@ -1178,7 +1513,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
 
 
     }
-    
+
+
     //=============================================
 
     /**
@@ -1243,7 +1579,7 @@ class MailStandaloneViewTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
-    public function renderHasAccessToSettings ()
+    public function renderHasAccessToExtensionSettings ()
     {
 
         /**
@@ -1257,6 +1593,28 @@ class MailStandaloneViewTest extends FunctionalTestCase
         $result = $this->subject->render();
 
         self::assertContains('Wonderful!', $result);
+
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function renderHasAccessToAssignedSettings ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given a valid configuration
+         * When the method is called
+         * Then the setting variables are available
+         */
+        $this->subject->setTemplate('Testing/Check80.html');
+        $this->subject->assign('settings', ['assignTest' => 'Testing Is ']);
+        $result = $this->subject->render();
+
+        self::assertContains('Testing Is Wonderful!', $result);
 
     }
 
@@ -1275,6 +1633,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * When the method is called
          * Then the value of the layoutPath-property of the queueMailObject is added to the layoutPaths of the subject
          */
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $queueMail->setLayoutPaths(
             [
@@ -1314,6 +1674,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * When the method is called
          * Then the value of the templatePath-property of the queueMailObject is added to the layoutPaths of the subject
          */
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $queueMail->setTemplatePaths(
             [
@@ -1354,6 +1716,8 @@ class MailStandaloneViewTest extends FunctionalTestCase
          * When the method is called
          * Then the value of the partialPath-property of the queueMailObject is added to the partialsRootPaths of the subject
          */
+
+        /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = new QueueMail();
         $queueMail->setPartialPaths(
             [

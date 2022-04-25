@@ -36,6 +36,42 @@ class QueueRecipientUtility
 {
 
     /**
+     * @var string
+     */
+    const STATUS_DRAFT = 1;
+
+    /**
+     * @var string
+     */
+    const STATUS_WAITING = 2;
+
+    /**
+     * @var string
+     */
+    const STATUS_SENDING = 3;
+
+    /**
+     * @var string
+     */
+    const STATUS_FINISHED = 4;
+
+    /**
+     * @var string
+     */
+    const STATUS_DEFERRED = 97;
+
+    /**
+     * @var string
+     */
+    const STATUS_BOUNCED = 98;    
+
+    /**
+     * @var string
+     */
+    const STATUS_ERROR = 99;
+    
+    
+    /**
      * Get a QueueRecipient-object based on properties of a given object
      * 
      * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity|array $basicData

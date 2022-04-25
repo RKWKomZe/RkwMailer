@@ -52,13 +52,25 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
             $this->getLogger()->log(
                 LogLevel::ERROR, 
                 sprintf(
-                    'No eMail-Address is set (queueRecipient with uid %s).', 
+                    'No email-address is set (queueRecipient with uid %s).', 
                     $queueRecipient->getUid()
                 )
             );
             $valid = false;
         }
 
+        if (!EmailValidator::validateEmail($queueRecipient->getEmail())) {
+            $this->getLogger()->log(
+                LogLevel::ERROR,
+                sprintf(
+                    'Email-address is not valid (queueRecipient with uid %s).',
+                    $queueRecipient->getUid()
+                )
+            );
+            
+            $valid = false;
+        }
+        
         if (!$queueRecipient->getFirstName()) {
             $this->getLogger()->log(
                 LogLevel::INFO, 
