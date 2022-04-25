@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Utility\QueueMailUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -58,7 +59,7 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
 
         $query = $this->createQuery();
         $constraints = [
-            $query->greaterThanOrEqual('status', 3)
+            $query->greaterThanOrEqual('status', QueueMailUtility::STATUS_SENDING)
         ];
 
         if ($type > -1) {

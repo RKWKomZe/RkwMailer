@@ -24,6 +24,8 @@ use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Mail\Mailer;
+use RKW\RkwMailer\Utility\QueueMailUtility;
+use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -305,35 +307,35 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailOne */
         $queueMailOne = $result[0];
         self::assertEquals(120, $queueMailOne->getUid());
-        self::assertEquals(99, $queueMailOne->getStatus());
-        self::assertEquals(99, $queueMailOne->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailOne->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailOne->getMailingStatistics()->getStatus());
         
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbOne = $this->queueMailRepository->findByIdentifier(120);
-        self::assertEquals(99, $queueMailDbOne->getStatus());
-        self::assertEquals(99, $queueMailDbOne->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailDbOne->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailDbOne->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailTwo */
         $queueMailTwo = $result[1];
         self::assertEquals(121, $queueMailTwo->getUid());
-        self::assertEquals(99, $queueMailTwo->getStatus());
-        self::assertEquals(99, $queueMailTwo->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailTwo->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailTwo->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbTwo = $this->queueMailRepository->findByIdentifier(121);
-        self::assertEquals(99, $queueMailDbTwo->getStatus());
-        self::assertEquals(99, $queueMailDbTwo->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailDbTwo->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailDbTwo->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailThree */
         $queueMailThree = $result[2];
         self::assertEquals(122, $queueMailThree->getUid());
-        self::assertEquals(4, $queueMailThree->getStatus());
-        self::assertEquals(4, $queueMailThree->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailThree->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailThree->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbThree = $this->queueMailRepository->findByIdentifier(122);
-        self::assertEquals(4, $queueMailDbThree->getStatus());
-        self::assertEquals(4, $queueMailDbThree->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDbThree->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDbThree->getMailingStatistics()->getStatus());
 
     }
 
@@ -605,13 +607,13 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
-        self::assertEquals(3, $queueMail->getStatus());
-        self::assertEquals(3, $queueMail->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_SENDING, $queueMail->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_SENDING, $queueMail->getMailingStatistics()->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(200);
-        self::assertEquals(3, $queueMailDb->getStatus());
-        self::assertEquals(3, $queueMailDb->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_SENDING, $queueMailDb->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_SENDING, $queueMailDb->getMailingStatistics()->getStatus());
 
     }
     
@@ -643,13 +645,13 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
-        self::assertEquals(4, $queueMail->getStatus());
-        self::assertEquals(4, $queueMail->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMail->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMail->getMailingStatistics()->getStatus());
         
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(210);
-        self::assertEquals(4, $queueMailDb->getStatus());
-        self::assertEquals(4, $queueMailDb->getMailingStatistics()->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDb->getStatus());
+        self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDb->getMailingStatistics()->getStatus());
 
     }
 
@@ -818,11 +820,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $result[0];
-        self::assertEquals(4, $queueRecipient->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipient->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(380);
-        self::assertEquals(4, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipientDb->getStatus());
     }
 
     /**
@@ -854,11 +856,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $result[0];
-        self::assertEquals(99, $queueRecipient->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_ERROR, $queueRecipient->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(390);
-        self::assertEquals(99, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_ERROR, $queueRecipientDb->getStatus());
     }
 
     /**
@@ -891,11 +893,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $result[0];
-        self::assertEquals(4, $queueRecipient->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipient->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(400);
-        self::assertEquals(4, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipientDb->getStatus());
     }
 
 
@@ -929,11 +931,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $result[0];
-        self::assertEquals(97, $queueRecipient->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_DEFERRED, $queueRecipient->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(410);
-        self::assertEquals(97, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_DEFERRED, $queueRecipientDb->getStatus());
     }
 
     /**
@@ -966,11 +968,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $result[0];
-        self::assertEquals(4, $queueRecipient->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipient->getStatus());
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipientDb */
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(420);
-        self::assertEquals(4, $queueRecipientDb->getStatus());
+        self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipientDb->getStatus());
     }
     
     //=============================================

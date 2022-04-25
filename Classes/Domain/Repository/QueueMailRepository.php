@@ -15,6 +15,8 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Mail\Mailer;
+use RKW\RkwMailer\Utility\QueueMailUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -52,8 +54,8 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query = $this->createQuery();
         $query->matching(
             $query->logicalOr(
-                $query->equals('status', '2'),
-                $query->equals('status', '3')
+                $query->equals('status', QueueMailUtility::STATUS_WAITING),
+                $query->equals('status', QueueMailUtility::STATUS_SENDING)
             )
         )
         ->setOrderings(
@@ -112,7 +114,7 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query = $this->createQuery();
         $query->matching(
             $query->logicalAnd(
-                $query->greaterThanOrEqual('status', 3),
+                $query->greaterThanOrEqual('status', QueueMailUtility::STATUS_SENDING),
                 $query->greaterThanOrEqual( 'mailingStatistics.tstampRealSending', $timestamp)
             )
         );
@@ -143,8 +145,8 @@ class QueueMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         }
         
         $constraints = [
-            $query->greaterThanOrEqual('status', 4),
-            $query->logicalNot($query->equals('status', 99)),
+            $query->greaterThanOrEqual('status', QueueMailUtility::STATUS_FINISHED),
+            $query->logicalNot($query->equals('status', QueueMailUtility::STATUS_ERROR)),
             $query->in('type', $types)
         ];
         

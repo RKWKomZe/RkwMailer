@@ -251,6 +251,45 @@ class ActionViewHelperTest extends FunctionalTestCase
      * @throws \Exception
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      */
+    public function itRendersAbsoluteLinkWithPageType ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given the absolute parameter is set to false
+         * Given the baseUrl of rkw_mailer is set to http-protocol
+         * Given the pageType-attribute is set
+         * When the link is rendered
+         * Then an absolute link is returned like in frontend context
+         * Then the controller- and action-attribute are converted in a speaking URL
+         * Then the link uses the http-protocol
+         * Then the pageType is set to the given value
+         * Then no cHash is used
+         */
+        $this->setUpFrontendRootPage(
+            1,
+            [
+                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
+            ]
+        );
+
+        $this->standAloneViewHelper->setTemplate('Check50.html');
+        $result = $this->standAloneViewHelper->render();
+        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/pagetype-print/tx-rkw-basics/media/list/', $result);
+        self::assertNotContains('cHash=', $result);
+
+    }
+    
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     */
     public function itRendersAbsoluteLinkWithQueueMailAndRedirect ()
     {
 
@@ -352,6 +391,64 @@ class ActionViewHelperTest extends FunctionalTestCase
        
     }
 
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function itRendersAbsoluteLinkWithQueueRecipientAndRedirectAndPageType ()
+    {
+
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given a pageUid-attribute is set
+         * Given a queueMail-attribute is set
+         * Given a redirect page is configured and exists
+         * Given a pageType is set
+         * When the link is rendered
+         * Then an absolute link to the configured redirect page is returned like in frontend context
+         * Then the redirect link calls the redirect plugin of rkw_mailer
+         * Then the redirect link contains the queueMailUid
+         * Then the redirect link contains an url-attribute
+         * Then the redirect link contains the pageType-parameter
+         * Then the url-attribute contains the absolute link to the given pageUid
+         * Then no pageType-parameter is added to the rendered link itself
+         * Then no cHash is used
+         * Then a noCache-parameter is set
+         */
+        $this->setUpFrontendRootPage(
+            1,
+            [
+                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
+                self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
+            ]
+        );
+
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check60.xml');
+        $queueMail = $this->queueMailRepository->findByIdentifier(1);
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
+
+        $this->standAloneViewHelper->setTemplate('Check60.html');
+        $this->standAloneViewHelper->assign('queueMail', $queueMail);
+        $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
+
+        $result = $this->standAloneViewHelper->render();
+
+        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
+        self::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
+        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        self::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
+        self::assertContains('http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Fpagetype-print%2Ftest%2F', $result);
+        self::assertNotContains('cHash=', $result);
+        self::assertNotContains('type=999', $result);
+        self::assertContains('/nc/', $result);
+
+
+    }
 
     //=============================================
 

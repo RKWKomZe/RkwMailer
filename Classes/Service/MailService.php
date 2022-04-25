@@ -198,6 +198,16 @@ class MailService
 
     
     /**
+     * Returns mailer
+     * @return \RKW\RkwMailer\Mail\Mailer
+     */
+    public function getMailer (): Mailer 
+    {
+        return $this->mailer;
+    }
+    
+    
+    /**
      * Init and return the queueMail
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
@@ -451,8 +461,8 @@ class MailService
                 $this->queueMailRepository->update($queueMail);
                 $this->persistenceManager->persistAll();
 
-                // reset object
-                $this->unsetVariables();
+                /** @toDo: can we savely remove this? It interferes with rkw_newsletter */
+                // $this->unsetVariables();
 
                 $this->getLogger()->log(
                     LogLevel::INFO, 
@@ -491,6 +501,68 @@ class MailService
         return false;
     }
 
+
+    /**
+     * Sets queueMail as pipeline and updates database
+     *
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @api
+     */
+    public function startPipelining(): void
+    {
+        self::debugTime(__LINE__, __METHOD__);
+
+        $queueMail = $this->getQueueMail();
+        
+        // set status to draft and activate pipelining
+        $queueMail->setStatus(1);
+        $queueMail->setPipeline(true);
+        $this->queueMailRepository->update($queueMail);
+        $this->persistenceManager->persistAll();
+
+        $this->getLogger()->log(
+            LogLevel::INFO,
+            sprintf(
+                'Marked QueueMail with uid %s as pipeline.',
+                $queueMail->getUid()
+            )
+        );
+        
+        self::debugTime(__LINE__, __METHOD__);
+    }
+
+
+    /**
+     * Unsets queueMail as pipeline and updates database
+     *
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @api
+     */
+    public function stopPipelining(): void
+    {
+        self::debugTime(__LINE__, __METHOD__);
+
+        $queueMail = $this->getQueueMail();
+        $queueMail->setPipeline(false);
+        $this->queueMailRepository->update($queueMail);
+        $this->persistenceManager->persistAll();
+
+        $this->getLogger()->log(
+            LogLevel::INFO,
+            sprintf(
+                'Unmarked QueueMail with uid %s as pipeline.',
+                $queueMail->getUid()
+            )
+        );
+
+        self::debugTime(__LINE__, __METHOD__);
+    }
 
     /**
      * unset several variables

@@ -15,10 +15,7 @@ namespace RKW\RkwMailer\Mail;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwMailer\Cache\MailCache;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
-use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
-use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use RKW\RkwMailer\View\MailStandaloneView;
@@ -26,15 +23,6 @@ use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
-use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
-use RKW\RkwMailer\Validation\QueueMailValidator;
-use RKW\RkwMailer\Validation\QueueRecipientValidator;
 use RKW\RkwMailer\Validation\EmailValidator;
 
 /**
@@ -47,7 +35,7 @@ use RKW\RkwMailer\Validation\EmailValidator;
  */
 class Mailer
 {
-
+    
     /**
      * objectManager
      *
@@ -138,14 +126,6 @@ class Mailer
     protected $mailCache;
   
     
-    /**
-     * markerReducer
-     *
-     * @var \RKW\RkwMailer\Persistence\MarkerReducer
-     * @inject
-     */
-    protected $markerReducer;
-    
     
     /**
      * logger
@@ -225,9 +205,9 @@ class Mailer
                 $queueMail->getMailingStatistics()->setType($queueMail->getType());
                 
                 // set status to sending and set sending time
-                if ($queueMail->getStatus() != 3) {
-                    $queueMail->setStatus(3);
-                    $queueMail->getMailingStatistics()->setStatus(3);
+                if ($queueMail->getStatus() != QueueMailUtility::STATUS_SENDING) {
+                    $queueMail->setStatus(QueueMailUtility::STATUS_SENDING);
+                    $queueMail->getMailingStatistics()->setStatus(QueueMailUtility::STATUS_SENDING);
                     $queueMail->getMailingStatistics()->setTstampRealSending(time());
                     $queueMail->getMailingStatistics()->setTstampFinishedSending(0);
                 }
@@ -238,8 +218,8 @@ class Mailer
                 if (! count($this->processQueueRecipients($queueMail, $emailsPerInterval, $sleep)) > 0) {
 
                     if (!$queueMail->getPipeline()) {
-                        $queueMail->setStatus(4);
-                        $queueMail->getMailingStatistics()->setStatus(4);
+                        $queueMail->setStatus(QueueMailUtility::STATUS_FINISHED);
+                        $queueMail->getMailingStatistics()->setStatus(QueueMailUtility::STATUS_FINISHED);
                         $queueMail->getMailingStatistics()->setTstampFinishedSending(time());
                         $this->getLogger()->log(
                             \TYPO3\CMS\Core \Log\LogLevel::INFO, 
@@ -271,8 +251,8 @@ class Mailer
                     )
                 );
 
-                $queueMail->getMailingStatistics()->setStatus(99);
-                $queueMail->setStatus(99);
+                $queueMail->getMailingStatistics()->setStatus(QueueMailUtility::STATUS_ERROR);
+                $queueMail->setStatus(QueueMailUtility::STATUS_ERROR);
             }
 
             // persist changes
@@ -334,7 +314,7 @@ class Mailer
                             $message->send();
 
                             // set recipient status 4 for "sent" and remove marker
-                            $queueRecipient->setStatus(4);
+                            $queueRecipient->setStatus(QueueRecipientUtility::STATUS_FINISHED);
 
                             $this->getLogger()->log(
                                 LogLevel::INFO, 
@@ -348,7 +328,7 @@ class Mailer
                         } catch (\Exception $e) {
                             
                             // set recipient status to error
-                            $queueRecipient->setStatus(99);
+                            $queueRecipient->setStatus(QueueRecipientUtility::STATUS_ERROR);
 
                             $this->getLogger()->log(
                                 LogLevel::WARNING, 
@@ -363,7 +343,7 @@ class Mailer
                     } else {
 
                         // set status to deferred - we don't sent emails to this address again
-                        $queueRecipient->setStatus(97);
+                        $queueRecipient->setStatus(QueueRecipientUtility::STATUS_DEFERRED);
                         $this->getLogger()->log(
                             LogLevel::WARNING, sprintf(
                                 'E-mail "%s" (recipient-uid %s) blocked for further mailings because of bounces detected during processing of queueMail width uid %s.', 
@@ -375,7 +355,7 @@ class Mailer
                     }
                                         
                 } catch (\Exception $e) {
-                    $queueRecipient->setStatus(99);
+                    $queueRecipient->setStatus(QueueRecipientUtility::STATUS_ERROR);
                     $this->getLogger()->log(
                         LogLevel::WARNING, 
                         sprintf(

@@ -299,11 +299,12 @@ class FrontendUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
 
-                // never use cHash here!
+                // never use cHash or pageType here!
                 // this is a bad thing when sending from BE!
                 // set all params for redirect link!
                 $this->setTargetPageUid($this->getRedirectPid())
                     ->setNoCache(true)
+                    ->setTargetPageType(0)
                     ->setUseCacheHash(false)
                     ->setCreateAbsoluteUri(true)
                     ->setArguments(

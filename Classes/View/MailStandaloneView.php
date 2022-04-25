@@ -427,12 +427,40 @@ class MailStandaloneView extends StandaloneView
      */
     public function assignMultiple($values): MailStandaloneView
     {
-        // always add current settings
-        if (! isset($values['settings'])) {
-            $settings = $this->getSettings();
-            $values['settings'] = $settings['settings'];
+
+        // first merge existing settings with new settings in case of multiple method-calls
+        $variableProvider = $this->getRenderingContext()->getVariableProvider();
+        $existingSettings = $variableProvider->get('settings');
+        if (
+            (isset($existingSettings))
+            && (is_array($existingSettings))
+        ) {
+            if (
+                (isset($values['settings']))
+                && (is_array($values['settings']))
+            ) {
+                $values['settings'] = array_merge($existingSettings, $values['settings']);
+            } else {
+                $values['settings'] = $existingSettings;
+            }
         }
-        
+
+        // always add mailer settings
+        $settings = $this->getSettings();
+        if (
+            (isset($settings['settings']))
+            && (is_array($settings['settings']))
+        ) {
+            if (
+                (isset($values['settings']))
+                && (is_array($values['settings']))
+            ) {
+                $values['settings'] = array_merge($values['settings'], $settings['settings']);
+            } else  {
+                $values['settings'] = $settings['settings'];
+            }           
+        }
+
         // add queueMail-object if set
         if ($this->getQueueMail()) {
             $values['queueMail'] = $this->getQueueMail();
@@ -457,6 +485,20 @@ class MailStandaloneView extends StandaloneView
         return $this;
     }
 
+
+    /**
+     * Assign a value to the variable container.
+     *
+     * @param string $key The key of a view variable to set
+     * @param mixed $value The value of the view variable
+     * @return $this
+     * @api
+     */
+    public function assign($key, $value)
+    {
+        $this->assignMultiple([$key => $value]);
+        return $this;
+    }
 
     /**
      * Loads the template source and renders the template.
