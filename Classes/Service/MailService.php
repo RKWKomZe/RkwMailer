@@ -430,7 +430,7 @@ class MailService
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      * @api
      */
-    public function send()
+    public function send(): bool
     {
         self::debugTime(__LINE__, __METHOD__);
 
@@ -443,7 +443,7 @@ class MailService
         }
 
         // only start sending if we are in draft status
-        if ($queueMail->getStatus() == 1) {
+        if ($queueMail->getStatus() == QueueMailUtility::STATUS_DRAFT) {
 
             // find all final recipients of waiting mails!
             $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting(
