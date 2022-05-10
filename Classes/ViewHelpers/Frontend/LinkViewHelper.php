@@ -34,6 +34,7 @@ class LinkViewHelper extends ActionViewHelper
      */
     public function __construct()
     {
+        parent::__construct();
         \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.uri.action instead.');
     }
     

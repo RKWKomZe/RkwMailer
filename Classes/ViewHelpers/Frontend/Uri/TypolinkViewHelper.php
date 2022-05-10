@@ -15,10 +15,6 @@ namespace RKW\RkwMailer\ViewHelpers\Frontend\Uri;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-
 /**
  * Class TypolinkViewHelper
  *
@@ -26,53 +22,18 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated 
  */
-class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
+class TypolinkViewHelper extends \RKW\RkwMailer\ViewHelpers\Email\Uri\TypolinkViewHelper
 {
 
     /**
-     * Initialize arguments
+     * Constructor
      */
-    public function initializeArguments()
+    public function __construct()
     {
-        parent::initializeArguments();
-        $this->registerArgument('pageUid', 'int', 'pageUid for FE-configuration - DEPRECATED', false, null);
-
+        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use \RKW\RkwMailer\ViewHelpers\Email\Uri\TypolinkViewHelper instead.');
     }
-
-    /**
-     * Render typolinks
-     **
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
-        $parameter = $arguments['parameter'];
-        $additionalParams = $arguments['additionalParams'];
-
-        // log deprecated attribute
-        if ($arguments['pageUid']) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'pageUid',
-                $renderingContext,
-                'Argument "pageUid" on rkwMailer:frontend.uri.typolink is deprecated and has no effect any more.'
-            );
-        }
-        
-        $content = '';
-        if ($parameter) {
-            $content = FrontendTypolinkUtility::getTypolinkUrl($parameter, $additionalParams);
-        }
-
-        return $content;
-    }
-
-    
-    
-
 }
 
 

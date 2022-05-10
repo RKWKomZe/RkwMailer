@@ -1,4 +1,4 @@
-module.tx_rkwmailer {
+plugin.tx_rkwmailer {
     view {
 
         layoutRootPaths {
@@ -45,6 +45,4 @@ module.tx_rkwmailer {
         basePathLogo = EXT:rkw_mailer/Resources/Public/Images/logo.png
     }
 }
-
-plugin.tx_rkwmailer < module.tx_rkwmailer
 

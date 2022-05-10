@@ -32,6 +32,7 @@ class TypolinkViewHelper extends \RKW\RkwMailer\ViewHelpers\Frontend\Uri\Typolin
      */
     public function __construct()
     {
+        parent::__construct();
         \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.uri.typolink instead.');
     }
 }

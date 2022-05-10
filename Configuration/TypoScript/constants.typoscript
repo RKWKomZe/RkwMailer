@@ -1,5 +1,54 @@
+plugin.tx_rkwmailer {
+	persistence {
+		# cat=module.tx_rkwmailer//a; type=string; label=Default storage PID
+		storagePid =
+	}
+
+	view {
+
+        # cat=plugin.tx_rkwmailer/file; type=string; label=Path to template layouts (BE)
+        layoutRootPath = EXT:rkw_mailer/Resources/Private/Layouts/
+
+		# cat=plugin.tx_rkwmailer/file; type=string; label=Path to template root (BE)
+		templateRootPath = EXT:rkw_mailer/Resources/Private/Templates/
+
+		# cat=plugin.tx_rkwmailer/file; type=string; label=Path to template partials (BE)
+		partialRootPath = EXT:rkw_mailer/Resources/Private/Partials/
+	}
+
+    settings {
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=Pid of privacy information
+        privacyPid = 1
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=Pid of redirect plugin
+        redirectPid = 1
+
+        # cat=plugin.tx_rkwmailer; type=integer; label= Delay for redirect (in sec)
+        redirectDelay = 5
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=Pid of plugin for pixel counter (HTML-mails only)
+        counterPixelPid = 1
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=URL for hard-links in templates
+        baseUrl =
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=URL for images in templates
+        basePathImages =  EXT:rkw_mailer/Resources/Public/Images
+
+        # cat=plugin.tx_rkwmailer; type=integer; label=URL for logo in templates
+        basePathLogo = EXT:rkw_mailer/Resources/Public/Images/logo.png
+    }
+}
+
+
 
 module.tx_rkwmailer {
+	persistence {
+		# cat=module.tx_rkwmailer//a; type=string; label=Default storage PID
+		storagePid =
+	}
+	
 	view {
 
         # cat=module.tx_rkwmailer/file; type=string; label=Path to template layouts (BE)
@@ -10,38 +59,7 @@ module.tx_rkwmailer {
 
 		# cat=module.tx_rkwmailer/file; type=string; label=Path to template partials (BE)
 		partialRootPath = EXT:rkw_mailer/Resources/Private/Partials/
-
 	}
-	persistence {
-		# cat=module.tx_rkwmailer//a; type=string; label=Default storage PID
-		storagePid =
-	}
-
-
-    settings {
-
-        # cat=module.tx_rkwmailer; type=integer; label=Pid of privacy information
-        privacyPid = 1
-
-        # cat=module.tx_rkwmailer; type=integer; label=Pid of redirect plugin
-        redirectPid = 1
-
-        # cat=module.tx_rkwmailer; type=integer; label= Delay for redirect (in sec)
-        redirectDelay = 5
-
-        # cat=module.tx_rkwmailer; type=integer; label=Pid of plugin for pixel counter (HTML-mails only)
-        counterPixelPid = 1
-
-        # cat=module.tx_rkwmailer; type=integer; label=URL for hard-links in templates
-        baseUrl =
-
-        # cat=module.tx_rkwmailer; type=integer; label=URL for images in templates
-        basePathImages =  EXT:rkw_mailer/Resources/Public/Images
-
-        # cat=module.tx_rkwmailer; type=integer; label=URL for logo in templates
-        basePathLogo = EXT:rkw_mailer/Resources/Public/Images/logo.png
-    }
 }
 
-plugin.tx_rkwmailer < module.tx_rkwmailer
 

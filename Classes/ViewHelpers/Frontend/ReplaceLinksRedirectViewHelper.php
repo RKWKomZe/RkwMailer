@@ -32,6 +32,7 @@ class ReplaceLinksRedirectViewHelper extends Replace\RedirectLinksViewHelper
      */
     public function __construct()
     {
+        parent::__construct();
         \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.replace.redirectLinks instead.');
     }
 

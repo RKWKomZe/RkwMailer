@@ -7,52 +7,52 @@
 <!-- PLAINTEXT -->
 <!-- No intend here !!! -->  
 <f:section name="Plaintext"><rkwMailer:plaintextLineBreaks>
-<rkwMailer:frontend.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" />\n
-<rkwMailer:frontend.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
+<rkwMailer:email.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" />\n
+<rkwMailer:email.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
 \n\n
-<rkwMailer:frontend.replace.redirectLinks queueMail="{queueMail}" queueRecipient="{queueRecipient}" isPlaintext="true" additionalParams="{queueMail.campaignParameterExploded}">
+<rkwMailer:email.replace.redirectLinks queueMail="{queueMail}" queueRecipient="{queueRecipient}" isPlaintext="true" additionalParams="{queueMail.campaignParameterExploded}">
 	[ http://www.google.de ] Testen\n
 	[ http://www.google.de ] Testen\n
 	[ mailto:mail@steffenkroggel.de ] Blalalal\n
-</rkwMailer:frontend.replace.redirectLinks>
+</rkwMailer:email.replace.redirectLinks>
 \n\n
-<rkwMailer:frontend.replace.rteLinks plaintextFormat="true">
+<rkwMailer:email.replace.rteLinks plaintextFormat="true">
     <f:format.html parseFuncTSPath="">
         Test from RTE <link test@rkw.de>E-mail</link>
     </f:format.html>
-</rkwMailer:frontend.replace.rteLinks>
+</rkwMailer:email.replace.rteLinks>
 \n\n
-Test with typolink: <rkwMailer:frontend.typolink parameter='http://www.google.de'  />
+Test with typolink: <rkwMailer:email.typolink parameter='http://www.google.de'  />
 \n\n
-<rkwMailer:frontend.link action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{queueMail.campaignParameterExploded}"/>
+<rkwMailer:email.uri.action action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{queueMail.campaignParameterExploded}"/>
 </rkwMailer:plaintextLineBreaks></f:section>
 
 <!-- HTML -->
 <f:section name="Html">
 
-	<h1><rkwMailer:frontend.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" /></h1>
-	<p><rkwMailer:frontend.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" /></p>
+	<h1><rkwMailer:email.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" /></h1>
+	<p><rkwMailer:email.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" /></p>
 
-	<rkwMailer:frontend.replace.redirectLinks queueRecipient="{queueRecipient}" queueMail="{queueMail}" additionalParams="{queueMail.campaignParameterExploded}">
+	<rkwMailer:email.replace.redirectLinks queueRecipient="{queueRecipient}" queueMail="{queueMail}" additionalParams="{queueMail.campaignParameterExploded}">
         <p>
             <a href="http://www.google.de">Testen</a>
             <a href="http://www.google.de">Testen</a>
             <a href="http://www.yahoo.de">Testen</a>
             <a href="mailto:mail@steffenkroggel.de">Blalalal</a>
         </p>
-	</rkwMailer:frontend.replace.redirectLinks>
+	</rkwMailer:email.replace.redirectLinks>
 
 
-    <rkwMailer:frontend.replace.rteLinks>
+    <rkwMailer:email.replace.rteLinks>
         <f:format.html parseFuncTSPath="">
             <p>
                 Test from RTE <link test@rkw.de>E-mail</link>
             </p>
         </f:format.html>
-    </rkwMailer:frontend.replace.rteLinks>
+    </rkwMailer:email.replace.rteLinks>
 
     <p>
-        <a href="<rkwMailer:frontend.typolink parameter='http://www.google.de' />">Test with Typolink</a>
+        <a href="<rkwMailer:email.typolink parameter='http://www.google.de' />">Test with Typolink</a>
     </p>
 
     <p>
@@ -60,7 +60,7 @@ Test with typolink: <rkwMailer:frontend.typolink parameter='http://www.google.de
     </p>
 
     <p>
-	    <a href="<rkwMailer:frontend.link action='optIn' controller='Registration' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='true' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_yes: token_yes, user: user_sha1}}'/>">Test</a>
+	    <a href="<rkwMailer:email.uri.action action='optIn' controller='Registration' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='true' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_yes: token_yes, user: user_sha1}}'/>">Test</a>
     </p>
 
 </f:section>

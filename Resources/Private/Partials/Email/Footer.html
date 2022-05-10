@@ -15,18 +15,18 @@
 		www.rkw-kompetenzzentrum.de\n
 
 		<f:if condition="{settings.privacyPid}">\n
-			<rkwMailer:frontend.translate
+			<rkwMailer:email.translate
 				key="partials_email_footer.privacyText1"
 				languageKey="{queueRecipient.languageCode}"
 				extensionName="rkwMailer" />\n
-			<rkwMailer:frontend.translate
+			<rkwMailer:email.translate
 				key="partials_email_footer.privacyText2"
 				languageKey="{queueRecipient.languageCode}"
-				extensionName="rkwMailer" /> <rkwMailer:frontend.translate
+				extensionName="rkwMailer" /> <rkwMailer:email.translate
 				key="partials_email_footer.privacyText3"
 				languageKey="{queueRecipient.languageCode}"
 				extensionName="rkwMailer" />:\n
-			<rkwMailer:frontend.link absolute="true" pageUid="{settings.privacyPid}" noCacheHash="true"/>\n
+			<rkwMailer:email.uri.action absolute="true" pageUid="{settings.privacyPid}" noCacheHash="true"/>\n
 		</f:if>
 	</rkwMailer:plaintextLineBreaks></f:section>
 
@@ -57,9 +57,9 @@
 			<tr>
 				<td style="padding:8px 16px 16px 16px" class="footer">
 					<p>
-						<rkwMailer:frontend.translate key="partials_email_footer.privacyText1" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /><br>
-						<rkwMailer:frontend.translate key="partials_email_footer.privacyText2" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" />
-						<a href="{rkwMailer:frontend.link(absolute:'true', pageUid:'{settings.privacyPid}', noCacheHash:'true')}"><rkwMailer:frontend.translate key="partials_email_footer.privacyText3" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /></a>.
+						<rkwMailer:email.translate key="partials_email_footer.privacyText1" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /><br>
+						<rkwMailer:email.translate key="partials_email_footer.privacyText2" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" />
+						<a href="{rkwMailer:email.uri.action(absolute:'true', pageUid:'{settings.privacyPid}', noCacheHash:'true')}"><rkwMailer:email.translate key="partials_email_footer.privacyText3" languageKey="{queueRecipient.languageCode}" extensionName="rkwMailer" /></a>.
 					</p>
 				</td>
 			</tr>
