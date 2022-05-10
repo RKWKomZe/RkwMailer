@@ -33,6 +33,7 @@ class RteLinksViewHelper extends Replace\RteLinksViewHelper
      */
     public function __construct()
     {
+        parent::__construct();
         \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This ViewHelper will be removed soon. Use rkwMailer:frontend.replace.rteLinks instead.');
     }
 

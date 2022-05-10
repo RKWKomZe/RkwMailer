@@ -1,4 +1,4 @@
-module.tx_rkwmailer {
+plugin.tx_rkwmailer {
     view {
 
         layoutRootPaths {
@@ -23,7 +23,6 @@ module.tx_rkwmailer {
         storagePid = 9999
     }
 
-
     settings {
 
         # cat=module.tx_rkwmailer; type=integer; label=Pid of redirect plugin
@@ -46,7 +45,13 @@ module.tx_rkwmailer {
     }
 }
 
-plugin.tx_rkwmailer < module.tx_rkwmailer
+
+# Module configuration
+module.tx_rkwmailer {
+    persistence {
+        storagePid = 9999
+    }
+}
 
 config {
     doctype = html5

@@ -18,7 +18,7 @@ namespace RKW\RkwMailer\Mail;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
-use RKW\RkwMailer\View\MailStandaloneView;
+use RKW\RkwMailer\View\EmailStandaloneView;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Mail\MailMessage;
@@ -136,9 +136,9 @@ class Mailer
     
     
     /**
-     * mailStandaloneView
+     * EmailStandaloneView
      *
-     * @var \RKW\RkwMailer\View\MailStandaloneView
+     * @var \RKW\RkwMailer\View\EmailStandaloneView
      */
     protected $view;
 
@@ -607,10 +607,10 @@ class Mailer
                 // check if templates have already been rendered and stored in cache
                 if (! $this->mailCache->$propertyGetter($queueRecipient)) {
 
-                    // load EmailStandaloneView with configuration of queueMail
-                    /** @var \RKW\RkwMailer\View\MailStandaloneView $emailView */
+                    // load EEmailStandaloneView with configuration of queueMail
+                    /** @var \RKW\RkwMailer\View\EmailStandaloneView $emailView */
                     $emailView = GeneralUtility::makeInstance(
-                        MailStandaloneView::class,
+                        EmailStandaloneView::class,
                         $queueMail->getSettingsPid()
                     );
 

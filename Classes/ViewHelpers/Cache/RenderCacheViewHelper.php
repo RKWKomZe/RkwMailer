@@ -15,8 +15,6 @@ namespace RKW\RkwMailer\ViewHelpers\Cache;
  */
 
 use RKW\RkwMailer\Cache\RenderCache;
-use RKW\RkwMailer\Utility\FrontendTypolinkUtility;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
