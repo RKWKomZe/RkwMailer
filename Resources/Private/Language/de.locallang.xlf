@@ -15,6 +15,10 @@
                 <source>Mrs.</source>
                 <target>Frau</target>
             </trans-unit>
+            <trans-unit id="tx_rkwmailer_domain_model_queuerecipient.salutation.I.2">
+                <source>Mx</source>
+                <target>Divers</target>
+            </trans-unit>
 
 
             <!-- =================================================== -->
