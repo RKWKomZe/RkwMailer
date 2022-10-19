@@ -304,6 +304,64 @@ class RecipientSalutationViewHelperTest extends FunctionalTestCase
     }
 
 
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function itRendersMxSalutationAllOptions ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given a queueRecipient is defined
+         * When the ViewHelper is rendered
+         * Then a male salutation with fallbackText is returned
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check80.xml');
+
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
+
+        $this->standAloneViewHelper->setTemplate('Check80.html');
+        $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
+
+        $expected = str_replace("\n", '', file_get_contents(self::FIXTURE_PATH . '/Expected/Check80.txt'));
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
+
+        self::assertEquals($expected, $result);
+    }
+
+
+    /**
+     * @test
+     * @throws \Exception
+     * @throws \TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException
+     */
+    public function itRendersMxSalutationDefault ()
+    {
+        /**
+         * Scenario:
+         *
+         * Given the ViewHelper is used in a template
+         * Given a queueRecipient is defined
+         * When the ViewHelper is rendered
+         * Then a female salutation is returned
+         */
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check90.xml');
+
+        $queueRecipient = $this->queueRecipientRepository->findByIdentifier(2);
+
+        $this->standAloneViewHelper->setTemplate('Check90.html');
+        $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
+
+        $expected = str_replace("\n", '', file_get_contents(self::FIXTURE_PATH . '/Expected/Check90.txt'));
+        $result = str_replace("\n", '', $this->standAloneViewHelper->render());
+
+        self::assertEquals($expected, $result);
+    }
+
+
 
     //=============================================
 

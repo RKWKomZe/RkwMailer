@@ -71,7 +71,11 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
         $fullName = array();
         if ($queueRecipient->getLastName()) {
 
-            if ($queueRecipient->getSalutationText()) {
+            // if salutation has value 2 ("divers" / "mx"), do not print salutation (instead use firstName)
+            if (
+                $queueRecipient->getSalutationText()
+                && ($queueRecipient->getSalutation() != 2)
+            ) {
                 $fullName[] = $queueRecipient->getSalutationText();
             } else {
                 $useFirstName = true;
@@ -107,6 +111,6 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
         return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
     }
 
-    
+
 }
 
