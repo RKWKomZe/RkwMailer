@@ -66,7 +66,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     private $objectManager;
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      */
@@ -76,7 +76,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -85,7 +85,6 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 static::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
@@ -107,7 +106,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
 
     }
 
-   
+
     /**
      * @test
      * @throws \Exception
@@ -123,7 +122,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
          * Given an array with one marker is set
          * Given this marker is a queueMail-object
          * Given this queueMail-object is persisted
-         * Given there are no nonCachedMarkers 
+         * Given there are no nonCachedMarkers
          * When the ViewHelper is rendered
          * Then the string is cached
          * Then the string cached is equal to the original rendered string
@@ -141,13 +140,13 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         );
 
         $content = $this->standAloneViewHelper->render();
-        
+
         $cacheIdentifier = $this->renderCache->getIdentifier($queueMail, true);
         $cachedContent = $this->renderCache->getContent($cacheIdentifier);
         self::assertNotEmpty($cachedContent);
-        self::assertContains('This is to be cached.', $content);
-        self::assertContains('This is to be cached.', $cachedContent);
-       
+        self::assertStringContainsString('This is to be cached.', $content);
+        self::assertStringContainsString('This is to be cached.', $cachedContent);
+
     }
 
     /**
@@ -190,17 +189,17 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         );
 
         $content = $this->standAloneViewHelper->render();
-        self::assertContains('This is to be cached.', $content);
-        self::assertContains('"test1"=' . $timestampStart, $content);
-        self::assertContains('"test2"=' . $timestampStart, $content);
+        self::assertStringContainsString('This is to be cached.', $content);
+        self::assertStringContainsString('"test1"=' . $timestampStart, $content);
+        self::assertStringContainsString('"test2"=' . $timestampStart, $content);
 
         $cacheIdentifier = $this->renderCache->getIdentifier($queueMail, true);
         $cachedContent = $this->renderCache->getContent($cacheIdentifier);
         self::assertNotEmpty($cachedContent);
-        self::assertContains('This is to be cached.', $cachedContent);
-        self::assertNotContains('{test1}', $cachedContent);
-        self::assertContains('###test2###', $cachedContent);
-        
+        self::assertStringContainsString('This is to be cached.', $cachedContent);
+        self::assertStringNotContainsString('{test1}', $cachedContent);
+        self::assertStringContainsString('###test2###', $cachedContent);
+
     }
 
     /**
@@ -248,16 +247,16 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         $timestampStart = microtime(true);
         $this->standAloneViewHelper->render();
         $durationSecond = microtime(true) - $timestampStart;
-        
+
         self::assertLessThan($durationFirst - 0.2, $durationSecond);
     }
-    
+
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->renderCache->clearCache();

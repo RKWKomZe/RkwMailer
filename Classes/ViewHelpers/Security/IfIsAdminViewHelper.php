@@ -22,7 +22,7 @@ namespace RKW\RkwMailer\ViewHelpers\Security;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class IfIsAdminViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfAuthenticatedViewHelper
 {
@@ -32,7 +32,7 @@ class IfIsAdminViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfAut
      * @param array $arguments ViewHelper arguments to evaluate the condition for this ViewHelper, allows for flexiblity in overriding this method.
      * @return bool
      */
-    protected static function evaluateCondition($arguments = null)
+    protected static function evaluateCondition($arguments = null): bool
     {
         return isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER']->user['admin'];
     }

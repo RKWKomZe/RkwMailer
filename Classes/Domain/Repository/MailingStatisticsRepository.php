@@ -28,7 +28,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class MailingStatisticsRepository extends AbstractRepository
 {
 
     /**
@@ -36,11 +36,12 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      */
     public function initializeObject()
     {
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
-    
-    
+
+
     /**
      * findByTstampFavSendingAndType
      *
@@ -49,7 +50,7 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      * @param int $type
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
-     * @toDo: write tests
+     * @todo write tests
      */
     public function findByTstampFavSendingAndType(
         int $fromTime,
@@ -88,8 +89,8 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
 
         return $query->execute();
     }
-    
-    
+
+
 
     /**
      * deleteByQueueMail
@@ -97,7 +98,7 @@ class MailingStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @comment implicitly tested
+     * comment: implicitly tested
      */
     public function deleteByQueueMail(
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail

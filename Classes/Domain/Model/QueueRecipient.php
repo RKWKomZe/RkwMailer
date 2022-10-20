@@ -34,7 +34,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $queueMail;
 
-    
+
     /**
      * email
      *
@@ -42,7 +42,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $email = '';
 
-    
+
     /**
      * title
      *
@@ -50,7 +50,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $title = '';
 
-    
+
     /**
      * salutation
      *
@@ -58,7 +58,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $salutation = 99;
 
-    
+
     /**
      * firstName
      *
@@ -66,7 +66,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $firstName = '';
 
-    
+
     /**
      * lastName
      *
@@ -74,7 +74,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $lastName = '';
 
-    
+
     /**
      * subject
      *
@@ -82,7 +82,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $subject = '';
 
-    
+
     /**
      * marker
      *
@@ -90,7 +90,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $marker = '';
 
-    
+
     /**
      * markerUnserialized
      *
@@ -98,7 +98,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $markerUnserialized = [];
 
-    
+
     /**
      * status
      *
@@ -106,7 +106,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $status = 0;
 
-    
+
     /**
      * languageCode
      *
@@ -295,11 +295,22 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getMarker(): array
     {
-        if ($this->markerUnserialized) {
+        if (
+            $this->markerUnserialized
+            && (is_array($this->markerUnserialized))
+        ) {
             return $this->markerUnserialized;
         }
 
-        return ($this->marker ? unserialize($this->marker) : []);
+        if (
+            $this->marker
+            && ($unserialized = unserialize($this->marker))
+            && (is_array($unserialized))
+        ) {
+            $this->markerUnserialized = $unserialized;
+        }
+
+        return ($this->markerUnserialized) ?: [];
     }
 
     /**
@@ -313,7 +324,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->markerUnserialized = $marker;
         $this->marker = serialize($marker);
     }
-    
+
 
     /**
      * Returns the status
@@ -358,5 +369,5 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->languageCode = $languageCode;
     }
 
-    
+
 }

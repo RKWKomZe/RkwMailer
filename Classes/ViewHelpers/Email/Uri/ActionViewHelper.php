@@ -41,8 +41,8 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
      * @var bool
      */
     protected $escapeOutput = false;
-    
-    
+
+
     /**
      * Initialize arguments
      *
@@ -51,7 +51,6 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-       
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for redirecting links');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object of email');
 
@@ -64,11 +63,11 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
-        
+    ): string {
+
         $pageUid = $arguments['pageUid'];
         $pageType = $arguments['pageType'];
         $noCache = $arguments['noCache'];
@@ -90,12 +89,12 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
         $arguments = $arguments['arguments'];
 
         try {
-            
+
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            
+
             /** @var \RKW\RkwMailer\UriBuilder\EmailUriBuilder $uriBuilder */
             $uriBuilder = $objectManager->get(EmailUriBuilder::class);
-            
+
             $uriBuilder
                 ->reset()
                 ->setTargetPageUid($pageUid)
@@ -110,31 +109,31 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
                 ->setAddQueryString($addQueryString)
                 ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString)
                 ->setAddQueryStringMethod($addQueryStringMethod);
-    
+
             if ($queueMail) {
                 $uriBuilder->setUseRedirectLink(true)
                     ->setQueueMail($queueMail);
-                
+
                 if ($queueRecipient) {
                     $uriBuilder->setQueueRecipient($queueRecipient);
-                }                    
+                }
             }
-    
+
             return $uriBuilder->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
 
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to set link: %s', 
+                    'Error while trying to set link: %s',
                     $e->getMessage()
                 )
             );
         }
-        
+
         return '';
     }
-    
+
 }

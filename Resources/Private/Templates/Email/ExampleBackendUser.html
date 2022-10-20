@@ -11,10 +11,10 @@
 <rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}"/>
 
 <rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptIn" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
-<rkwMailer:email.uri.action action="optIn" controller="Service" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="TRUE" pageUid="{pageUid}" additionalParams="{tx_rkwregistration_rkwregistration: {token_yes: tokenYes, service: serviceSha1}}"/>
+<rkwMailer:email.uri.action action="optIn" controller="Service" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{tx_rkwregistration_rkwregistration: {token: optIn.tokenYes, tokenUser: optIn.tokenUser}}"/>
 
 <rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptOut" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
-<rkwMailer:email.uri.action action="optIn" controller="Service" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="TRUE" pageUid="{pageUid}" additionalParams="{tx_rkwregistration_rkwregistration: {token_no: tokenNo, service: serviceSha1}}" />
+<rkwMailer:email.uri.action action="optIn" controller="Service" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{tx_rkwregistration_rkwregistration: {token: optIn.tokenNo, tokenUser: optIn.tokenUser}}" />
 </f:section>
 
 <!-- HTML -->
@@ -28,11 +28,11 @@
 	</ul>
 	<p>
 		<rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptIn" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/><br>
-		<a href="<rkwMailer:email.uri.action action='optIn' controller='Service' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='TRUE' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_yes: tokenYes, service: serviceSha1}}' />"><rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptInLinkLabel" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/></a>
+		<a href="<rkwMailer:email.uri.action action='optIn' controller='Service' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='true' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token: optIn.tokenYes, tokenUser: optIn.tokenUser}}' />"><rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptInLinkLabel" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/></a>
 	</p>
 	<p>
 		<rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptOut" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" /><br>
-		<a href="<rkwMailer:email.uri.action action='optIn' controller='Service' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='TRUE' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token_no: tokenNo, service: serviceSha1}}'  />"><rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptOutLinkLabel" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/></a>
+		<a href="<rkwMailer:email.uri.action action='optIn' controller='Service' extensionName='rkwRegistration' pluginName='rkwRegistration' absolute='true' pageUid='{pageUid}' additionalParams='{tx_rkwregistration_rkwregistration: {token: optIn.tokenNo, tokenUser: optIn.tokenUser}}'  />"><rkwMailer:email.translate key="templates_email_serviceOptInAdminRequest.textOptOutLinkLabel" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration"/></a>
 	</p>
 </f:section>
 

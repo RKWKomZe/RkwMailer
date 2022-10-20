@@ -27,7 +27,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class ClickStatisticsRepository extends AbstractRepository
 {
 
     /** @var array $defaultOrderings */
@@ -35,16 +35,17 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
         'counter' => QueryInterface::ORDER_DESCENDING,
         'url' => QueryInterface::ORDER_ASCENDING,
     ];
-    
-    
+
+
     /**
      * initializeObject
      */
     public function initializeObject()
     {
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
-        
+
     }
 
 
@@ -54,7 +55,7 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return \RKW\RkwMailer\Domain\Model\ClickStatistics
-     * @comment implicitly tested
+     * comment: implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,

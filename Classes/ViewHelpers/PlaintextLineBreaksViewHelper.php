@@ -17,7 +17,7 @@ namespace RKW\RkwMailer\ViewHelpers;
 
 use RKW\RkwAjax\Utilities\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
@@ -58,20 +58,20 @@ class PlaintextLineBreaksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Ab
      * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+
         $value = $renderChildrenClosure();
         $convertLineBreaks = (bool) ($arguments['convertLineBreaks'] ? $arguments['convertLineBreaks'] : $arguments['keepLineBreaks']);
-        
+
         // log deprecated attribute
         if ($arguments['keepLineBreaks']) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'keepLineBreaks', 
-                $renderingContext,
-                'Argument "keepLineBreaks" on rkwMailer:plaintextLineBreaks is deprecated - use "convertLineBreaks" instead'
-            );
+            trigger_error(__CLASS__ . ': Argument "keepLineBreaks" on rkwMailer:plaintextLineBreaks is deprecated - use "convertLineBreaks" instead.');
         }
-        
+
         // convert line breaks to manual line breaks
         if ($convertLineBreaks) {
             $value = preg_replace( '/\r|\n/', '\n',  $value);

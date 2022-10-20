@@ -35,16 +35,16 @@ class MailingStatisticsAnalyser
      * persistenceManager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager;
 
-    
+
     /**
      * queueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailRepository;
 
@@ -52,7 +52,7 @@ class MailingStatisticsAnalyser
      * queueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientRepository;
 
@@ -61,7 +61,7 @@ class MailingStatisticsAnalyser
      * mailingStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $mailingStatisticsRepository;
 
@@ -83,10 +83,10 @@ class MailingStatisticsAnalyser
      */
     public function analyse (int $daysAfterSendingFinished = 30): void
     {
-        
+
         // migrate statistics
         if ($queueMailsMigrate = $this->queueMailRepository->findByMissingMailingStatistics()) {
-            
+
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
             foreach ($queueMailsMigrate as $queueMail) {
                 $this->analyseQueueMail($queueMail);
@@ -105,7 +105,7 @@ class MailingStatisticsAnalyser
                 'No statistic migration needed.'
             );
         }
-        
+
         // now process statistics according to given time
         $queueMails = $this->queueMailRepository->findByTstampRealSending($daysAfterSendingFinished);
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -120,9 +120,9 @@ class MailingStatisticsAnalyser
                 )
             );
         }
-        
+
     }
-    
+
 
     /**
      * analyseQueueMail
@@ -131,9 +131,9 @@ class MailingStatisticsAnalyser
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function analyseQueueMail (\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void 
+    public function analyseQueueMail (\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
     {
-   
+
         // add statistics-object if not yet existent
         if (! $mailingStatistics = $queueMail->getMailingStatistics()) {
 
@@ -141,16 +141,16 @@ class MailingStatisticsAnalyser
             $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
             $mailingStatistics->setQueueMail($queueMail);
 
-            // migration 
+            // migration
             $mailingStatistics->setTstampFavSending($queueMail->getTstampFavSending());
             $mailingStatistics->setTstampRealSending($queueMail->getTstampRealSending());
             $mailingStatistics->setTstampFinishedSending($queueMail->getTstampSendFinish());
             $mailingStatistics->setSubject($queueMail->getSubject());
             $mailingStatistics->setType($queueMail->getType());
-           
+
             $queueMail->setMailingStatistics($mailingStatistics);
         }
-        
+
         // set current values
         $mailingStatistics->setStatus($queueMail->getStatus());
 
@@ -180,11 +180,11 @@ class MailingStatisticsAnalyser
         } else {
             $this->mailingStatisticsRepository->update($mailingStatistics);
         }
-        
+
         $this->persistenceManager->persistAll();
-       
+
     }
-    
+
 
     /**
      * Returns logger instance

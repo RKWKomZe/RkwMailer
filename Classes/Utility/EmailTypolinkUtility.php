@@ -30,7 +30,7 @@ use TYPO3\CMS\Frontend\Service\TypoLinkCodecService;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class EmailTypolinkUtility 
+class EmailTypolinkUtility
 {
 
     /**
@@ -44,19 +44,19 @@ class EmailTypolinkUtility
      * @throws \RKW\RkwMailer\Exception
      */
     public static function getTypolink (
-        string $linkText, 
-        string $parameter, 
+        string $linkText,
+        string $parameter,
         string $additionalParams = '',
         string $styles = ''
     ): string {
-        
+
         if (!$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             throw new Exception(
                 'Frontend has to be instantiated, but is not.',
                 1652102610
             );
         }
-        
+
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $content = $contentObject->typoLink(
@@ -85,14 +85,14 @@ class EmailTypolinkUtility
      */
     public static function getTypolinkUrl (string $parameter, string $additionalParams = ''): string
     {
-        
+
         if (!$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             throw new Exception(
                 'Frontend has to be instantiated, but is not.',
                 1652102609
             );
         }
-        
+
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $content = $contentObject->typoLink_URL(
@@ -104,7 +104,7 @@ class EmailTypolinkUtility
                 'fileTarget'        => '_blank',
             ]
         );
-        
+
         return $content;
     }
 
@@ -122,7 +122,7 @@ class EmailTypolinkUtility
         if ($style) {
             if (strpos($string, 'style="') !== false) {
                 $string = preg_replace_callback(
-                    '/style="([^"]+)"/', 
+                    '/style="([^"]+)"/',
                     function ($matches) use ($style) {
                         return 'style="' . trim($matches[1], ' ;') . '; ' . $style . '"';
                     },
@@ -132,7 +132,7 @@ class EmailTypolinkUtility
                 $string = trim($string) . ' style="' . $style . '"';
             }
         }
-        
+
         return trim($string);
     }
 

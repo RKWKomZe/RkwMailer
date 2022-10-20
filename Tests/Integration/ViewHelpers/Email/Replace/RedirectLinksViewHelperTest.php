@@ -44,8 +44,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
      */
     protected $testExtensionsToLoad = [
         'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/rkw_mailer'
     ];
 
     /**
@@ -78,11 +77,8 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/Replace/RedirectLinksViewHelperTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
@@ -90,11 +86,11 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -162,7 +158,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Then a queueMail-parameter is set in the redirect-links
          * Then no queueRecipient-parameter is set in the redirect-links
          * Then no cHash-parameter is set
-         * Then a noCache-parameter is set 
+         * Then a noCache-parameter is set
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
@@ -175,10 +171,10 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertNotContains('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        self::assertStringNotContainsString('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('/nc/', $result);
     }
 
     /**
@@ -197,7 +193,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Given a queueRecipient-object is defined
          * When the ViewHelper is rendered
          * Then all normal links are replaced by a redirect link
-         * Then anchor- and e-mail-links are left unchanged 
+         * Then anchor- and e-mail-links are left unchanged
          * Then a queueMail-parameter is set in the redirect-links
          * Then a queueRecipient-parameter is set in the redirect-links
          * Then no cHash-parameter is set
@@ -216,10 +212,10 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('/nc/', $result);
     }
 
 
@@ -228,7 +224,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

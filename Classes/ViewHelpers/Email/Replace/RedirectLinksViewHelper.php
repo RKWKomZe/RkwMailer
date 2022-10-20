@@ -51,13 +51,14 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
      */
     public function initializeArguments()
     {
+        parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for redirecting links');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object of email');
         $this->registerArgument('isPlaintext', 'boolean', 'QueueRecipient-object of email');
         $this->registerArgument('additionalParams', 'array', 'Additional params for links');
     }
-  
+
 
     /**
      * Render typolinks
@@ -68,11 +69,11 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
-        
+    ): string {
+
         $value = $renderChildrenClosure();
         $queueMail = $arguments['queueMail'];
         $queueRecipient = $arguments['queueRecipient'];
@@ -141,10 +142,10 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger()->log(
-                LogLevel::ERROR, 
+            $logger->log(
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to replace links: %s', 
+                    'Error while trying to replace links: %s',
                     $e->getMessage()
                 )
             );
@@ -152,7 +153,7 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
 
         return $value;
     }
-    
+
 
     /**
      * Replaces the link
@@ -166,12 +167,12 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     static protected function replace(
-        string $link, 
+        string $link,
         QueueMail $queueMail,
-        QueueRecipient $queueRecipient = null, 
+        QueueRecipient $queueRecipient = null,
         array $additionalParams = []
     ): string {
-        
+
         // load EmailUriBuilder
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -188,8 +189,8 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
         if ($queueRecipient) {
             $uriBuilder->setQueueRecipient($queueRecipient);
         }
-        
+
         return $uriBuilder->build();
-       
+
     }
 }

@@ -17,8 +17,7 @@ namespace RKW\RkwMailer\ViewHelpers;
 
 
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 
@@ -31,10 +30,9 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RecipientSalutationViewHelper extends AbstractViewHelper implements CompilableInterface
+class RecipientSalutationViewHelper extends AbstractViewHelper
 {
-    // fix for not founding "render()":
-    // https://docs.typo3.org/m/typo3/book-extbasefluid/master/en-us/8-Fluid/8-developing-a-custom-viewhelper.html
+
     use CompileWithRenderStatic;
 
     /**
@@ -59,8 +57,12 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $arguments['queueRecipient'];
         $useFirstName = ($arguments['useFirstName'] ? true : false);
@@ -107,6 +109,6 @@ class RecipientSalutationViewHelper extends AbstractViewHelper implements Compil
         return ($prependText ? $prependText : '') . $finalName . ($appendText ? $appendText : '');
     }
 
-    
+
 }
 

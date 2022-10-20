@@ -80,7 +80,7 @@ class OpeningTrackerTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -100,7 +100,7 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->openingStatisticsRepository = $this->objectManager->get(OpeningStatisticsRepository::class);
         $this->subject = $this->objectManager->get(OpeningTracker::class);
     }
-    
+
     //=============================================
     /**
      * @test
@@ -115,7 +115,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Given a persistent queueRecipient-object
          * When the method is called
          * Then false is returned
-         * Then no entry in the statistic table is generated 
+         * Then no entry in the statistic table is generated
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
         self::assertFalse($this->subject->track(10, 10));
@@ -166,7 +166,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then this entry in the statistic table has the counter-property set to one
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
-        
+
         self::assertTrue($this->subject->track(30, 30));
 
         $statisticResultList = $this->openingStatisticsRepository->findAll();
@@ -201,7 +201,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then this entry in the statistic table has a queueMail-Object set
          * Then the queueMail-Object of this entry in the statistic table has the uid of the given queueMail
          * Then this entry in the statistic table has a queueRecipient-Object set
-         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient 
+         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient
          * Then this entry in the statistic table has a unique value for the hash-property set
          * Then this entry in the statistic table has the counter-property set to one
          */
@@ -218,7 +218,7 @@ class OpeningTrackerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
         self::assertEquals(40, $openingStatistics->getQueueMail()->getUid());
         self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        self::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());
         self::assertNotEmpty($openingStatistics->getHash());
         self::assertEquals(1, $openingStatistics->getCounter());
     }
@@ -241,7 +241,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then the existing entry in the statistic table has a queueMail-Object set
          * Then the queueMail-Object of this entry in the statistic table has the uid of the given queueMail
          * Then this entry in the statistic table has a queueRecipient-Object set
-         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient         
+         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient
          * Then this entry in the statistic table has a unique value for the hash-property set
          * Then this entry in the statistic table has the counter-property set to two
          */
@@ -257,7 +257,7 @@ class OpeningTrackerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
         self::assertEquals(50, $openingStatistics->getQueueMail()->getUid());
         self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        self::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());
         self::assertNotEmpty($openingStatistics->getHash());
         self::assertEquals(2, $openingStatistics->getCounter());
     }
@@ -268,7 +268,7 @@ class OpeningTrackerTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

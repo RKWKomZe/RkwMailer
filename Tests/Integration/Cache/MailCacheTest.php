@@ -65,18 +65,18 @@ class MailCacheTest extends FunctionalTestCase
      */
     private $objectManager;
 
- 
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      */
     private $queueRecipientRepository;
-    
+
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -98,8 +98,8 @@ class MailCacheTest extends FunctionalTestCase
         $this->subject->clearCache();
 
     }
-    
-    
+
+
     //=============================================
 
 
@@ -123,7 +123,7 @@ class MailCacheTest extends FunctionalTestCase
         $this->subject= $this->objectManager->get(MailCache::class, SimpleFileBackend::class);
         $cacheDir = $this->subject->getCache()->getBackend()->getCacheDirectory();
         self::assertTrue($this->subject->securityCheck());
-        
+
         self::assertFileExists($cacheDir . '.htaccess');
         self::assertFileExists($cacheDir . 'conf.nginx');
 
@@ -182,7 +182,7 @@ class MailCacheTest extends FunctionalTestCase
 
         $result = $this->subject->getIdentifier($queueRecipient, 'test');
         self::assertStringStartsWith('MailCache', $result);
-        self::assertContains('_10_', $result);
+        self::assertStringContainsString('_10_', $result);
         self::assertStringEndsWith('test', $result);
 
     }
@@ -205,16 +205,16 @@ class MailCacheTest extends FunctionalTestCase
          * Then an exception is thrown
          * Then the code of the exception is 1634308452
          */
-        
+
         static::expectException(\RKW\RkwMailer\Exception::class);
         static::expectExceptionCode(1634308452);
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         $this->subject->setPlaintextBody($queueRecipient, 'Abc');
 
     }
-    
+
     //=============================================
 
     /**
@@ -241,7 +241,7 @@ class MailCacheTest extends FunctionalTestCase
         $this->subject->getPlaintextBody($queueRecipient);
 
     }
-    
+
     /**
      * @test
      * @throws \Exception
@@ -257,9 +257,9 @@ class MailCacheTest extends FunctionalTestCase
          * When method is called
          * Then the cached content is returned
          */
-        
+
         $this->importDataSet(static::FIXTURE_PATH . '/Database/Check10.xml');
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $this->queueRecipientRepository->findbyUid(10);
         $this->subject->setPlaintextBody($queueRecipient, 'Abc');
@@ -281,7 +281,7 @@ class MailCacheTest extends FunctionalTestCase
          * Given two persisted queueRecipient-objects
          * Given the cache for the first queueRecipient-object has already been set
          * Given the second queueRecipient-object as parameter
-         * When method is called 
+         * When method is called
          * Then an empty string is returned
          */
 
@@ -408,7 +408,7 @@ class MailCacheTest extends FunctionalTestCase
         self::assertEmpty($this->subject->getHtmlBody($queueRecipientTwo));
 
     }
-    
+
     //=============================================
     /**
      * @test
@@ -522,7 +522,7 @@ class MailCacheTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->subject->clearCache();
         parent::tearDown();

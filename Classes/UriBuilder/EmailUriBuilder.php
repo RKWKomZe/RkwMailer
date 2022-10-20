@@ -29,7 +29,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @comment implicitly tested
+ * comment: implicitly tested
  */
 class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 {
@@ -64,13 +64,13 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      */
     protected $settings = [];
 
-    
+
     /**
      * Life-cycle method that is called by the DI container as soon as this object is completely built
      */
     public function initializeObject(): void
     {
-        
+
         // set url scheme based on settings
         $this->settings = $this->getSettings();
         if (isset($this->settings['baseUrl'])) {
@@ -80,7 +80,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         parent::initializeObject();
     }
 
-    
+
     /**
      * Uid of the target page
      *
@@ -251,7 +251,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         return $this->build();
     }
 
-    
+
     /**
      * Builds the URI
      *
@@ -271,24 +271,24 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         ) {
 
             if ($this->getRedirectPid()) {
-                
+
                 // unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
                 //$this->reset();
                 $this->setUseRedirectLink(false);
-                
+
                 // get url
                 $url = $this->buildFrontendUri();
                 if ($this->getRedirectLink()) {
                     $url = $this->getRedirectLink();
-                } 
+                }
 
                 // set params
                 $arguments = [
                     'tx_rkwmailer_rkwmailer[url]' => $url,
                     'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
                 ];
-                
+
                 if ($this->getQueueRecipient()) {
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
@@ -307,10 +307,10 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
                 // generate redirect link
                 $url = $this->uriFor(
-                    'redirect', 
-                    [], 
-                    'Tracking', 
-                    'rkwmailer', 
+                    'redirect',
+                    [],
+                    'Tracking',
+                    'rkwmailer',
                     'Rkwmailer'
                 );
 
@@ -330,7 +330,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
     }
 
 
-    
+
     /**
      * Get UrlScheme
      *
@@ -343,7 +343,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         $parsedUrl = parse_url($baseUrl);
         return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http');
     }
-    
+
     /**
      * Returns TYPO3 settings
      *

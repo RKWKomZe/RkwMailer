@@ -11,17 +11,17 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
     status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '0',
     pipeline tinyint(1) unsigned DEFAULT '0',
-    
+
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
 	reply_to_name varchar(255) DEFAULT '' NOT NULL,
 	reply_to_address varchar(255) DEFAULT '' NOT NULL,
 	return_path varchar(255) DEFAULT '' NOT NULL,
-	
+
 	subject varchar(255) DEFAULT '' NOT NULL,
 	body_text text NOT NULL,
 	attachment_paths text NOT NULL,
-	
+
 	plaintext_template longtext NOT NULL,
 	html_template longtext NOT NULL,
 	calendar_template longtext NOT NULL,
@@ -45,13 +45,13 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	attachment blob,
 	attachment_type varchar(255) DEFAULT '' NOT NULL,
 	attachment_name varchar(255) DEFAULT '' NOT NULL,
-    sorting int(11) unsigned DEFAULT '0' NOT NULL,
+  sorting int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-    KEY status (status),
-    KEY type (type)
-
+	KEY status (status),
+	KEY type (type),
+	KEY status_type (status,type)
 );
 
 #
@@ -76,15 +76,15 @@ CREATE TABLE tx_rkwmailer_domain_model_queuerecipient (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
-    migrated int(1) DEFAULT '0' NOT NULL,
+	migrated int(1) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-    KEY email (email),
-    KEY status (status),
-    KEY queue_mail (queue_mail),
-    KEY queue_mail_status (queue_mail,status),
-
+	KEY email (email),
+	KEY status (status),
+	KEY queue_mail (queue_mail),
+	KEY queue_mail_status (queue_mail,status),
+	KEY email_status (email,status)
 );
 
 
@@ -95,7 +95,7 @@ CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
-	
+
 	queue_mail int(11) DEFAULT '0' NOT NULL,
 	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	subject varchar(255) DEFAULT '' NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE tx_rkwmailer_domain_model_mailingstatistics (
 	failed int(11) DEFAULT '0' NOT NULL,
 	deferred int(11) DEFAULT '0' NOT NULL,
 	bounced int(11) DEFAULT '0' NOT NULL,
-	
+
     tstamp_fav_sending int(11) unsigned DEFAULT '0' NOT NULL,
     tstamp_real_sending int(11) unsigned DEFAULT '0' NOT NULL,
     tstamp_finished_sending int(11) unsigned DEFAULT '0' NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE tx_rkwmailer_domain_model_clickstatistics (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
-	
+
 	queue_mail int(11) DEFAULT '0' NOT NULL,
 	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
 	hash varchar(255) DEFAULT '' NOT NULL,
@@ -156,10 +156,10 @@ CREATE TABLE tx_rkwmailer_domain_model_openingstatistics (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
-	
+
 	queue_mail int(11) DEFAULT '0' NOT NULL,
 	queue_mail_uid int(11) DEFAULT '0' NOT NULL,
-	queue_recipient int(11) DEFAULT '0' NOT NULL,	
+	queue_recipient int(11) DEFAULT '0' NOT NULL,
 	hash varchar(255) DEFAULT '' NOT NULL,
 	counter int(11) DEFAULT '1' NOT NULL,
 
@@ -193,10 +193,10 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 	rule_category varchar(255) DEFAULT '' NOT NULL,
 
 	header text NOT NULL,
-    body text NOT NULL,
+  body text NOT NULL,
 
-    header_full longtext NOT NULL,
-    body_full longtext NOT NULL,
+  header_full longtext NOT NULL,
+  body_full longtext NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -205,8 +205,7 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 	KEY parent (pid),
     KEY email (email),
     KEY status (status),
-    KEY email_status (email, status),
-
+    KEY email_status (email, status)
 );
 
 

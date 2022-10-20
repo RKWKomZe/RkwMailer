@@ -18,6 +18,7 @@ namespace RKW\RkwMailer\ViewHelpers\Email;
 
 use RKW\RkwMailer\Utility\FrontendLocalizationUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -39,7 +40,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('languageKey', 'string', 'Language Key', false, null);
+        //$this->registerArgument('languageKey', 'string', 'Language Key', false, null);
     }
 
     /**
@@ -50,28 +51,20 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
      * @return string
-     */
+
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): ?string {
+
         $key = $arguments['key'];
         $languageKey = $arguments['languageKey'];
         $id = $arguments['id'];
         $default = $arguments['default'];
-        $htmlEscape = $arguments['htmlEscape'];
         $extensionName = $arguments['extensionName'];
         $arguments = $arguments['arguments'];
 
-
-        if ($htmlEscape !== null) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'htmlEscape',
-                $renderingContext,
-                'Please wrap the view helper in <f:format.raw> if you want to disable HTML escaping, which is enabled by default now.'
-            );
-        }
 
         // Wrapper including a compatibility layer for TYPO3 Flow Translation
         if ($id === null) {
@@ -96,6 +89,22 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
             }
         }
         return $value;
+    } */
+
+    /**
+     * Wrapper call to static LocalizationUtility
+     *
+     * @param string $id Translation Key
+     * @param string $extensionName UpperCamelCased extension key (for example BlogExample)
+     * @param array $arguments Arguments to be replaced in the resulting string
+     * @param string $languageKey Language key to use for this translation
+     * @param string[] $alternativeLanguageKeys Alternative language keys if no translation does exist
+     *
+     * @return string|null
+     */
+    protected static function translate($id, $extensionName, $arguments, $languageKey, $alternativeLanguageKeys): ?string
+    {
+        return FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
     }
 }
 

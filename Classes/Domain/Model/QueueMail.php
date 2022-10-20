@@ -87,7 +87,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var string
      */
     protected $replyToName = '';
-    
+
     /**
      * replyToAddress
      *
@@ -125,12 +125,12 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $attachmentPaths = '';
 
-    
+
     /**
      * attachment
      *
      * @var string
-     * @deprecated 
+     * @deprecated
      */
     protected $attachment = '';
 
@@ -139,7 +139,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * attachmentType
      *
      * @var string
-     * @deprecated 
+     * @deprecated
      */
     protected $attachmentType = '';
 
@@ -147,7 +147,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * attachmentName
      *
      * @var string
-     * @deprecated 
+     * @deprecated
      */
     protected $attachmentName = '';
 
@@ -158,7 +158,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $plaintextTemplate = '';
 
-    
+
     /**
      * htmlTemplate
      *
@@ -166,7 +166,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $htmlTemplate = '';
 
-    
+
     /**
      * calendarTemplate
      *
@@ -243,7 +243,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var \RKW\RkwMailer\Domain\Model\MailingStatistics
      */
     protected $mailingStatistics;
-    
+
 
     /**
      * tstampFavSending
@@ -261,7 +261,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     protected $tstampRealSending = 0;
 
-    
+
     /**
      * tstampSendFinish
      *
@@ -269,7 +269,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @deprecated
      */
     protected $tstampSendFinish = 0;
-    
+
 
     /**
      * total
@@ -336,11 +336,11 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * clicked
      *
      * @var integer
-     * @deprecated 
+     * @deprecated
      */
     protected $clicked;
-    
-    
+
+
 
     /**
      * Returns the crdate
@@ -368,7 +368,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return integer $sorting
      */
-    public function getSorting(): int 
+    public function getSorting(): int
     {
         return $this->sorting;
     }
@@ -511,8 +511,8 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->replyToName = $replyToName;
     }
-    
-    
+
+
     /**
      * Returns the replyToAddress
      *
@@ -543,10 +543,10 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function setReplyAddress(string $replyAddress)
     {
-        \TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog(__CLASS__ . ': This method is deprecated. Please use setReplyToAddress() instead.');
+        trigger_error(__CLASS__ . ': This method is deprecated. Please use setReplyToAddress() instead.');
         $this->setReplyToAddress($replyAddress);
     }
-    
+
     /**
      * Returns the returnPath
      *
@@ -609,7 +609,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->bodyText = $bodyText;
     }
-    
+
 
     /**
      * Returns the attachmentPath
@@ -622,7 +622,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         return $paths;
     }
 
-    
+
     /**
      * Sets the attachmentPaths
      *
@@ -634,7 +634,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->attachmentPaths = implode(',', $attachmentPaths);
     }
 
-    
+
     /**
      * Adds an attachmentPath
      *
@@ -662,8 +662,8 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
             $this->attachmentPaths = implode(',', array_merge($paths, $attachmentPaths));
         }
     }
-    
-    
+
+
     /**
      * Returns the attachment
      *
@@ -674,7 +674,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->attachment;
     }
-    
+
 
     /**
      * Sets the attachment
@@ -692,7 +692,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the attachment
      *
      * @return integer $attachment
-     * @deprecated 
+     * @deprecated
      */
     public function getAttachmentType()
     {
@@ -704,7 +704,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param string $attachmentType
      * @return void
-     * @deprecated 
+     * @deprecated
      */
     public function setAttachmentType($attachmentType)
     {
@@ -715,7 +715,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the attachment
      *
      * @return integer $attachment
-     * @deprecated 
+     * @deprecated
      */
     public function getAttachmentName()
     {
@@ -727,7 +727,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @param string $attachmentName
      * @return void
-     * @deprecated 
+     * @deprecated
      */
     public function setAttachmentName($attachmentName)
     {
@@ -938,7 +938,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return array
      * @throws \Exception
      */
-    public function getTemplatePaths(): array 
+    public function getTemplatePaths(): array
     {
         $paths = GeneralUtility::trimExplode(',', $this->templatePaths, true);
         return $paths;
@@ -1294,7 +1294,7 @@ class QueueMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Returns the clicked
      *
      * @return integer $clicked
-     * @deprecated 
+     * @deprecated
      */
     public function getClicked(): int
     {

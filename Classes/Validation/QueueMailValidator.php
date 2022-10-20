@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\Log\LogManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -48,9 +48,9 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         $valid = true;
         if (!$queueMail->getFromName()) {
-            $this->getLogger()->log(LogLevel::ERROR, 
+            $this->getLogger()->log(LogLevel::ERROR,
                 sprintf(
-                    'No fromName is set (queueMail with uid %s).', 
+                    'No fromName is set (queueMail with uid %s).',
                     $queueMail->getUid()
                 )
             );
@@ -59,9 +59,9 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         if (!$queueMail->getFromAddress()) {
             $this->getLogger()->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'No fromAddress is set (queueMail with uid %s).', 
+                    'No fromAddress is set (queueMail with uid %s).',
                     $queueMail->getUid()
                 )
             );
@@ -70,14 +70,14 @@ class QueueMailValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         if (!$queueMail->getSubject()) {
             $this->getLogger()->log(
-                LogLevel::WARNING, 
+                LogLevel::WARNING,
                 sprintf(
-                    'No Subject is set (queueMail with uid %s).', 
+                    'No Subject is set (queueMail with uid %s).',
                     $queueMail->getUid()
                 )
             );
         }
-        
+
         return $valid;
     }
 

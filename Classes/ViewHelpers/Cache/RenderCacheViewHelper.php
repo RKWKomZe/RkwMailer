@@ -18,7 +18,7 @@ use RKW\RkwMailer\Cache\RenderCache;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
@@ -34,7 +34,6 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
 
     use CompileWithContentArgumentAndRenderStatic;
 
-    
     /**
      * @var bool
      */
@@ -48,6 +47,7 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
      */
     public function initializeArguments()
     {
+        parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on.');
         $this->registerArgument('queueMail', '\RKW\RkwMailer\Domain\Model\QueueMail', 'The queueMail-object.');
         $this->registerArgument('isPlaintext', 'boolean', 'Whether the content is plaintext or not.');
@@ -65,24 +65,24 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
-        
+
         $queueMail = $arguments['queueMail'];
         $isPlaintext = (bool) ($arguments['isPlaintext']);
         $additionalIdentifier = ($arguments['additionalIdentifier'] ? $arguments['additionalIdentifier'] : '');
         $nonCachedMarkers = ($arguments['nonCachedMarkers'] ? $arguments['nonCachedMarkers'] : []);
-        
+
         try {
-            
+
             if ($queueMail instanceof \RKW\RkwMailer\Domain\Model\QueueMail) {
 
                 /** @var \RKW\RkwMailer\Cache\RenderCache $cache */
                 $cache = GeneralUtility::makeInstance(RenderCache::class);
                 $cacheIdentifier = $cache->getIdentifier($queueMail, $isPlaintext, $additionalIdentifier);
-                
+
                 // check if cache has to be build
                 if (! $value = $cache->getContent($cacheIdentifier)) {
                     $value = $renderChildrenClosure();
@@ -92,7 +92,7 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
                 // replace nonCachedMarkers
                 return $cache->replaceMarkers($value, $nonCachedMarkers);
             }
-            
+
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);

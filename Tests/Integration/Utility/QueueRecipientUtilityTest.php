@@ -63,7 +63,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
      */
     private $objectManager;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Utility\QueueRecipientUtility
      */
@@ -78,9 +78,9 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
@@ -94,7 +94,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
             ]
         );
 
-        
+
         $this->subject = GeneralUtility::makeInstance(QueueRecipientUtility::class);
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->pagesRepository = $this->objectManager->get(PagesRepository::class);
@@ -146,7 +146,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
-        self::assertEquals($expected, $result);        
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -286,7 +286,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $frontendUser->setTxRkwregistrationTitle($title);
         $frontendUser->setTxRkwregistrationGender(0);
         $frontendUser->setTxRkwregistrationLanguageKey('fr');
-        
+
         $expected->setEmail('lauterbach@spd.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Karl');
@@ -306,10 +306,10 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
     {
         /**
          * Scenario:
-         * 
+         *
          * Given an additionalData-Array
          * Given that additionalData-Array has an username-key set
-         * Given that username is a valid email-address 
+         * Given that username is a valid email-address
          * Given that additionalData-Array has an email-key set
          * Given that additionalData-Array has a title-key set
          * Given that additionalData-Array has a firstName-key set
@@ -362,7 +362,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
          * Given that additionalData-Array has a firstName-key set
          * Given that additionalData-Array has a lastName-key set
          * Given that additionalData-Array has the txRkwregistrationGender-key set
-         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set 
+         * Given that additionalData-Array has the txRkwregistrationLanguageKey-key set
          * Given an RkwRegistration-FrontendUser-Object
          * Given that FrontendUser-Object has the email-property set
          * Given that FrontendUser-Object has the lastName-property set
@@ -373,7 +373,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
          * Then the firstName-property of this object is set to the value of the firstName-key of the additionalData-Array
          * Then the lastName-property of this object is set to the value of the lastName-property of the FrontendUser-Object
          * Then the salutation-property of this object is set to the value of the txRkwregistrationGender-key of the additionalData-Array
-         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array 
+         * Then the languageCode-property of this object is set to the value of the txRkwregistrationLanguageKey-key of the additionalData-Array
          */
         $expected = new QueueRecipient();
         $frontendUser = new FrontendUserRkw();
@@ -399,11 +399,11 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $expected->setLastName('Lauterbach');
         $expected->setSalutation(1);
         $expected->setLanguageCode('fr');
-        
+
         $result = $this->subject::initQueueRecipient($frontendUser, $additionalData);
         self::assertEquals($expected, $result);
     }
-    
+
     //=============================================
 
     /**
@@ -425,7 +425,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
 
         $additionalData = [];
         $backendUser->setEmail('lauterbach@spd.de');
-        
+
         $expected->setEmail('lauterbach@spd.de');
 
         $result = $this->subject::initQueueRecipient($backendUser, $additionalData);
@@ -607,7 +607,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         ];
         $backendUser->setRealName('Prof. Karl Lauterbach');
         $backendUser->setLang('ru');
-        
+
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Prof.');
         $expected->setFirstName('Karl');
@@ -653,13 +653,13 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
             'salutation' => 1,
             'firstName' => 'Angela',
         ];
-        
+
         $additionalData = [
             'firstName' => 'Dorothea',
             'lastName' => 'Bär',
             'languageCode' => 'ru'
         ];
-        
+
         $expected->setEmail('merkel@cdu.de');
         $expected->setTitle('Dr.');
         $expected->setFirstName('Angela');
@@ -704,7 +704,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         $result = $this->subject::initQueueRecipient($basicData, $additionalData);
         self::assertEquals($expected, $result);
     }
-    
+
 
     /**
      * @test
@@ -761,7 +761,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
             'test1' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
             'test2' => 'A string is string',
         ];
-        
+
         $result = $this->subject->initQueueRecipient([], ['marker' => $initMarker]);
         self::assertInstanceOf(QueueRecipient::class, $result);
 
@@ -771,11 +771,11 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         self::assertEquals($expected['test2'], $marker['test2']);
 
     }
-    
+
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

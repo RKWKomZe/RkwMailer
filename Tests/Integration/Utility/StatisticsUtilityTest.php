@@ -63,8 +63,8 @@ class StatisticsUtilityTest extends FunctionalTestCase
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     private $objectManager = null;
-    
-    
+
+
     /**
      * @var \RKW\RkwMailer\Utility\StatisticsUtility
      */
@@ -74,9 +74,9 @@ class StatisticsUtilityTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
@@ -90,7 +90,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         );
 
         $this->subject = GeneralUtility::makeInstance(StatisticsUtility::class);
-        
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
     }
@@ -113,13 +113,13 @@ class StatisticsUtilityTest extends FunctionalTestCase
          * Then the SHA1-Hash does not include the protocol
          * Then the SHA1-Hash does not include a trailing slash
          */
-        
+
         $link = 'https://www.php.net/manual/de/';
         $linkTrimmed = 'www.php.net/manual/de';
         $expected = sha1($linkTrimmed);
-        
+
         $result = $this->subject::generateLinkHash($link);
-        self::assertEquals($expected, $result);        
+        self::assertEquals($expected, $result);
     }
 
 
@@ -141,7 +141,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
          */
         $linkOne = 'https://www.php.net/manual/de/?test=1';
         $linkTwo = 'https://www.php.net/manual/de/?test=2';
-        
+
         $resultOne = $this->subject::generateLinkHash($linkOne);
         $resultTwo = $this->subject::generateLinkHash($linkTwo);
 
@@ -169,10 +169,10 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $result = $this->subject::generateLinkHash($link);
         self::assertEquals($expected, $result);
     }
-    
-    
+
+
     //=============================================
-    
+
     /**
      * @test
      * @throws \Exception
@@ -184,14 +184,14 @@ class StatisticsUtilityTest extends FunctionalTestCase
          *
          * Given a queueRecipient object
          * Given the queueRecipient-object is not persisted
-         * When the method is called 
+         * When the method is called
          * Then an exception is thrown
          */
         static::expectException(\RKW\RkwMailer\Exception::class);
 
         $queueRecipient = new QueueRecipient();
         $result = $this->subject::generateRecipientHash($queueRecipient);
-       
+
     }
 
     /**
@@ -230,7 +230,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
          *
          * Given an url as string
          * Given no additional parameters
-         * When the method is called 
+         * When the method is called
          * Then the given link is returned unchanged
          */
         $url = 'https://www.php.net/manual/de/';
@@ -328,11 +328,11 @@ class StatisticsUtilityTest extends FunctionalTestCase
         self::assertEquals($expected, $result);
     }
 
-    
+
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

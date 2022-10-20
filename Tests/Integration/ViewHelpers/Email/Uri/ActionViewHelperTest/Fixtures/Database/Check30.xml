@@ -5,6 +5,7 @@
         <uid>2</uid>
         <pid>100</pid>
         <title>Test</title>
+        <slug>test</slug>
         <doktype>1</doktype>
         <perms_everybody>15</perms_everybody>
     </pages>

@@ -29,7 +29,7 @@ use RKW\RkwMailer\Domain\Model\BounceMail;
 class BounceMailAnalyser
 {
 
-    
+
     /**
      * @var \BounceMailHandler\BounceMailHandler $bounceMailHandler
      */
@@ -40,7 +40,7 @@ class BounceMailAnalyser
      * objectManager
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $objectManager;
 
@@ -49,7 +49,7 @@ class BounceMailAnalyser
      * objectManager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager;
 
@@ -58,7 +58,7 @@ class BounceMailAnalyser
      * bounceMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $bounceMailRepository;
 

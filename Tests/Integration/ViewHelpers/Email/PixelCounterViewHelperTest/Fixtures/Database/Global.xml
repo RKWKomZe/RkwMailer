@@ -12,6 +12,7 @@
         <uid>9998</uid>
         <pid>100</pid>
         <title>Pixelcounterseite</title>
+        <slug>pixelcounterseite</slug>
         <doktype>1</doktype>
         <perms_everybody>15</perms_everybody>
     </pages>
@@ -20,14 +21,8 @@
         <uid>9999</uid>
         <pid>100</pid>
         <title>Umleitungsseite der Umleitungen</title>
+        <slug>umleitungsseite-der-umleitungen</slug>
         <doktype>1</doktype>
         <perms_everybody>15</perms_everybody>
     </pages>
-
-
-    <sys_domain>
-        <uid>1</uid>
-        <pid>100</pid>
-        <domainName>www.rkw-kompetenzzentrum.rkw.local</domainName>
-    </sys_domain>
 </dataset>

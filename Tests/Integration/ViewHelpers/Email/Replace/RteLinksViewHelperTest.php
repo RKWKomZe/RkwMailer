@@ -41,8 +41,7 @@ class RteLinksViewHelperTest extends FunctionalTestCase
      */
     protected $testExtensionsToLoad = [
         'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/rkw_mailer'
     ];
 
     /**
@@ -65,23 +64,19 @@ class RteLinksViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/Replace/RteLinksViewHelperTest/Fixtures/RealUrlConfiguration.php');
-
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -173,7 +168,7 @@ class RteLinksViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

@@ -35,13 +35,13 @@ class RteLinksViewHelper extends TypolinkViewHelper
 {
 
     use CompileWithContentArgumentAndRenderStatic;
-    
+
     /**
      * @var bool
      */
     protected $escapeOutput = false;
 
-    
+
     /**
      * Initialize arguments.
      *
@@ -49,6 +49,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
      */
     public function initializeArguments()
     {
+        parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
         $this->registerArgument('plaintextFormat', 'boolean', 'Use plaintext-format for links. DEPRECATED.');
         $this->registerArgument('isPlaintext', 'boolean', 'Use plaintext-format for links.');
@@ -65,11 +66,11 @@ class RteLinksViewHelper extends TypolinkViewHelper
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
-        
+    ): string {
+
         $value = $renderChildrenClosure();
         $plaintextFormat = (bool) ($arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat']);
         $style = ($arguments['style'] ? $arguments['style'] : '');
@@ -77,13 +78,9 @@ class RteLinksViewHelper extends TypolinkViewHelper
 
             // log deprecated attribute
             if ($arguments['isPlaintext']) {
-                \RKW\RkwAjax\Utilities\GeneralUtility::logDeprecatedViewHelperAttribute(
-                    'plaintextFormat',
-                    $renderingContext,
-                    'Argument "plaintextFormat" on rkwMailer:frontend.replace.rteLinks is deprecated - use "isPlaintext" instead'
-                );
+                trigger_error(__CLASS__ . ': Argument "plaintextFormat" on rkwMailer:frontend.replace.rteLinks is deprecated - use "isPlaintext" instead.');
             }
-            
+
             // new version for TKE
             $value = preg_replace_callback(
                 '/(<a([^>]+)href="([^"]+)"([^>]+)>([^<]+)<\/a>)/',
@@ -106,7 +103,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
                 $value
             );
 
-            // Old version for RTE 
+            // Old version for RTE
             // Plaintext replacement
             if ($plaintextFormat) {
                 $value = preg_replace_callback(
@@ -140,12 +137,12 @@ class RteLinksViewHelper extends TypolinkViewHelper
             }
 
         } catch (\Exception $e) {
-            
+
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to replace links: %s', 
+                    'Error while trying to replace links: %s',
                     $e->getMessage()
                 )
             );

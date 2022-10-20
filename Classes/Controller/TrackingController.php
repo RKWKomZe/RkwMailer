@@ -25,12 +25,12 @@ namespace RKW\RkwMailer\Controller;
  */
 class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-    
+
     /**
      * ClickTracker
      *
      * @var \RKW\RkwMailer\Tracking\ClickTracker
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $clickTracker;
 
@@ -39,7 +39,7 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * OpeningTracker
      *
      * @var \RKW\RkwMailer\Tracking\OpeningTracker
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $openingTracker;
 
@@ -64,8 +64,8 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         // try to get the tracking-url via old version with hash
         if ($hash) {
             $trackingUrl = $this->clickTracker->getPlainUrlByHash($hash);
-        } 
-        
+        }
+
         // track the given url
         $this->clickTracker->track($queueMailId, $trackingUrl);
 
@@ -74,8 +74,8 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 
             // if no delay is set, redirect directly
             if (!intval($this->settings['redirectDelay'])) {
-                /** @toDo currently not working with subscription-edit redirect to mein.rkw.de - don't know why! */
-                // $this->redirectToUri($url); 
+                /** @todo currently not working with subscription-edit redirect to mein.rkw.de - don't know why! */
+                // $this->redirectToUri($url);
                 // exit();
             }
 
@@ -116,7 +116,7 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      */
     public function openingAction()
     {
-        
+
         $parameters = $this->request->getArguments();
         $queueMailId = intval($parameters['mid']);
         $queueRecipientId = intval($parameters['uid']);
@@ -132,5 +132,5 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 
         exit();
     }
-    
+
 }

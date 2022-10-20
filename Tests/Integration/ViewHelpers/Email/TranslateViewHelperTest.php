@@ -42,7 +42,6 @@ class TranslateViewHelperTest extends FunctionalTestCase
     protected $testExtensionsToLoad = [
         'typo3conf/ext/rkw_basics',
         'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
     ];
 
     /**
@@ -54,7 +53,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
      * @var \TYPO3\CMS\Fluid\View\StandaloneView
      */
     private $standAloneViewHelper;
-    
+
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -66,7 +65,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -75,11 +74,11 @@ class TranslateViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -125,7 +124,7 @@ class TranslateViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

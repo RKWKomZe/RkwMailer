@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\Log\LogManager;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -50,9 +50,9 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         if (!$queueRecipient->getEmail()) {
             $this->getLogger()->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'No email-address is set (queueRecipient with uid %s).', 
+                    'No email-address is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
@@ -67,15 +67,15 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
                     $queueRecipient->getUid()
                 )
             );
-            
+
             $valid = false;
         }
-        
+
         if (!$queueRecipient->getFirstName()) {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'No firstName is set (queueRecipient with uid %s).', 
+                    'No firstName is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
@@ -83,14 +83,14 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         if (!$queueRecipient->getLastName()) {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'No lastName is set (queueRecipient with uid %s).', 
+                    'No lastName is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
         }
-        
+
         return $valid;
     }
 

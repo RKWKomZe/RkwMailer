@@ -30,14 +30,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class OpeningTracker 
+class OpeningTracker
 {
 
     /**
      * QueueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailRepository;
 
@@ -45,15 +45,15 @@ class OpeningTracker
      * QueueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientRepository;
-    
+
     /**
      * clickStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $openingStatisticsRepository;
 
@@ -61,7 +61,7 @@ class OpeningTracker
      * Persistence Manager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager;
 
@@ -70,7 +70,7 @@ class OpeningTracker
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
-    
+
 
     /**
      * Tracks the opening of the email
@@ -82,7 +82,7 @@ class OpeningTracker
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function track(
-        int $queueMailId = 0, 
+        int $queueMailId = 0,
         int $queueMailRecipientId = 0
     ): bool {
 
@@ -98,11 +98,11 @@ class OpeningTracker
             $this->persistTrackingData($queueMail, $queueRecipient);
             return true;
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Persists tracking-data to database
      *
@@ -114,7 +114,7 @@ class OpeningTracker
      */
     protected function persistTrackingData (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient     
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
     ): void
     {
 
@@ -146,7 +146,7 @@ class OpeningTracker
             $openingStatistic->setQueueRecipient($queueRecipient);
             $openingStatistic->setHash($hash);
             $openingStatistic->setCounter(1);
-    
+
             $this->openingStatisticsRepository->add($openingStatistic);
             $this->persistenceManager->persistAll();
 
@@ -160,8 +160,8 @@ class OpeningTracker
             );
         }
     }
-    
-    
+
+
     /**
      * Returns logger instance
      *

@@ -49,30 +49,26 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ){
-        
+
         $parameter = $arguments['parameter'];
         $additionalParams = $arguments['additionalParams'];
 
         // log deprecated attribute
         if ($arguments['pageUid']) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'pageUid',
-                $renderingContext,
-                'Argument "pageUid" on rkwMailer:frontend.uri.typolink is deprecated and has no effect any more.'
-            );
+            trigger_error(__CLASS__ . ': Argument "pageUid" on rkwMailer:frontend.uri.typolink is deprecated and has no effect any more.');
         }
-        
+
         $content = '';
         if ($parameter) {
             $content = EmailTypolinkUtility::getTypolinkUrl($parameter, $additionalParams);
         }
 
         return $content;
-    }   
+    }
 
 }
 

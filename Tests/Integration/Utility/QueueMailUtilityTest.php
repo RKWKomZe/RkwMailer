@@ -62,9 +62,9 @@ class QueueMailUtilityTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
@@ -85,7 +85,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
 
     //=============================================
 
-    
+
 
     /**
      * @test
@@ -99,7 +99,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          * When the method is called
          * Then a QueueMail-object is returned
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail();
         self::assertInstanceOf(QueueMail::class, $result);
@@ -140,7 +140,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals('reply@mein.rkw.de', $result->getReplyToAddress());
         self::assertEquals('bounces@mein.rkw.de', $result->getReturnPath());
 
-        
+
     }
 
     /**
@@ -194,7 +194,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          */
 
         FrontendSimulatorUtility::simulateFrontendEnvironment(100);
-       
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail();
         self::assertInstanceOf(QueueMail::class, $result);
@@ -219,7 +219,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          * Then a QueueMail-object is returned
          * Then pid-property is set to the storagePid given
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail(987);
         self::assertInstanceOf(QueueMail::class, $result);
@@ -247,12 +247,12 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals(QueueMailUtility::STATUS_DRAFT, $result->getStatus());
 
     }
-    
-    
+
+
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

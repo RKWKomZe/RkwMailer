@@ -65,7 +65,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -153,7 +153,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
          * Given the ViewHelper is used in a template
          * Given a text with line break
          * Given the text is indented
-         * Given the text has a manual line break set 
+         * Given the text has a manual line break set
          * When the ViewHelper is rendered
          * Then the text is returned without normal line breaks
          * Then the intends are removed
@@ -165,7 +165,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
         self::assertEquals($expected, $this->standAloneViewHelper->render());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -198,7 +198,7 @@ class PlaintextLineBreaksViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

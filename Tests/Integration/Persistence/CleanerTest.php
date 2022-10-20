@@ -104,7 +104,7 @@ class CleanerTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -151,12 +151,12 @@ class CleanerTest extends FunctionalTestCase
          * Then the value one is returned
          * Then one queueMail-object is left
          */
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(10);
-        
+
         $result = $this->subject->deleteQueueMail($queueMail);
 
         self::assertEquals(1, $result);
@@ -194,7 +194,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(2, $this->queueRecipientRepository->findAll());
 
     }
-    
+
     //=============================================
 
     /**
@@ -228,7 +228,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(0, $this->queueRecipientRepository->findByQueueMail($queueMail));
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -257,7 +257,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertEquals(2, $result);
         self::assertCount(2, $this->queueMailRepository->findAll());
     }
-    
+
     //=============================================
 
     /**
@@ -337,7 +337,7 @@ class CleanerTest extends FunctionalTestCase
 
 
     }
-    
+
     /**
      * @test
      * @throws \Exception
@@ -502,7 +502,7 @@ class CleanerTest extends FunctionalTestCase
         $mailingStatistics->setTstampFinishedSending(time() - intval(31 * 24 * 60 * 60));
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $result = $this->subject->cleanup(30, [2]);
 
         self::assertTrue($result);
@@ -510,7 +510,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(0, $this->queueMailRepository->findByType(2));
         self::assertCount(1, $this->queueMailRepository->findByType(1));
     }
-    
+
     /**
      * @test
      * @throws \Exception
@@ -545,7 +545,7 @@ class CleanerTest extends FunctionalTestCase
         $mailingStatistics->setTstampFinishedSending(time() - intval(31 * 24 * 60 * 60));
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $result = $this->subject->cleanup();
 
         self::assertTrue($result);
@@ -609,7 +609,7 @@ class CleanerTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

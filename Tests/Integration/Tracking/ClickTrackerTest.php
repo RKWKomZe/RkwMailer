@@ -68,7 +68,7 @@ class ClickTrackerTest extends FunctionalTestCase
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      */
     private $clickStatisticsRepository;
-    
+
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
@@ -79,7 +79,7 @@ class ClickTrackerTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -100,11 +100,11 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(ClickTracker::class);
     }
 
-    
-    
+
+
 
     //=============================================
-    
+
     /**
      * @test
      */
@@ -345,8 +345,8 @@ class ClickTrackerTest extends FunctionalTestCase
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 99999);
         self::assertEquals($expected, $result);
-        self::assertNotContains('tx_rkwmailer[mid]=', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[mid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
     }
 
 
@@ -376,7 +376,7 @@ class ClickTrackerTest extends FunctionalTestCase
         $result = $this->subject->getRedirectUrl($encodedUrl, 200);
         self::assertStringStartsWith($expected, $result);
         self::assertStringEndsWith('?tx_rkwmailer[mid]=200', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
 
@@ -407,7 +407,7 @@ class ClickTrackerTest extends FunctionalTestCase
         $result = $this->subject->getRedirectUrl($encodedUrl, 210, 210);
         self::assertStringStartsWith($expected, $result);
         self::assertStringEndsWith('?tx_rkwmailer[mid]=210', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
 
@@ -481,7 +481,7 @@ class ClickTrackerTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

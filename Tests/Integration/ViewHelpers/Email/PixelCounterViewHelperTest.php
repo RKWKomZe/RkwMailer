@@ -44,8 +44,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
      */
     protected $testExtensionsToLoad = [
         'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/rkw_mailer'
     ];
 
     /**
@@ -78,11 +77,8 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/PixelCounterViewHelperTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
@@ -90,13 +86,13 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
-        
+
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
@@ -139,7 +135,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertNotContains('<img', $result);
+        self::assertStringNotContainsString('<img', $result);
     }
 
     /**
@@ -167,7 +163,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertNotContains('<img', $result);
+        self::assertStringNotContainsString('<img', $result);
     }
 
     /**
@@ -197,7 +193,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=opening&tx_rkwmailer_rkwmailer[controller]=Tracking" width="1" height="1" alt="" />', $result);
+        self::assertStringContainsString('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=opening&tx_rkwmailer_rkwmailer[controller]=Tracking" width="1" height="1" alt="" />', $result);
 
     }
 
@@ -207,7 +203,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

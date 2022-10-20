@@ -71,7 +71,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
      */
     private $persistenceManager;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      */
@@ -88,7 +88,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -110,7 +110,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $this->mailingStatisticsRepository = $this->objectManager->get(MailingStatisticsRepository::class);
         $this->subject = $this->objectManager->get(MailingStatisticsAnalyser::class);
     }
-    
+
 
     //=============================================
 
@@ -145,9 +145,9 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(10);
-        
+
         $this->subject->analyseQueueMail($queueMail);
-        
+
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(6, $queueMail->getMailingStatistics()->getTotalRecipients());
@@ -180,7 +180,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          * Then the totalSent-property of the mailingStatistics-object is set to the value three
          * Then the mailingStatistics-object is persisted
          */
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -275,7 +275,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertCount(1, $this->mailingStatisticsRepository->findAll());
 
     }
-    
+
 
     /**
      * @test
@@ -398,15 +398,15 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          */
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check70.xml');
-        
+
         $this->subject->analyse();
-        
+
         $result = $this->mailingStatisticsRepository->findAll();
         self::assertCount(2, $result);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(70);
-               
+
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $queueMail->getMailingStatistics();
         self::assertEquals(70, $mailingStatistics->getQueueMail()->getUid());
@@ -463,7 +463,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time());
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $this->subject->analyse();
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -509,18 +509,18 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time() - intval(31 * 24 * 60 * 60));
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         // remove linkage
         $mailingStatistics = unserialize(serialize($mailingStatistics));
 
         $this->subject->analyse();
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(90);
 
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatisticsAfter */
         $mailingStatisticsAfter = $queueMail->getMailingStatistics();
-        
+
         self::assertEquals($mailingStatistics, $mailingStatisticsAfter);
 
     }
@@ -552,9 +552,9 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time());
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $this->subject->analyse();
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(100);
 
@@ -569,7 +569,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

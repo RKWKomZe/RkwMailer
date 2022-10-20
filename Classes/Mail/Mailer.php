@@ -35,12 +35,12 @@ use RKW\RkwMailer\Validation\EmailValidator;
  */
 class Mailer
 {
-    
+
     /**
      * objectManager
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $objectManager;
 
@@ -49,7 +49,7 @@ class Mailer
      * configurationManager
      *
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $configurationManager;
 
@@ -58,7 +58,7 @@ class Mailer
      * persistenceManager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager;
 
@@ -67,16 +67,16 @@ class Mailer
      * queueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailRepository;
 
-    
+
     /**
      * queueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientRepository;
 
@@ -85,16 +85,16 @@ class Mailer
      * bounceMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $bounceMailRepository;
 
-    
+
     /**
      * mailingStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $mailingStatisticsRepository;
 
@@ -103,7 +103,7 @@ class Mailer
      * queueMailValidator
      *
      * @var \RKW\RkwMailer\Validation\QueueMailValidator
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailValidator;
 
@@ -112,29 +112,29 @@ class Mailer
      * queueMailValidator
      *
      * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientValidator;
 
-    
+
     /**
      * mailCache
      *
      * @var \RKW\RkwMailer\Cache\MailCache
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $mailCache;
-  
-    
-    
+
+
+
     /**
      * logger
      *
      * @var \TYPO3\CMS\Core\Log\Logger
      */
     protected $logger;
-    
-    
+
+
     /**
      * EmailStandaloneView
      *
@@ -142,7 +142,7 @@ class Mailer
      */
     protected $view;
 
-    
+
     /**
      * Gets queueMails from queue and send mails to associated recipients
      *
@@ -156,7 +156,7 @@ class Mailer
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function processQueueMails (
-        int $emailsPerJob = 5, 
+        int $emailsPerJob = 5,
         int $emailsPerInterval = 10,
         int $settingsPid = 0,
         float $sleep = 0.0
@@ -199,11 +199,11 @@ class Mailer
                 if (!$queueMail->getSettingsPid()) {
                     $queueMail->setSettingsPid($settingsPid);
                 }
-                
+
                 // set important default values for statistics
                 $queueMail->getMailingStatistics()->setSubject($queueMail->getSubject());
                 $queueMail->getMailingStatistics()->setType($queueMail->getType());
-                
+
                 // set status to sending and set sending time
                 if ($queueMail->getStatus() != QueueMailUtility::STATUS_SENDING) {
                     $queueMail->setStatus(QueueMailUtility::STATUS_SENDING);
@@ -222,15 +222,15 @@ class Mailer
                         $queueMail->getMailingStatistics()->setStatus(QueueMailUtility::STATUS_FINISHED);
                         $queueMail->getMailingStatistics()->setTstampFinishedSending(time());
                         $this->getLogger()->log(
-                            \TYPO3\CMS\Core \Log\LogLevel::INFO, 
+                            \TYPO3\CMS\Core \Log\LogLevel::INFO,
                             sprintf(
-                                'Successfully finished queueMail with uid %s.', 
+                                'Successfully finished queueMail with uid %s.',
                                 $queueMail->getUid()
                             )
                         );
                     } else {
                         $this->getLogger()->log(
-                            LogLevel::INFO, 
+                            LogLevel::INFO,
                             sprintf(
                                 'Currently no recipients for queueMail with uid %s, but marked for pipeline-usage.',
                                 $queueMail->getUid()
@@ -238,15 +238,15 @@ class Mailer
                         );
                     }
                 }
-            
+
             // try to catch error and set status to 99
             } catch (\Exception $e) {
 
                 $this->getLogger()->log(
-                    LogLevel::ERROR, 
+                    LogLevel::ERROR,
                     sprintf('
-                        An unexpected error occurred while trying to send e-mails. QueueMail with uid %s has not been sent. Error: %s.', 
-                        $queueMail->getUid(), 
+                        An unexpected error occurred while trying to send e-mails. QueueMail with uid %s has not been sent. Error: %s.',
+                        $queueMail->getUid(),
                         str_replace(array("\n", "\r"), '', $e->getMessage())
                     )
                 );
@@ -263,7 +263,7 @@ class Mailer
                 } else {
                     $this->mailingStatisticsRepository->update($queueMail->getMailingStatistics());
                 }
-            }            
+            }
             $this->persistenceManager->persistAll();
             $processedQueueMails[] = $queueMail;
         }
@@ -272,8 +272,8 @@ class Mailer
         return $processedQueueMails;
     }
 
-    
-    
+
+
     /**
      * Gets queueRecipients for a given queueMail from queue and send mails to associated recipients
      *
@@ -317,24 +317,24 @@ class Mailer
                             $queueRecipient->setStatus(QueueRecipientUtility::STATUS_FINISHED);
 
                             $this->getLogger()->log(
-                                LogLevel::INFO, 
-                                sprintf('Successfully sent e-mail to "%s" (recipient-uid %s) for queueMail id %s.', 
-                                    $queueRecipient->getEmail(), 
-                                    $queueRecipient->getUid(), 
+                                LogLevel::INFO,
+                                sprintf('Successfully sent e-mail to "%s" (recipient-uid %s) for queueMail id %s.',
+                                    $queueRecipient->getEmail(),
+                                    $queueRecipient->getUid(),
                                     $queueMail->getUid()
                                 )
                             );
-                            
+
                         } catch (\Exception $e) {
-                            
+
                             // set recipient status to error
                             $queueRecipient->setStatus(QueueRecipientUtility::STATUS_ERROR);
 
                             $this->getLogger()->log(
-                                LogLevel::WARNING, 
+                                LogLevel::WARNING,
                                 sprintf(
-                                    'An error occurred while trying to send an e-mail to "%s" (recipient-uid %s). Message: %s', 
-                                    $queueRecipient->getEmail(), 
+                                    'An error occurred while trying to send an e-mail to "%s" (recipient-uid %s). Message: %s',
+                                    $queueRecipient->getEmail(),
                                     $queueRecipient->getUid(),
                                     str_replace(array("\n", "\r"), '', $e->getMessage()))
                             );
@@ -346,21 +346,21 @@ class Mailer
                         $queueRecipient->setStatus(QueueRecipientUtility::STATUS_DEFERRED);
                         $this->getLogger()->log(
                             LogLevel::WARNING, sprintf(
-                                'E-mail "%s" (recipient-uid %s) blocked for further mailings because of bounces detected during processing of queueMail width uid %s.', 
-                                $queueRecipient->getEmail(), 
-                                $queueRecipient->getUid(), 
+                                'E-mail "%s" (recipient-uid %s) blocked for further mailings because of bounces detected during processing of queueMail width uid %s.',
+                                $queueRecipient->getEmail(),
+                                $queueRecipient->getUid(),
                                 $queueMail->getUid()
                             )
                         );
                     }
-                                        
+
                 } catch (\Exception $e) {
                     $queueRecipient->setStatus(QueueRecipientUtility::STATUS_ERROR);
                     $this->getLogger()->log(
-                        LogLevel::WARNING, 
+                        LogLevel::WARNING,
                         sprintf(
                             'An error occurred while trying to send an e-mail to queueRecipient with uid %s. Error: %s.',
-                            $queueRecipient->getUid(), 
+                            $queueRecipient->getUid(),
                             str_replace(array("\n", "\r"), '', $e->getMessage())
                         )
                     );
@@ -380,9 +380,9 @@ class Mailer
         return $processedQueueRecipients;
     }
 
-   
-    
-    
+
+
+
     /**
      *  prepares email object for given recipient user
      *
@@ -408,18 +408,18 @@ class Mailer
                 1438249330
             );
         }
-        
+
         // validate queueRecipient
         if (! $this->queueRecipientValidator->validate($queueRecipient)) {
             throw new \RKW\RkwMailer\Exception(
                 sprintf(
                     'Invalid data or missing data in queueRecipient with uid %s.',
                     $queueRecipient->getUid()
-                ), 
+                ),
                 1552485792
             );
         }
-        
+
         // render templates
         $this->renderTemplates($queueMail, $queueRecipient);
 
@@ -442,14 +442,14 @@ class Mailer
 
                 $getter = 'get' . ucFirst($longName) . 'Body';
                 if ($template = $this->mailCache->$getter($queueRecipient)) {
-                    
+
                     $message->addPart($template, 'text/' . $shortName);
                     $this->getLogger()->log(
-                        LogLevel::DEBUG, 
+                        LogLevel::DEBUG,
                         sprintf(
-                            'Setting %s-body for recipient with uid=%s in queueMail with uid=%s.', 
-                            $longName, 
-                            $queueRecipient->getUid(), 
+                            'Setting %s-body for recipient with uid=%s in queueMail with uid=%s.',
+                            $longName,
+                            $queueRecipient->getUid(),
                             $queueMail->getUid()
                         )
                     );
@@ -461,10 +461,10 @@ class Mailer
             $emailBody = $queueMail->getBodyText();
             $message->setBody($emailBody, 'text/plain');
             $this->getLogger()->log(
-                LogLevel::DEBUG, 
+                LogLevel::DEBUG,
                 sprintf(
-                    'Setting default body for recipient with uid %s in queueMail with uid %s.', 
-                    $queueRecipient->getUid(), 
+                    'Setting default body for recipient with uid %s in queueMail with uid %s.',
+                    $queueRecipient->getUid(),
                     $queueMail->getUid()
                 )
             );
@@ -478,52 +478,52 @@ class Mailer
             $attachment = \Swift_Attachment::newInstance($emailString, 'meeting.ics', 'text/calendar');
             $message->attach($attachment);
             $this->getLogger()->log(
-                LogLevel::DEBUG, 
+                LogLevel::DEBUG,
                 sprintf(
-                    'Setting calendar-body for recipient with uid %s in queueMail with uid %s.', 
-                    $queueRecipient->getUid(), 
+                    'Setting calendar-body for recipient with uid %s in queueMail with uid %s.',
+                    $queueRecipient->getUid(),
                     $queueMail->getUid()
                 )
             );
         }
 
-        
+
         // add attachment if set - old versions first
         if ($queueMail->getAttachment()) {
             $this->getLogger()->log(
                 LogLevel::WARNING,
                 'This method to add attachments is deprecated. Please use $this->setAttachmentPath to add attachments.'
             );
-            GeneralUtility::deprecationLog(__CLASS__ . ': Please use $this->setAttachmentPath to add attachments.');
+            trigger_error(__CLASS__ .':' . __METHOD__ . ' will be removed soon. Do not use it any more. lease use $this->setAttachmentPath to add attachments.', E_USER_DEPRECATED);
 
             // via BLOB: old version from Max
             /** @deprecated */
             if (
-                (is_string($queueMail->getAttachment()) 
+                (is_string($queueMail->getAttachment())
                 && (! json_decode($queueMail->getAttachment(), true)))
             ) {
 
                 $attachment = \Swift_Attachment::newInstance(
-                    $queueMail->getAttachment(), 
-                    $queueMail->getAttachmentName(), 
+                    $queueMail->getAttachment(),
+                    $queueMail->getAttachmentName(),
                     $queueMail->getAttachmentType()
                 );
                 $message->attach($attachment);
             }
-            
+
             // via array - old version from Christian
             /** @deprecated */
             if (is_array($attachments = json_decode($queueMail->getAttachment(), true))) {
                 foreach ($attachments as $attachment) {
                     $file = \Swift_Attachment::fromPath(
-                        $attachment['path'], 
+                        $attachment['path'],
                         $attachment['type']
                     );
                     $message->attach($file);
                 }
-            }            
+            }
         }
-        
+
         // add attachments - new version
         if ($attachments = $queueMail->getAttachmentPaths()) {
             foreach ($attachments as $attachment) {
@@ -534,7 +534,7 @@ class Mailer
                 $message->attach($file);
             }
         }
-        
+
         // add mailing list header if type > 0
         if ($queueMail->getType() > 0) {
             $message->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:' . EmailValidator::cleanUpEmail($queueMail->getFromAddress()) . '>');
@@ -658,7 +658,7 @@ class Mailer
 
         self::debugTime(__LINE__, __METHOD__);
     }
-    
+
     /**
      * Returns logger instance
      *
@@ -671,7 +671,7 @@ class Mailer
         }
         return $this->logger;
     }
-    
+
 
     /**
      * Does debugging of runtime
@@ -683,7 +683,7 @@ class Mailer
     {
         if (GeneralUtility::getApplicationContext()->isDevelopment()) {
 
-            $path = PATH_site . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
+            $path = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
             file_put_contents($path, microtime() . ' ' . $line . ' ' . $function . "\n", FILE_APPEND);
         }
     }

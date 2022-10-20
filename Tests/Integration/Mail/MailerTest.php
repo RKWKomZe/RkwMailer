@@ -71,25 +71,25 @@ class MailerTest extends FunctionalTestCase
      */
     private $objectManager;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      */
     private $queueMailRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      */
     private $queueRecipientRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      */
-    private $mailingStatisticsRepository;    
+    private $mailingStatisticsRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Cache\MailCache
      */
@@ -99,7 +99,7 @@ class MailerTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -125,7 +125,7 @@ class MailerTest extends FunctionalTestCase
         $this->mailCache->clearCache();
 
     }
-    
+
 
     //=============================================
 
@@ -148,24 +148,24 @@ class MailerTest extends FunctionalTestCase
          * Given one of the queueMail-objects has the status sending
          * When the method is called
          * Then two queueMail-objects are returned
-         * Then the first object has the uid of the one with status waiting 
+         * Then the first object has the uid of the one with status waiting
          * Then the second object has the uid of the one with status sending
          */
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check80.xml');
-        
+
         $result = $this->subject->processQueueMails();
-        
+
         self::assertCount(2, $result);
         self::assertInstanceOf(QueueMail::class, $result[0]);
         self::assertInstanceOf(QueueMail::class, $result[1]);
 
         self::assertEquals(83, $result[0]->getUid());
         self::assertEquals(84, $result[1]->getUid());
-        
+
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -178,7 +178,7 @@ class MailerTest extends FunctionalTestCase
          *
          * Given three queueMail-objects in database
          * Given all three queueMail-objects have the status waiting
-         * Given the first of the queueMail-objects has priority 3 
+         * Given the first of the queueMail-objects has priority 3
          * Given the second of the queueMail-objects has priority 2
          * Given the first of the queueMail-objects has priority 1
          * When the method is called
@@ -233,7 +233,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(100, $result[1]->getUid());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -265,7 +265,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(110, $result[1]->getUid());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -292,7 +292,7 @@ class MailerTest extends FunctionalTestCase
          * Then the corresponding mailingStatistics-object of this object has the status 99
          * Then the status change of this object is persisted
          * Then the third object has the uid of the one with the missing subject-property
-         * Then this object has the status 4 
+         * Then this object has the status 4
          * Then the corresponding mailingStatistics-object of this object has the status 99
          * Then the status change of this object is persisted
          */
@@ -309,7 +309,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(120, $queueMailOne->getUid());
         self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailOne->getStatus());
         self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailOne->getMailingStatistics()->getStatus());
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDbOne = $this->queueMailRepository->findByIdentifier(120);
         self::assertEquals(QueueMailUtility::STATUS_ERROR, $queueMailDbOne->getStatus());
@@ -376,7 +376,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(9999, $queueMailDb->getSettingsPid());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -399,7 +399,7 @@ class MailerTest extends FunctionalTestCase
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check140.xml');
 
         $result = $this->subject->processQueueMails(5, 5, 9999);
-        
+
         self::assertCount(1, $result);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -413,7 +413,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals($queueMail->getSettingsPid(), $queueMailDb->getSettingsPid());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -473,7 +473,7 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $result[0]->getMailingStatistics();
         self::assertInstanceOf(MailingStatistics::class,  $mailingStatistics);
@@ -481,9 +481,9 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals($queueMail->getTstampFavSending(), $mailingStatistics->getTstampFavSending());
         self::assertEquals($queueMail->getTstampRealSending(), $mailingStatistics->getTstampRealSending());
         self::assertEquals($queueMail->getTstampSendFinish(), $mailingStatistics->getTstampFinishedSending());
-        
+
         self::assertEquals($queueMail->getUid(), $mailingStatistics->getQueueMail()->getUid());
-        
+
         $dbResult = $this->mailingStatisticsRepository->findAll();
         self::assertCount(1, $dbResult);
         self::assertSame($mailingStatistics, $dbResult->getFirst());
@@ -516,17 +516,17 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $this->mailingStatisticsRepository->findAll()->getFirst();
-        
+
         // remove linkage
         $mailingStatistics = unserialize(serialize($mailingStatistics));
-        
+
         $result = $this->subject->processQueueMails();
         self::assertCount(1, $result);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $result[0];
         self::assertInstanceOf(QueueMail::class, $queueMail);
-        
+
         self::assertInstanceOf(MailingStatistics::class,  $result[0]->getMailingStatistics());
         self::assertEquals($mailingStatistics, $result[0]->getMailingStatistics());
 
@@ -579,7 +579,7 @@ class MailerTest extends FunctionalTestCase
 
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -616,7 +616,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(QueueMailUtility::STATUS_SENDING, $queueMailDb->getMailingStatistics()->getStatus());
 
     }
-    
+
 
     /**
      * @test
@@ -647,7 +647,7 @@ class MailerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $queueMail);
         self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMail->getStatus());
         self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMail->getMailingStatistics()->getStatus());
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(210);
         self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDb->getStatus());
@@ -782,11 +782,11 @@ class MailerTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(370);
-        
+
         $startTime = time();
         $result = $this->subject->processQueueRecipients($queueMail, 3, 3);
         $endTime = time();
-        
+
         self::assertCount(3, $result);
         self::assertGreaterThanOrEqual(9, $endTime - $startTime);
     }
@@ -815,7 +815,7 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(380);
         $result = $this->subject->processQueueRecipients($queueMail);
-        
+
         self::assertCount(1, $result);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
@@ -974,7 +974,7 @@ class MailerTest extends FunctionalTestCase
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(420);
         self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipientDb->getStatus());
     }
-    
+
     //=============================================
 
     /**
@@ -995,13 +995,13 @@ class MailerTest extends FunctionalTestCase
          */
         self::expectException(\RKW\RkwMailer\Exception::class);
         self::expectExceptionCode(1438249330);
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check220.xml');
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(220);
         $queueRecipient = new QueueRecipient();
-        
+
         $this->subject->prepareEmailBody($queueMail, $queueRecipient);
     }
 
@@ -1034,7 +1034,7 @@ class MailerTest extends FunctionalTestCase
         $this->subject->prepareEmailBody($queueMail, $queueRecipient);
     }
 
-    
+
 
     /**
      * @test
@@ -1059,7 +1059,7 @@ class MailerTest extends FunctionalTestCase
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(240);
 
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
-        
+
         self::assertInstanceOf(MailMessage::class, $result);
     }
 
@@ -1079,7 +1079,7 @@ class MailerTest extends FunctionalTestCase
          * Given this queueRecipient-object has all basic values for validation set (email)
          * When the method is called
          * Then an mailMessage-object is returned
-         * Then this mailMessage-object contains three message-parts 
+         * Then this mailMessage-object contains three message-parts
          * Then the first message-part is a Swift_MimePart-object
          * Then this first object has the content-type text/html
          * Then this first object contains the content of the defined html-template
@@ -1106,18 +1106,18 @@ class MailerTest extends FunctionalTestCase
         $mimePartHtml = $result->getChildren()[0];
         self::assertEquals(\Swift_MimePart::class, get_class($mimePartHtml));
         self::assertEquals('text/html', $mimePartHtml->getContentType());
-        self::assertContains('TEST-TEMPLATE-HTML', $mimePartHtml->getBody());
+        self::assertStringContainsString('TEST-TEMPLATE-HTML', $mimePartHtml->getBody());
 
         /** @var \Swift_MimePart  $mimePartPlaintext */
         $mimePartPlaintext = $result->getChildren()[1];
         self::assertEquals(\Swift_MimePart::class, get_class($mimePartPlaintext));
-        self::assertContains('TEST-TEMPLATE-PLAINTEXT', $mimePartPlaintext->getBody());
+        self::assertStringContainsString('TEST-TEMPLATE-PLAINTEXT', $mimePartPlaintext->getBody());
 
         /** @var \Swift_Attachment  $mimePartCalendar */
         $mimePartCalendar = $result->getChildren()[2];
         self::assertEquals(\Swift_Attachment::class, get_class($mimePartCalendar));
         self::assertEquals('text/calendar', $mimePartCalendar->getContentType());
-        self::assertContains('BEGIN:VCALENDAR', $mimePartCalendar->getBody());
+        self::assertStringContainsString('BEGIN:VCALENDAR', $mimePartCalendar->getBody());
         self::assertEquals('meeting.ics', $mimePartCalendar->getFilename());
 
     }
@@ -1133,7 +1133,7 @@ class MailerTest extends FunctionalTestCase
          *
          * Given a queueMail-object in database
          * Given this queueMail-objects has all basic values for validation set (fromAddress, fromName)
-         * Given this queueMail-object has no templates set 
+         * Given this queueMail-object has no templates set
          * Given this queueMail-object has the bodyText-property set
          * Given a queueRecipient-object in database
          * Given this queueRecipient-object has all basic values for validation set (email)
@@ -1152,7 +1152,7 @@ class MailerTest extends FunctionalTestCase
 
         self::assertInstanceOf(MailMessage::class, $result);
         self::assertCount(0, $result->getChildren());
-        self::assertContains('Test the best', $result->getBody());
+        self::assertStringContainsString('Test the best', $result->getBody());
     }
 
 
@@ -1221,7 +1221,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertContains('List-Unsubscribe: <mailto:test@testen.de>', $result->getHeaders()->toString());
+        self::assertStringContainsString('List-Unsubscribe: <mailto:test@testen.de>', $result->getHeaders()->toString());
     }
 
 
@@ -1318,7 +1318,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertInternalType('array', $result->getTo());
+        self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => 'Dr. Sebastian Schmidt'], $result->getTo());
     }
 
@@ -1353,7 +1353,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertInternalType('array', $result->getTo());
+        self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => 'Sebastian Schmidt'], $result->getTo());
     }
 
@@ -1386,7 +1386,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertInternalType('array', $result->getTo());
+        self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => 'Schmidt'], $result->getTo());
     }
 
@@ -1420,7 +1420,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertInternalType('array', $result->getTo());
+        self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => 'Dr. Schmidt'], $result->getTo());
     }
 
@@ -1442,7 +1442,7 @@ class MailerTest extends FunctionalTestCase
          * Given this queueRecipient-object has no title-property set
          * When the method is called
          * Then an mailMessage-object is returned
-         * Then this object has the to-header set as array with the email of the recipient set as key 
+         * Then this object has the to-header set as array with the email of the recipient set as key
          * Then this object has the to-header set as array with null set as value
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check330.xml');
@@ -1454,7 +1454,7 @@ class MailerTest extends FunctionalTestCase
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
 
         self::assertInstanceOf(MailMessage::class, $result);
-        self::assertInternalType('array', $result->getTo());
+        self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => null], $result->getTo());
     }
 
@@ -1476,9 +1476,9 @@ class MailerTest extends FunctionalTestCase
          * Given as file-name is set "Attachment.xml"
          * When the method is called
          * Then an mailMessage-object is returned
-         * Then this mailMessage-object has one message-part 
-         * Then this message-part is a Swift_Attachment-object 
-         * Then this object has the mime-type "text/xml" 
+         * Then this mailMessage-object has one message-part
+         * Then this message-part is a Swift_Attachment-object
+         * Then this object has the mime-type "text/xml"
          * Then this object has file-name "Attachment.xml"
          * Then this object contains the content of the attached XML-file
          */
@@ -1487,11 +1487,11 @@ class MailerTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(430);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(430);
-        
+
         $queueMail->setAttachment(file_get_contents(self::FIXTURE_PATH . '/Database/Check430.xml'));
         $queueMail->setAttachmentName('Attachment.xml');
         $queueMail->setAttachmentType('text/xml');
-        
+
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
         self::assertInstanceOf(MailMessage::class, $result);
         static::assertCount(1, $result->getChildren());
@@ -1500,7 +1500,7 @@ class MailerTest extends FunctionalTestCase
         static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
         static::assertEquals('Attachment.xml', $mimePartAttachment->getFilename());
         static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertContains('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
 
 
@@ -1549,7 +1549,7 @@ class MailerTest extends FunctionalTestCase
         static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
         static::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
         static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertContains('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
 
     /**
@@ -1590,9 +1590,9 @@ class MailerTest extends FunctionalTestCase
         static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
         static::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
         static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertContains('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
-    
+
     //=============================================
 
     /**
@@ -1760,23 +1760,23 @@ class MailerTest extends FunctionalTestCase
         self::assertNotEmpty($this->mailCache->getHtmlBody($queueRecipient));
 
         $result = $this->mailCache->getHtmlBody($queueRecipient);
-        self::assertContains('TEST-TEMPLATE-HTML', $result);
-        self::assertContains('ROOTPAGE', $result);
-        self::assertContains('queueMail.uid: 30', $result);
-        self::assertContains('queueMail.settingsPid: 0', $result);
-        self::assertContains('mailType: Html', $result);
-        self::assertContains('settings.redirectPid: 9999', $result);
+        self::assertStringContainsString('TEST-TEMPLATE-HTML', $result);
+        self::assertStringContainsString('ROOTPAGE', $result);
+        self::assertStringContainsString('queueMail.uid: 30', $result);
+        self::assertStringContainsString('queueMail.settingsPid: 0', $result);
+        self::assertStringContainsString('mailType: Html', $result);
+        self::assertStringContainsString('settings.redirectPid: 9999', $result);
 
-        self::assertContains('baseUrl: http://www.example.de', $result);
-        self::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        self::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
+        self::assertStringContainsString('baseUrl: http://www.example.de', $result);
+        self::assertStringContainsString('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
+        self::assertStringContainsString('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
 
-        self::assertContains('queueRecipient.uid: 30', $result);
-        self::assertContains('queueRecipient.firstName: Sebastian', $result);
-        self::assertContains('queueRecipient.lastName: Schmidt', $result);
+        self::assertStringContainsString('queueRecipient.uid: 30', $result);
+        self::assertStringContainsString('queueRecipient.firstName: Sebastian', $result);
+        self::assertStringContainsString('queueRecipient.lastName: Schmidt', $result);
 
-        self::assertContains('test1.uid: 30', $result);
-        self::assertContains('test2: Hello!', $result);
+        self::assertStringContainsString('test1.uid: 30', $result);
+        self::assertStringContainsString('test2: Hello!', $result);
     }
 
 
@@ -1815,23 +1815,23 @@ class MailerTest extends FunctionalTestCase
         self::assertNotEmpty($this->mailCache->getPlaintextBody($queueRecipient));
 
         $result = $this->mailCache->getPlaintextBody($queueRecipient);
-        self::assertContains('TEST-TEMPLATE-PLAINTEXT', $result);
-        self::assertContains('ROOTPAGE', $result);
-        self::assertContains('queueMail.uid: 40', $result);
-        self::assertContains('queueMail.settingsPid: 0', $result);
-        self::assertContains('mailType: Plaintext', $result);
-        self::assertContains('settings.redirectPid: 9999', $result);
+        self::assertStringContainsString('TEST-TEMPLATE-PLAINTEXT', $result);
+        self::assertStringContainsString('ROOTPAGE', $result);
+        self::assertStringContainsString('queueMail.uid: 40', $result);
+        self::assertStringContainsString('queueMail.settingsPid: 0', $result);
+        self::assertStringContainsString('mailType: Plaintext', $result);
+        self::assertStringContainsString('settings.redirectPid: 9999', $result);
 
-        self::assertContains('baseUrl: http://www.example.de', $result);
-        self::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        self::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
+        self::assertStringContainsString('baseUrl: http://www.example.de', $result);
+        self::assertStringContainsString('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
+        self::assertStringContainsString('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
 
-        self::assertContains('queueRecipient.uid: 40', $result);
-        self::assertContains('queueRecipient.firstName: Sebastian', $result);
-        self::assertContains('queueRecipient.lastName: Schmidt', $result);
+        self::assertStringContainsString('queueRecipient.uid: 40', $result);
+        self::assertStringContainsString('queueRecipient.firstName: Sebastian', $result);
+        self::assertStringContainsString('queueRecipient.lastName: Schmidt', $result);
 
-        self::assertContains('test1.uid: 40', $result);
-        self::assertContains('test2: Hello!', $result);
+        self::assertStringContainsString('test1.uid: 40', $result);
+        self::assertStringContainsString('test2: Hello!', $result);
     }
 
 
@@ -1870,23 +1870,23 @@ class MailerTest extends FunctionalTestCase
         self::assertNotEmpty($this->mailCache->getCalendarBody($queueRecipient));
 
         $result = $this->mailCache->getCalendarBody($queueRecipient);
-        self::assertContains('BEGIN:VCALENDAR', $result);
-        self::assertContains('ROOTPAGE', $result);
-        self::assertContains('queueMail.uid: 50', $result);
-        self::assertContains('queueMail.settingsPid: 0', $result);
-        self::assertContains('mailType: Calendar', $result);
-        self::assertContains('settings.redirectPid: 9999', $result);
+        self::assertStringContainsString('BEGIN:VCALENDAR', $result);
+        self::assertStringContainsString('ROOTPAGE', $result);
+        self::assertStringContainsString('queueMail.uid: 50', $result);
+        self::assertStringContainsString('queueMail.settingsPid: 0', $result);
+        self::assertStringContainsString('mailType: Calendar', $result);
+        self::assertStringContainsString('settings.redirectPid: 9999', $result);
 
-        self::assertContains('baseUrl: http://www.example.de', $result);
-        self::assertContains('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
-        self::assertContains('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
+        self::assertStringContainsString('baseUrl: http://www.example.de', $result);
+        self::assertStringContainsString('baseUrlImages: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images', $result);
+        self::assertStringContainsString('baseUrlLogo: http://www.example.de/typo3conf/ext/rkw_mailer/Resources/Public/Images/logo.png', $result);
 
-        self::assertContains('queueRecipient.uid: 50', $result);
-        self::assertContains('queueRecipient.firstName: Sebastian', $result);
-        self::assertContains('queueRecipient.lastName: Schmidt', $result);
+        self::assertStringContainsString('queueRecipient.uid: 50', $result);
+        self::assertStringContainsString('queueRecipient.firstName: Sebastian', $result);
+        self::assertStringContainsString('queueRecipient.lastName: Schmidt', $result);
 
-        self::assertContains('test1.uid: 50', $result);
-        self::assertContains('test2: Hello!', $result);
+        self::assertStringContainsString('test1.uid: 50', $result);
+        self::assertStringContainsString('test2: Hello!', $result);
     }
 
 
@@ -2003,13 +2003,13 @@ class MailerTest extends FunctionalTestCase
         self::assertNotEquals($resultHtmlFirst, $resultHtmlSecond);
         self::assertNotEquals($resultCalendarFirst, $resultCalendarSecond);
 
-        self::assertContains("$firstTimestamp", $resultPlaintextFirst);
-        self::assertContains("$firstTimestamp", $resultHtmlFirst);
-        self::assertContains("$firstTimestamp", $resultCalendarFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultPlaintextFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultHtmlFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultCalendarFirst);
 
-        self::assertContains("$secondTimestamp", $resultPlaintextSecond);
-        self::assertContains("$secondTimestamp", $resultHtmlSecond);
-        self::assertContains("$secondTimestamp", $resultCalendarSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultPlaintextSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultHtmlSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultCalendarSecond);
     }
 
 
@@ -2069,20 +2069,20 @@ class MailerTest extends FunctionalTestCase
         self::assertNotEquals($resultHtmlFirst, $resultHtmlSecond);
         self::assertNotEquals($resultCalendarFirst, $resultCalendarSecond);
 
-        self::assertContains("$firstTimestamp", $resultPlaintextFirst);
-        self::assertContains("$firstTimestamp", $resultHtmlFirst);
-        self::assertContains("$firstTimestamp", $resultCalendarFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultPlaintextFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultHtmlFirst);
+        self::assertStringContainsString("$firstTimestamp", $resultCalendarFirst);
 
-        self::assertContains("$secondTimestamp", $resultPlaintextSecond);
-        self::assertContains("$secondTimestamp", $resultHtmlSecond);
-        self::assertContains("$secondTimestamp", $resultCalendarSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultPlaintextSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultHtmlSecond);
+        self::assertStringContainsString("$secondTimestamp", $resultCalendarSecond);
     }
 
     //=============================================
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->mailCache->clearCache();
         parent::tearDown();

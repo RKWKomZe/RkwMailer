@@ -36,9 +36,9 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  */
 class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
-    
+
     use CompileWithRenderStatic;
-    
+
     /**
      * @var bool
      */
@@ -52,10 +52,11 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      */
     public function initializeArguments()
     {
+        parent::initializeArguments();
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for counter');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object for counter');
     }
-    
+
 
     /**
      * @param array $arguments
@@ -64,14 +65,14 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ){
-        
+    ): string {
+
         $queueMail = $arguments['queueMail'];
         $queueRecipient = $arguments['queueRecipient'];
-        
+
         try {
 
             $settings = self::getSettings();
@@ -102,10 +103,10 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
 
                 return '<img src="' . urldecode(
                     $uriBuilder->uriFor(
-                        'opening', 
-                        array(), 
-                        'Tracking', 
-                        'rkwmailer', 
+                        'opening',
+                        array(),
+                        'Tracking',
+                        'rkwmailer',
                         'Rkwmailer')
                     ) . '" width="1" height="1" alt="" />';
             }
@@ -114,9 +115,9 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to set pixel-counter: %s', 
+                    'Error while trying to set pixel-counter: %s',
                     $e->getMessage()
                 )
             );
@@ -125,7 +126,7 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
         return '';
     }
 
-    
+
     /**
      * Returns TYPO3 settings
      *

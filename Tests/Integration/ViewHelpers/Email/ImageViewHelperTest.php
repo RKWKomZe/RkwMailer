@@ -65,7 +65,7 @@ class ImageViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -74,7 +74,6 @@ class ImageViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
@@ -114,9 +113,9 @@ class ImageViewHelperTest extends FunctionalTestCase
 
         $result = $this->standAloneViewHelper->render();
 
-        self::assertContains('<img src="http://www.example.de/typo3temp/', $result);
-        self::assertContains('width="536"', $result);
-        self::assertContains('height="200"', $result);
+        self::assertStringContainsString('<img src="http://www.example.de/typo3temp/', $result);
+        self::assertStringContainsString('width="536"', $result);
+        self::assertStringContainsString('height="200"', $result);
     }
 
 
@@ -125,7 +124,7 @@ class ImageViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

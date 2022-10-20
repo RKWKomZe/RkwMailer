@@ -37,7 +37,7 @@ class ClickTracker
      * QueueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailRepository;
 
@@ -45,7 +45,7 @@ class ClickTracker
      * QueueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientRepository;
 
@@ -53,16 +53,16 @@ class ClickTracker
      * LinkRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\LinkRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $linkRepository;
 
-    
+
     /**
      * clickStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $clickStatisticsRepository;
 
@@ -70,7 +70,7 @@ class ClickTracker
      * Persistence Manager
      *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager;
 
@@ -104,11 +104,11 @@ class ClickTracker
             $this->persistTrackingData($queueMail, $string);
             return true;
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Get the redirect url with all relevant parameters
      *
@@ -122,10 +122,10 @@ class ClickTracker
         int $queueMailId = 0,
         int $queueMailRecipientId = 0
     ): string {
-        
+
         // decode url (just to be sure)
         $url = urldecode($url);
-        
+
         // additional params
         $additionalParams = [];
 
@@ -148,8 +148,8 @@ class ClickTracker
 
         return StatisticsUtility::addParamsToUrl($url, $additionalParams);
     }
-    
-    
+
+
 
     /**
      * Get getUrl by Hash
@@ -169,8 +169,8 @@ class ClickTracker
 
         return '';
     }
-    
-        
+
+
     /**
      * Persists tracking-data to database
      *
@@ -187,7 +187,7 @@ class ClickTracker
     {
         // decode url (just to be sure)
         $url = urldecode($url);
-        
+
         // generate hash from url
         $hash = StatisticsUtility::generateLinkHash($url);
 
@@ -230,8 +230,8 @@ class ClickTracker
             );
         }
     }
-    
-    
+
+
     /**
      * Returns logger instance
      *

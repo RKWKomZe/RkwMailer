@@ -14,6 +14,8 @@ namespace RKW\RkwMailer\ViewHelpers\Widget;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+
 
 /**
  * Class UriViewHelper
@@ -22,106 +24,71 @@ namespace RKW\RkwMailer\ViewHelpers\Widget;
  * @copyright Rkw Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
 {
-
-    /**
-     * initializeArguments
-     */
-    public function initializeArguments()
-    {
-        parent::initializeArguments();
-    }
-
-    /**
-     * Render the Uri.
-     *
-     * @return string The rendered link
-     * @api
-     */
-    public function render()
-    {
-        $action = $this->arguments['action'];
-        $arguments = $this->arguments['arguments'];
-        $section = $this->arguments['section'];
-        $format = $this->arguments['format'];
-        $ajax = $this->arguments['ajax'];
-
-        if ($ajax === true) {
-            return $this->getAjaxUri();
-        } else {
-            return $this->getWidgetUri(
-                ['timeFrame', 'mailType'],
-                'tx_rkwmailer_tools_rkwmailermailadministration'
-            );
-        }
-    }
 
     /**
      * Get the URI for a non-AJAX Request.
      *
      * Thanks to https://www.npostnik.de/typo3/pagination-widget-im-backend-anpassen/
      *
-     * @param array  $argumentKeys
-     * @param string $moduleKey
-     *
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
      * @return string the Widget URI
      */
-    protected function getWidgetUri($argumentKeys = [], $moduleKey = '')
+    protected static function getWidgetUri(RenderingContextInterface $renderingContext, array $arguments): string
     {
-        $uriBuilder = $this->controllerContext->getUriBuilder();
-        $argumentPrefix = $this->controllerContext->getRequest()->getArgumentPrefix();
-        $arguments = $this->hasArgument('arguments') ? $this->arguments['arguments'] : [];
-        if ($this->hasArgument('action')) {
-            $arguments['action'] = $this->arguments['action'];
+        $controllerContext = $renderingContext->getControllerContext();
+        $uriBuilder = $controllerContext->getUriBuilder();
+        $argumentPrefix = $controllerContext->getRequest()->getArgumentPrefix();
+        $cleanedArgumentPrefix = substr($argumentPrefix, 0, strpos($argumentPrefix, '['));
+        $parameters = $arguments['arguments'] ?? [];
+
+        if ($arguments['action'] ?? false) {
+            $parameters['action'] = $arguments['action'];
         }
-        if ($this->hasArgument('format') && $this->arguments['format'] !== '') {
-            $arguments['format'] = $this->arguments['format'];
+        if (($arguments['format'] ?? '') !== '') {
+            $parameters['format'] = $arguments['format'];
         }
-        $uriArguments = [$argumentPrefix => $arguments];
-        if (isset($moduleKey)) {
-            \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($uriArguments, $this->getFilterArguments($argumentKeys, $moduleKey));
+
+        $uriArguments = [$argumentPrefix => $parameters];
+        if ($filterArguments = self::getFilterArguments($cleanedArgumentPrefix)) {
+            $uriArguments[$cleanedArgumentPrefix] = $filterArguments;
         }
 
         return $uriBuilder->reset()
             ->setArguments($uriArguments)
-            ->setSection($this->arguments['section'])
+            ->setSection($arguments['section'])
+            ->setUseCacheHash($arguments['useCacheHash'])
             ->setAddQueryString(true)
-            ->setAddQueryStringMethod($this->arguments['addQueryStringMethod'])
+            ->setAddQueryStringMethod($arguments['addQueryStringMethod'])
             ->setArgumentsToBeExcludedFromQueryString([$argumentPrefix, 'cHash'])
-            ->setFormat($this->arguments['format'])
+            ->setFormat($arguments['format'])
             ->build();
     }
 
     /**
-     * @param array  $argumentKeys
-     * @param string $moduleKey
+     * Adds filter-arguments to normal ones
      *
+     * @param string $argumentPrefix
      * @return array
      */
-    protected function getFilterArguments($argumentKeys = [], $moduleKey = '')
+    protected static function getFilterArguments(string $argumentPrefix = ''): array
     {
-        $moduleArguments = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($moduleKey);
-
-        if(!is_array($moduleArguments) && empty($moduleArguments)) {
+        $moduleArguments = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($argumentPrefix);
+        if (!$moduleArguments) {
             return [];
         }
-
+;
         $arguments = [];
-        foreach($argumentKeys as $key) {
-            if ($key === 'mailType') {  //  @todo: $mailType = 0 corresponds to message, so it should not be tested on empty
-                if(array_key_exists($key, $moduleArguments)) {
-                    $arguments[$key] = $moduleArguments[$key];
-                }
-            } else {
-                if(array_key_exists($key, $moduleArguments) && !empty($moduleArguments[$key])) {
-                    $arguments[$key] = $moduleArguments[$key];
-                }
+        foreach($moduleArguments as $key => $value) {
+            if (strpos($key, '__') === false) {
+                $arguments[$key] = $value;
             }
         }
 
-        return [$moduleKey => $arguments];
+        return $arguments;
     }
 }

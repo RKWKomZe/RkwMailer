@@ -72,25 +72,25 @@ class MailServiceTest extends FunctionalTestCase
      */
     private $objectManager;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      */
     private $queueMailRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      */
     private $queueRecipientRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      */
-    private $mailingStatisticsRepository;    
+    private $mailingStatisticsRepository;
 
-    
+
     /**
      * @var \RKW\RkwMailer\Cache\MailCache
      */
@@ -100,7 +100,7 @@ class MailServiceTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -137,7 +137,7 @@ class MailServiceTest extends FunctionalTestCase
          * Scenario:
          *
          * Given all TYPO3_CONF_VARS for the mail-configuration are set
-         * Given a page is loaded in frontend-context 
+         * Given a page is loaded in frontend-context
          * When the method is called
          * Then a queueMail-object is returned
          * Then this object has the storagePid-property set to the value in the configuration
@@ -154,11 +154,11 @@ class MailServiceTest extends FunctionalTestCase
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyName'] = 'RKW';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] = 'reply@mein.rkw.de';
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] = 'bounces@mein.rkw.de';
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->subject->getQueueMail();
         self::assertInstanceOf(QueueMail::class, $queueMail);
-        
+
         self::assertEquals(9999, $queueMail->getPid());
         self::assertEquals($queueMail->getStatus(), QueueMailUtility::STATUS_DRAFT);
         self::assertEquals(1, $queueMail->getSettingsPid());
@@ -220,7 +220,7 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMailDb */
         $queueMailDb = $this->queueMailRepository->findAll()->getFirst();
         self::assertSame($queueMail, $queueMailDb);
-        
+
         self::assertInstanceOf(MailingStatistics::class, $queueMailDb->getMailingStatistics());
         self::assertSame($queueMailDb, $queueMailDb->getMailingStatistics()->getQueueMail());
         self::assertEquals($queueMailDb->getUid(), $queueMailDb->getMailingStatistics()->getQueueMailUid());
@@ -244,13 +244,13 @@ class MailServiceTest extends FunctionalTestCase
          * Then an exception is thrown
          * Then the code of the exception is 1540294116
          */
-        
+
         static::expectException(\RKW\RkwMailer\Exception::class);
         static::expectExceptionCode(1540193242);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = GeneralUtility::makeInstance(\RKW\RkwMailer\Domain\Model\QueueMail::class);
-        
+
         $this->subject->setQueueMail($queueMail);
     }
 
@@ -278,7 +278,7 @@ class MailServiceTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(80);
-        
+
         $this->subject->setQueueMail($queueMail);
 
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());
@@ -306,14 +306,14 @@ class MailServiceTest extends FunctionalTestCase
          * Then false is returned
          * Then no new queueRecipient-object is added to the database
          */
-       
+
         /** @var \RKW\RkwRegistration\Domain\Model\FrontendUser $feUser */
         $feUser = GeneralUtility::makeInstance(FrontendUser::class);
         $feUser->setEmail('lauterbach@spd.de');
-        
+
         $this->subject->setTo($feUser);
         self::assertFalse($this->subject->setTo($feUser));
-        
+
         self::assertCount(1, $this->queueRecipientRepository->findAll());
     }
 
@@ -452,7 +452,7 @@ class MailServiceTest extends FunctionalTestCase
          * Given this queueMail-object is set to the mailService
          * Given a frontendUser-object
          * Given that frontendUser-object has a valid email set
-         * Given this e-mail-address has not been added as recipient to the queueMail 
+         * Given this e-mail-address has not been added as recipient to the queueMail
          * Given the renderTemplates-parameter is set to true
          * When the method is called
          * Then true is returned
@@ -466,7 +466,7 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(10);
         $this->subject->setQueueMail($queueMail);
-        
+
         /** @var \RKW\RkwRegistration\Domain\Model\FrontendUser $feUser */
         $feUser = GeneralUtility::makeInstance(FrontendUser::class);
         $feUser->setEmail('lauterbach@spd.de');
@@ -478,13 +478,13 @@ class MailServiceTest extends FunctionalTestCase
         $queueRecipient = $this->queueRecipientRepository->findAll()->getFirst();
 
         self::assertEquals('lauterbach@spd.de', $queueRecipient->getEmail());
-        
+
         self::assertEquals($this->subject->getQueueMail(), $queueRecipient->getQueueMail());
 
         self::assertNotEmpty($this->mailCache->getHtmlBody($queueRecipient));
         self::assertNotEmpty($this->mailCache->getPlaintextBody($queueRecipient));
     }
-    
+
     //=============================================
 
     /**
@@ -502,7 +502,7 @@ class MailServiceTest extends FunctionalTestCase
          * When the method is called
          * Then false is returned
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         self::assertFalse($this->subject->addQueueRecipient($queueRecipient));
@@ -535,7 +535,7 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         $queueRecipient->setEmail('debug@rkw.de');
-            
+
         self::assertFalse($this->subject->addQueueRecipient($queueRecipient));
 
     }
@@ -550,7 +550,7 @@ class MailServiceTest extends FunctionalTestCase
         /**
          * Scenario:
          *
-         * Given a queueRecipient-object 
+         * Given a queueRecipient-object
          * Given this queueRecipient-object has a valid email-address
          * Given this queueRecipient-object has not been added to the queueMail yet
          * When the method is called
@@ -562,7 +562,7 @@ class MailServiceTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         $queueRecipient->setEmail('debug@rkw.de');
-        
+
         self::assertTrue($this->subject->addQueueRecipient($queueRecipient));
         self::assertCount(1, $this->queueRecipientRepository->findAll());
 
@@ -572,7 +572,7 @@ class MailServiceTest extends FunctionalTestCase
 
 
     }
-    
+
     /**
      * @test
      * @throws \Exception
@@ -620,7 +620,7 @@ class MailServiceTest extends FunctionalTestCase
         self::assertEquals('Dr.', $queueRecipientDb->getTitle());
     }
 
-    
+
     /**
      * @test
      * @throws \Exception
@@ -644,7 +644,7 @@ class MailServiceTest extends FunctionalTestCase
          * Then the pid-property of the queueRecipient-object is set to according to configuration
          * Then the queueMail-property of the queueRecipient-object is set to the current queueMail
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         $queueRecipient->setEmail('debug@rkw.de');
@@ -656,12 +656,12 @@ class MailServiceTest extends FunctionalTestCase
         $queueRecipientDb = $this->queueRecipientRepository->findAll()->getFirst();
         self::assertEquals(QueueRecipientUtility::STATUS_WAITING, $queueRecipientDb->getStatus());
         self::assertEquals(9999, $queueRecipientDb->getPid());
-        
+
         $queueMail = $this->subject->getQueueMail();
         self::assertEquals($queueMail->getUid(), $queueRecipientDb->getQueueMail()->getUid());
 
     }
-    
+
     //=============================================
 
     /**
@@ -738,7 +738,7 @@ class MailServiceTest extends FunctionalTestCase
          * When the method is called
          * Then false is returned
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = GeneralUtility::makeInstance(QueueRecipient::class);
         $queueRecipient->setEmail('debug@rkw.de');
@@ -753,7 +753,7 @@ class MailServiceTest extends FunctionalTestCase
      */
     public function hasQueueRecipientGivenNewEmailReturnsTrue()
     {
-        
+
         /**
          * Scenario:
          *
@@ -765,7 +765,7 @@ class MailServiceTest extends FunctionalTestCase
 
         self::assertFalse($this->subject->hasQueueRecipient('debug@rkw.de'));
     }
-    
+
     //=============================================
 
     /**
@@ -793,7 +793,7 @@ class MailServiceTest extends FunctionalTestCase
 
         $this->subject->setQueueMail($queueMail);
         $this->subject->send();
-        
+
     }
 
     /**
@@ -813,7 +813,7 @@ class MailServiceTest extends FunctionalTestCase
          * Then false is returned
          * Then the status of the queueMail-object is not changed
          */
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -852,7 +852,7 @@ class MailServiceTest extends FunctionalTestCase
         $this->subject->setQueueMail($queueMail);
         self::assertFalse($this->subject->send());
         self::assertEquals(QueueMailUtility::STATUS_DRAFT, $queueMail->getStatus());
-        
+
     }
 
     /**
@@ -914,11 +914,11 @@ class MailServiceTest extends FunctionalTestCase
         $timeMin = time();
 
         $this->subject->setQueueMail($queueMail);
-        
+
         self::assertTrue($this->subject->send());
         self::assertEquals(QueueMailUtility::STATUS_WAITING, $queueMail->getStatus());
         // self::assertNotEquals($this->subject->getQueueMail(), $queueMail);
-        
+
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());
         self::assertGreaterThanOrEqual($timeMin, $queueMail->getMailingStatistics()->getTstampFavSending());
         self::assertLessThanOrEqual(time(), $queueMail->getMailingStatistics()->getTstampFavSending());
@@ -991,19 +991,19 @@ class MailServiceTest extends FunctionalTestCase
         // force TYPO3 to load objects new from database
         $persistenceManager = $this->objectManager->get(PersistenceManager::class);
         $persistenceManager->clearState();
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMailDb = $this->queueMailRepository->findByIdentifier(90);
 
         self::assertEquals(false, $queueMailDb->getPipeline());
     }
-    
+
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->mailCache->clearCache();
         parent::tearDown();

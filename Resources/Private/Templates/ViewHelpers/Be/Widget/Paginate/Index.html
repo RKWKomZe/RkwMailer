@@ -1,5 +1,5 @@
 {namespace core=TYPO3\CMS\Core\ViewHelpers}
-{namespace vh=RKW\RkwMailer\ViewHelpers}
+{namespace rkwMailer=RKW\RkwMailer\ViewHelpers}
 <f:if condition="{configuration.insertAbove}">
     <f:render section="paginator" arguments="{pagination: pagination, position:'top', recordsLabel: configuration.recordsLabel}" />
 </f:if>
@@ -16,12 +16,12 @@
             <f:if condition="{pagination.hasLessPages}">
                 <f:then>
                     <li>
-                        <a href="{vh:widget.uri(arguments:{currentPage: 1})}" title="{f:translate(key:'widget.pagination.first')}">
+                        <a href="{rkwMailer:widget.uri(arguments:{currentPage: 1})}" title="{f:translate(key:'widget.pagination.first')}">
                             <core:icon identifier="actions-view-paging-first" />
                         </a>
                     </li>
                     <li>
-                        <a href="{vh:widget.uri(arguments:{currentPage: pagination.previousPage})}" title="{f:translate(key:'widget.pagination.previous')}">
+                        <a href="{rkwMailer:widget.uri(arguments:{currentPage: pagination.previousPage})}" title="{f:translate(key:'widget.pagination.previous')}">
                             <core:icon identifier="actions-view-paging-previous" />
                         </a>
                     </li>
@@ -59,7 +59,7 @@
 					<form id="paginator-form-{position}" onsubmit="goToPage{position}(this); return false;" style="display:inline;">
 					<script type="text/javascript">
 						function goToPage{position}(formObject) {
-                            var url = '{vh:widget.uri(arguments:{currentPage: 987654321})}';
+                            var url = '{rkwMailer:widget.uri(arguments:{currentPage: 987654321})}';
                             var page = formObject.elements['paginator-target-page'].value;
                             if (page > {pagination.numberOfPages}) {
                                 page = {pagination.numberOfPages};
@@ -79,12 +79,12 @@
             <f:if condition="{pagination.hasMorePages}">
                 <f:then>
                     <li>
-                        <a href="{vh:widget.uri(arguments:{currentPage: pagination.nextPage})}" title="{f:translate(key:'widget.pagination.next')}">
+                        <a href="{rkwMailer:widget.uri(arguments:{currentPage: pagination.nextPage})}" title="{f:translate(key:'widget.pagination.next')}">
                             <core:icon identifier="actions-view-paging-next" />
                         </a>
                     </li>
                     <li>
-                        <a href="{vh:widget.uri(arguments:{currentPage: pagination.numberOfPages})}" title="{f:translate(key:'widget.pagination.last')}">
+                        <a href="{rkwMailer:widget.uri(arguments:{currentPage: pagination.numberOfPages})}" title="{f:translate(key:'widget.pagination.last')}">
                             <core:icon identifier="actions-view-paging-last" />
                         </a>
                     </li>
@@ -103,7 +103,7 @@
                 </f:else>
             </f:if>
             <li>
-                <a href="{vh:widget.uri(arguments:{currentPage: pagination.current})}" title="{f:translate(key:'widget.pagination.refresh')}">
+                <a href="{rkwMailer:widget.uri(arguments:{currentPage: pagination.current})}" title="{f:translate(key:'widget.pagination.refresh')}">
                     <core:icon identifier="actions-refresh" />
                 </a>
             </li>

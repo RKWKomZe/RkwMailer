@@ -42,8 +42,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
      */
     protected $testExtensionsToLoad = [
         'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/rkw_mailer'
     ];
 
     /**
@@ -56,7 +55,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
      */
     private $standAloneViewHelper;
 
-  
+
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
@@ -67,23 +66,19 @@ class TypolinkViewHelperTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/TypolinkViewHelperTest/Fixtures/RealUrlConfiguration.php');
-
         parent::setUp();
 
         $this->importDataSet(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Database/Global.xml');
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -120,7 +115,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
          * Given a typolink to an internal page with target, class and title, using the new typolink-style
          * Given a typolink to an internal page with anchor, target, class and title, using the old typolink-style
          * Given a typolink to an internal page with anchor, target, class and title, using the new typolink-style
-         * Given a typolink to an existing file with anchor, target, class and title            
+         * Given a typolink to an existing file with anchor, target, class and title
          * When the ViewHelper is rendered
          * Then the typolink to an external page with target, class and title is returned as absolute link with target, class and title
          * Then the typolink to an external page with anchor, target, class and title is returned as absolute link with anchor, target, class and title
@@ -146,7 +141,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

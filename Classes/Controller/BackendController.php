@@ -33,25 +33,25 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * mailingStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $mailingStatisticsRepository;
 
-    
+
     /**
      * clickStatisticsRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $clickStatisticsRepository;
-    
-    
+
+
     /**
      * queueMailRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueMailRepository;
 
@@ -60,7 +60,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * queueRecipientRepository
      *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $queueRecipientRepository;
 
@@ -69,11 +69,11 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * cleaner
      *
      * @var \RKW\RkwMailer\Persistence\Cleaner
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $cleaner;
-    
-    
+
+
     /**
      * Shows statistics
      *
@@ -86,8 +86,8 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $period = TimePeriodUtility::getTimePeriod($timeFrame);
         $mailingStatisticsList = $this->mailingStatisticsRepository->findByTstampFavSendingAndType(
-            $period['from'], 
-            $period['to'], 
+            $period['from'],
+            $period['to'],
             $mailType
         );
 
@@ -98,7 +98,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         }
         asort($mailTypeList);
 
-        
+
         $this->view->assignMultiple(
             array(
                 'mailingStatisticsList' => $mailingStatisticsList,
@@ -145,7 +145,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $period['to'],
             $mailType
         );
-        
+
         $mailTypeList = [];
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
@@ -220,7 +220,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $this->mailingStatisticsRepository->update($mailingStatistics);
         }
         $this->queueMailRepository->update($queueMail);
-        
+
         // reset status of all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */
         foreach ($this->queueRecipientRepository->findByQueueMail($queueMail) as $recipient) {
@@ -230,7 +230,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // reset statistics by queueMail
         $this->cleaner->deleteStatistics($queueMail);
-        
+
         $this->redirect('list');
     }
 

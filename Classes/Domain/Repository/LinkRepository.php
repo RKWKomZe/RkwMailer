@@ -24,15 +24,15 @@ namespace RKW\RkwMailer\Domain\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated This class is only kept for backwards compatibility with old mails
  */
-class LinkRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class LinkRepository extends AbstractRepository
 {
 
     public function initializeObject()
     {
-
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
-   
+
 
 }

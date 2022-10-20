@@ -27,7 +27,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated
- * @toDo: rework
+ * @todo rework
  */
 class QueueRecipientRepositoryTest extends FunctionalTestCase
 {
@@ -59,7 +59,7 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueRecipientRepository/Pages.xml');
@@ -106,7 +106,7 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

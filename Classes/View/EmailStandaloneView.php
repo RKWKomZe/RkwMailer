@@ -17,7 +17,7 @@ namespace RKW\RkwMailer\View;
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Exception;
-use RKW\RkwMailer\Persistence\MarkerReducer;
+use RKW\RkwBasics\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -67,7 +67,7 @@ class EmailStandaloneView extends StandaloneView
      */
     protected $templateType = '';
 
-    
+
     /**
      * objectManager
      *
@@ -75,7 +75,7 @@ class EmailStandaloneView extends StandaloneView
      */
     protected $objectManager;
 
-    
+
     /**
      * queueMail
      *
@@ -83,14 +83,14 @@ class EmailStandaloneView extends StandaloneView
      */
     protected $queueMail;
 
-    
+
     /**
      * queueRecipient
      *
      * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     protected $queueRecipient;
-    
+
 
     /**
      * Constructor
@@ -133,7 +133,7 @@ class EmailStandaloneView extends StandaloneView
         // get template configuration based on loaded frontend
         /** @var \TYPO3\CMS\Core\TypoScript\TypoScriptService $typoscriptService */
         $typoscriptService = GeneralUtility::makeInstance(TypoScriptService::class);
-        
+
         /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $GLOBALS ['TSFE'] */
         $this->settings = $typoscriptService->convertTypoScriptArrayToPlainArray($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_rkwmailer.']);
         $this->settingsPid = $pid;
@@ -162,7 +162,7 @@ class EmailStandaloneView extends StandaloneView
 
     }
 
-    
+
 
     /**
      * get base url
@@ -362,17 +362,16 @@ class EmailStandaloneView extends StandaloneView
             }
             $this->addTemplateRootPaths($newTemplatePaths);
 
-            GeneralUtility::deprecationLog(
-                __CLASS__ . '::' . __METHOD__ . '(): Please do not use this method with relative paths included. ' .
+            trigger_error(__CLASS__ . '::' . __METHOD__ . '(): Please do not use this method with relative paths included. ' .
                 'The paths should be added to the TemplateRootPaths instead. From TYPO3 8.7 on templates are set via the given controller action. ' .
                 'Thus using setTemplate with relative paths will in turn result in using this path as controller action.'
-            );
+                , E_USER_DEPRECATED);
         }
 
         parent::setTemplate(basename($templateName));
     }
 
-    
+
     /**
      * Gets the templateType
      *
@@ -382,8 +381,8 @@ class EmailStandaloneView extends StandaloneView
     {
         return $this->templateType;
     }
-    
-    
+
+
     /**
      * Sets the templateType
      *
@@ -397,7 +396,7 @@ class EmailStandaloneView extends StandaloneView
         // check for queueMail
         if (! $this->getQueueMail()) {
             throw new Exception(
-                'No queueMail-object set. Please set an queueMail-object before using setTemplateType().', 
+                'No queueMail-object set. Please set an queueMail-object before using setTemplateType().',
                 1633088149
             );
         }
@@ -413,7 +412,7 @@ class EmailStandaloneView extends StandaloneView
         $this->templateType = strtolower($type);
         $this->setTemplate($this->getQueueMail()->$templateGetter());
     }
-    
+
 
     /**
      * Assigns multiple values to the JSON output.
@@ -456,7 +455,7 @@ class EmailStandaloneView extends StandaloneView
                 $values['settings'] = array_merge($values['settings'], $settings['settings']);
             } else  {
                 $values['settings'] = $settings['settings'];
-            }           
+            }
         }
 
         // add queueMail-object if set
@@ -468,16 +467,14 @@ class EmailStandaloneView extends StandaloneView
         if ($this->getQueueRecipient()) {
             $values['queueRecipient'] = $this->getQueueRecipient();
         }
-        
+
         // add templateType
         if ($this->getTemplateType()) {
             $values['templateType'] = $values['mailType'] = ucFirst($this->getTemplateType());
         }
 
         // explode marker if needed
-        /** @var MarkerReducer $markerReducer */
-        $markerReducer = GeneralUtility::makeInstance(MarkerReducer::class);
-        $values = $markerReducer->explodeMarker($values);
+        $values = MarkerReducer::explode($values);
 
         parent::assignMultiple($values);
         return $this;
@@ -509,7 +506,7 @@ class EmailStandaloneView extends StandaloneView
     {
         // empty call to inject settings and other fix variables
         $this->assignMultiple([]);
-        
+
         $renderedTemplate = parent::render($actionName);
 
         // replace baseURLs in final email  - replacement with asign only works in template-files, not on layout-files
@@ -519,7 +516,7 @@ class EmailStandaloneView extends StandaloneView
         $renderedTemplate = preg_replace('/###logoUrl###/', $this->getLogoUrl(), $renderedTemplate);
 
         // replace relative paths and absolute paths to server-root!
-        /* @toDo: Check if Environment-variables are still valid in TYPO3 9 and upwards! */
+        /* @todo Check if Environment-variables are still valid in TYPO3 9 and upwards! */
         $replacePaths = [
             GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
             $_SERVER['TYPO3_PATH_ROOT'] .'/'
