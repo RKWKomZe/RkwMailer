@@ -293,6 +293,7 @@ class QueueRecipientRepository extends AbstractRepository
                 recipient_sub.status = 4 AND
                 recipient_sub.email = tx_rkwmailer_domain_model_queuerecipient.email
             )
+            ORDER BY tx_rkwmailer_domain_model_queuerecipient.uid
             LIMIT ' . intval ($limit) . '
         ');
 

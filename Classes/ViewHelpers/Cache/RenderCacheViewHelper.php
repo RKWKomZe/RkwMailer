@@ -72,8 +72,8 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
 
         $queueMail = $arguments['queueMail'];
         $isPlaintext = (bool) ($arguments['isPlaintext']);
-        $additionalIdentifier = ($arguments['additionalIdentifier'] ? $arguments['additionalIdentifier'] : '');
-        $nonCachedMarkers = ($arguments['nonCachedMarkers'] ? $arguments['nonCachedMarkers'] : []);
+        $additionalIdentifier = ($arguments['additionalIdentifier'] ?: '');
+        $nonCachedMarkers = ($arguments['nonCachedMarkers'] ?: []);
 
         try {
 

@@ -1494,13 +1494,13 @@ class MailerTest extends FunctionalTestCase
 
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
         self::assertInstanceOf(MailMessage::class, $result);
-        static::assertCount(1, $result->getChildren());
+        self::assertCount(1, $result->getChildren());
 
         $mimePartAttachment = $result->getChildren()[0];
-        static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
-        static::assertEquals('Attachment.xml', $mimePartAttachment->getFilename());
-        static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        self::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
+        self::assertEquals('Attachment.xml', $mimePartAttachment->getFilename());
+        self::assertEquals('text/xml', $mimePartAttachment->getContentType());
+        self::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
 
 
@@ -1543,13 +1543,13 @@ class MailerTest extends FunctionalTestCase
 
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
         self::assertInstanceOf(MailMessage::class, $result);
-        static::assertCount(1, $result->getChildren());
+        self::assertCount(1, $result->getChildren());
 
         $mimePartAttachment = $result->getChildren()[0];
-        static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
-        static::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
-        static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        self::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
+        self::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
+        self::assertEquals('text/xml', $mimePartAttachment->getContentType());
+        self::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
 
     /**
@@ -1584,13 +1584,13 @@ class MailerTest extends FunctionalTestCase
 
         $result = $this->subject->prepareEmailBody($queueMail, $queueRecipient);
         self::assertInstanceOf(MailMessage::class, $result);
-        static::assertCount(1, $result->getChildren());
+        self::assertCount(1, $result->getChildren());
 
         $mimePartAttachment = $result->getChildren()[0];
-        static::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
-        static::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
-        static::assertEquals('text/xml', $mimePartAttachment->getContentType());
-        static::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
+        self::assertEquals(\Swift_Attachment::class, get_class($mimePartAttachment));
+        self::assertEquals('Check430.xml', $mimePartAttachment->getFilename());
+        self::assertEquals('text/xml', $mimePartAttachment->getContentType());
+        self::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
 
     //=============================================

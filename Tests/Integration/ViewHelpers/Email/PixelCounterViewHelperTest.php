@@ -84,7 +84,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
@@ -99,13 +99,12 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
 
     }
 
@@ -183,7 +182,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a valid tracking link is returned
          */
-        $this->importDataSet(self::FIXTURE_PATH . '//Database/Check30.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
@@ -193,7 +192,8 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertStringContainsString('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=opening&tx_rkwmailer_rkwmailer[controller]=Tracking" width="1" height="1" alt="" />', $result);
+
+        self::assertStringContainsString('<img src="http://www.rkw-kompetenzzentrum.rkw.local/pixelcounterseite/rkw-mailer/track/1/1?no_cache=1" width="1" height="1" alt="" />', $result);
 
     }
 

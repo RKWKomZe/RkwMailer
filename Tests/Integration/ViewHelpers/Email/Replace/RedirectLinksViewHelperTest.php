@@ -84,7 +84,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
@@ -99,7 +99,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
@@ -171,10 +171,9 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertStringNotContainsString('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
+        self::assertStringContainsString('rkw-mailer/redirect/1?', $result);
         self::assertStringNotContainsString('cHash=', $result);
-        self::assertStringContainsString('/nc/', $result);
+        self::assertStringContainsString('no_cache=1', $result);
     }
 
     /**
@@ -212,10 +211,9 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
+        self::assertStringContainsString('rkw-mailer/redirect/1/1?', $result);
         self::assertStringNotContainsString('cHash=', $result);
-        self::assertStringContainsString('/nc/', $result);
+        self::assertStringContainsString('no_cache=1', $result);
     }
 
 

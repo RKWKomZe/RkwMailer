@@ -26,5 +26,5 @@ languages:
     languageId: '1'
     fallbackType: strict
     fallbacks: ''
-rootPageId: 1
+rootPageId: '{rootPageId}'
 routes: {  }

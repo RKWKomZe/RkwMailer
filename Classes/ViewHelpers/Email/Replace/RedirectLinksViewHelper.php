@@ -85,7 +85,7 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
             if ($queueMail) {
 
                 // plaintext replacement
-                if ($isPlaintext == true) {
+                if ($isPlaintext) {
 
                     return preg_replace_callback(
                         '/(http[s]?:\/\/[^\s]+)/',

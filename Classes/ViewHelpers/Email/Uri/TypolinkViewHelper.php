@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\ViewHelpers\Email\Uri;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -27,7 +27,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
+class TypolinkViewHelper extends AbstractViewHelper
 {
 
     /**
@@ -37,7 +37,8 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
     {
         parent::initializeArguments();
         $this->registerArgument('pageUid', 'int', 'pageUid for FE-configuration - DEPRECATED', false, null);
-
+        $this->registerArgument('parameter', 'string', 'stdWrap.typolink style parameter string', true);
+        $this->registerArgument('additionalParams', 'string', 'stdWrap.typolink additionalParams', false, '');
     }
 
     /**
@@ -59,7 +60,7 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
 
         // log deprecated attribute
         if ($arguments['pageUid']) {
-            trigger_error(__CLASS__ . ': Argument "pageUid" on rkwMailer:frontend.uri.typolink is deprecated and has no effect any more.');
+            trigger_error(__CLASS__ . ': Argument "pageUid" on rkwMailer:email.uri.typolink is deprecated and has no effect any more.');
         }
 
         $content = '';

@@ -96,9 +96,10 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $objectTwo */
         $objectTwo = $result[1];
 
-        static::assertEquals(2, count($result));
-        static::assertEquals(8, $objectOne->getUid());
-        static::assertEquals(9, $objectTwo->getUid());
+        self::assertEquals(2, count($result));
+
+        self::assertEquals(8, $objectOne->getUid());
+        self::assertEquals(9, $objectTwo->getUid());
 
     }
 

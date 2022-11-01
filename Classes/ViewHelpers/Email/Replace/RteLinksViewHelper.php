@@ -16,10 +16,10 @@ namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
  */
 
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
-use RKW\RkwMailer\ViewHelpers\Email\Uri\TypolinkViewHelper;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
@@ -31,7 +31,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RteLinksViewHelper extends TypolinkViewHelper
+class RteLinksViewHelper extends AbstractViewHelper
 {
 
     use CompileWithContentArgumentAndRenderStatic;
@@ -72,13 +72,13 @@ class RteLinksViewHelper extends TypolinkViewHelper
     ): string {
 
         $value = $renderChildrenClosure();
-        $plaintextFormat = (bool) ($arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat']);
-        $style = ($arguments['style'] ? $arguments['style'] : '');
+        $plaintextFormat = (bool) ($arguments['isPlaintext'] ?: $arguments['plaintextFormat']);
+        $style = ($arguments['style'] ?: '');
         try {
 
             // log deprecated attribute
             if ($arguments['isPlaintext']) {
-                trigger_error(__CLASS__ . ': Argument "plaintextFormat" on rkwMailer:frontend.replace.rteLinks is deprecated - use "isPlaintext" instead.');
+                trigger_error(__CLASS__ . ': Argument "plaintextFormat" on rkwMailer:email.replace.rteLinks is deprecated - use "isPlaintext" instead.');
             }
 
             // new version for TKE

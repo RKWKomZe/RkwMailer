@@ -72,7 +72,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
 
         $this->importDataSet(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
                 'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
@@ -84,7 +84,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
@@ -145,12 +145,5 @@ class TypolinkViewHelperTest extends FunctionalTestCase
     {
         parent::tearDown();
     }
-
-
-
-
-
-
-
 
 }

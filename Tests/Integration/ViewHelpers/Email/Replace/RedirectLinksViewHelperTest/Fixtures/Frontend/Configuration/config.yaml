@@ -26,5 +26,7 @@ languages:
     languageId: '1'
     fallbackType: strict
     fallbacks: ''
-rootPageId: 1
+rootPageId: '{rootPageId}'
 routes: {  }
+imports:
+  - { resource: "EXT:rkw_mailer/Configuration/Routes/Default.yaml" }

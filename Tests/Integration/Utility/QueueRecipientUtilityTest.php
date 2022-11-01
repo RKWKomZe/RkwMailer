@@ -758,7 +758,7 @@ class QueueRecipientUtilityTest extends FunctionalTestCase
         ];
 
         $expected = [
-            'test1' => 'RKW_MAILER_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
+            'test1' => 'RKW_BASICS_NAMESPACES RKW\RkwBasics\Domain\Model\Pages:1',
             'test2' => 'A string is string',
         ];
 

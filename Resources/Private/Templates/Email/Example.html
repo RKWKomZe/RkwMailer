@@ -6,7 +6,7 @@
 
 <!-- PLAINTEXT -->
 <!-- No intend here !!! -->
-<f:section name="Plaintext"><rkwMailer:plaintextLineBreaks>
+<f:section name="Plaintext"><rkwMailer:email.plaintextLineBreaks>
 <rkwMailer:email.translate key="templates_email_registerOptInRequest.headline" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" arguments="{0 : frontendUser.firstName, 1: frontendUser.lastName}" />\n
 <rkwMailer:email.translate key="templates_email_registerOptInRequest.text1" languageKey="{queueRecipient.languageCode}" extensionName="rkwRegistration" />
 \n\n
@@ -25,7 +25,7 @@
 Test with typolink: <rkwMailer:email.typolink parameter='http://www.google.de'  />
 \n\n
 <rkwMailer:email.uri.action action="optIn" controller="Registration" extensionName="rkwRegistration" pluginName="rkwRegistration" absolute="true" pageUid="{pageUid}" additionalParams="{queueMail.campaignParameterExploded}"/>
-</rkwMailer:plaintextLineBreaks></f:section>
+</rkwMailer:email.plaintextLineBreaks></f:section>
 
 <!-- HTML -->
 <f:section name="Html">

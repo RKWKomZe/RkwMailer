@@ -73,7 +73,12 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 
         // set url scheme based on settings
         $this->settings = $this->getSettings();
-        if (isset($this->settings['baseUrl'])) {
+
+        /* @todo: guess we don't need this any more because it is overwritten by routing */
+        if (
+            (isset($this->settings['baseUrl']))
+            || (\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL'))
+        ){
             $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
         }
 
@@ -248,7 +253,9 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         }
 
         ArrayUtility::mergeRecursiveWithOverrule($this->arguments, $prefixedControllerArguments);
-        return $this->build();
+
+        // Fix since TYPO3 9: Remove cHash-param manually!
+        return preg_replace('#([&|\?]cHash=[^&]+)#', '', $this->build());
     }
 
 
