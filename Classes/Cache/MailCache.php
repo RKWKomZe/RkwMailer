@@ -19,13 +19,13 @@ namespace RKW\RkwMailer\Cache;
  * MailCache
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class MailCache extends AbstractCache
 {
-    
+
     /**
      * Returns the plaintextBody
      *
@@ -51,10 +51,10 @@ class MailCache extends AbstractCache
      * @throws \RKW\RkwMailer\Exception
      */
     public function setPlaintextBody(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient,
         string $plaintextBody
     ): void {
-        
+
         $cacheIdentifier = $this->getIdentifier($queueRecipient, 'plaintext');
         $this->setContent($cacheIdentifier, $plaintextBody);
     }
@@ -67,7 +67,7 @@ class MailCache extends AbstractCache
      * @return string $htmlBody
      * @throws \RKW\RkwMailer\Exception
      */
-    public function getHtmlBody(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): string 
+    public function getHtmlBody(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): string
     {
         $cacheIdentifier = $this->getIdentifier($queueRecipient, 'html');
         return $this->getContent($cacheIdentifier);
@@ -83,9 +83,9 @@ class MailCache extends AbstractCache
      * @throws \RKW\RkwMailer\Exception
      */
     public function setHtmlBody(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient,
         string $htmlBody): void {
-        
+
         $cacheIdentifier = $this->getIdentifier($queueRecipient, 'html');
         $this->setContent($cacheIdentifier, $htmlBody);
     }
@@ -114,10 +114,10 @@ class MailCache extends AbstractCache
      * @throws \RKW\RkwMailer\Exception
      */
     public function setCalendarBody(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient,
         string $calendarBody
     ): void {
-        
+
         $cacheIdentifier = $this->getIdentifier($queueRecipient, 'calendar');
         $this->setContent($cacheIdentifier, $calendarBody);
     }
@@ -133,7 +133,7 @@ class MailCache extends AbstractCache
      * @throws \RKW\RkwMailer\Exception
      */
     public function getIdentifier(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient, 
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient,
         string $property
     ) : string {
 
@@ -143,11 +143,11 @@ class MailCache extends AbstractCache
                 1634308452
             );
         }
-        
+
         return 'MailCache_' . intval($queueRecipient->getUid()) . '_' . $property;
     }
 
 
-    
+
 
 }

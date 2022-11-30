@@ -20,7 +20,7 @@ namespace RKW\RkwMailer\Controller;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated This class is only kept for backwards compatibility with old mails
@@ -33,7 +33,7 @@ class LinkController extends TrackingController
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @deprecated 
+     * @deprecated
      */
     public function confirmationAction()
     {

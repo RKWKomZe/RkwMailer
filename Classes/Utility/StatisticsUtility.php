@@ -19,7 +19,7 @@ namespace RKW\RkwMailer\Utility;
  * StatisticsUtility
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -28,24 +28,24 @@ class StatisticsUtility
 
     /**
      * Generate a normalized hash value from the given link
-     * 
+     *
      * @param string $link
      * @return string
      */
     public static function generateLinkHash (
         string $link
     ): string {
-       
+
         // decode url (just to be sure)
        $link = urldecode($link);
-        
+
        $parsedUrl = parse_url($link);
        $params = $parsedUrl['query'] ? '?' . $parsedUrl['query'] : '';
        $hashString = $parsedUrl['host'] . '/' . trim($parsedUrl['path'], '/') . $params;
        return sha1($hashString);
     }
 
-    
+
     /**
      * Generate a hash value from the given queueRecipient
      *
@@ -56,9 +56,9 @@ class StatisticsUtility
     public static function generateRecipientHash (
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
     ): string {
-        
+
         if ($queueRecipient->_isNew()) {
-            throw new \RKW\RkwMailer\Exception('Given object is not persisted.'); 
+            throw new \RKW\RkwMailer\Exception('Given object is not persisted.');
         }
         return sha1($queueRecipient->getUid());
     }

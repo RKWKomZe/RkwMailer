@@ -1,0 +1,130 @@
+<?php
+
+namespace RKW\RkwMailer\ViewHelpers\Email\Uri;
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
+use RKW\RkwMailer\UriBuilder\EmailUriBuilder;
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+
+/**
+ * Class PageViewHelper
+ *
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright RKW Kompetenzzentrum
+ * @package RKW_RkwMailer
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ */
+class PageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\PageViewHelper
+{
+
+    /**
+     * The output must not be escaped.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+
+    /**
+     * Initialize arguments
+     *
+     * @api
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for redirecting links');
+        $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object of email');
+    }
+
+    /**
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+     * @return string
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+
+        $queueMail = $arguments['queueMail'];
+        $queueRecipient = $arguments['queueRecipient'];
+        $pageUid = $arguments['pageUid'];
+        $additionalParams = $arguments['additionalParams'];
+        $pageType = $arguments['pageType'];
+        $noCache = $arguments['noCache'];
+        $noCacheHash = $arguments['noCacheHash'];
+        $section = $arguments['section'];
+        $linkAccessRestrictedPages = $arguments['linkAccessRestrictedPages'];
+        $addQueryString = $arguments['addQueryString'];
+        $argumentsToBeExcludedFromQueryString = $arguments['argumentsToBeExcludedFromQueryString'];
+        $addQueryStringMethod = $arguments['addQueryStringMethod'];
+
+        try {
+
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+
+            /** @var \RKW\RkwMailer\UriBuilder\EmailUriBuilder $uriBuilder */
+            $uriBuilder = $objectManager->get(EmailUriBuilder::class);
+
+            $uriBuilder
+                ->reset()
+                ->setTargetPageUid($pageUid)
+                ->setTargetPageType($pageType)
+                ->setNoCache($noCache)
+                ->setUseCacheHash(!$noCacheHash)
+                ->setSection($section)
+                ->setLinkAccessRestrictedPages($linkAccessRestrictedPages)
+                ->setArguments($additionalParams)
+                ->setCreateAbsoluteUri(true)// force absolute link
+                ->setAddQueryString($addQueryString)
+                ->setArgumentsToBeExcludedFromQueryString($argumentsToBeExcludedFromQueryString)
+                ->setAddQueryStringMethod($addQueryStringMethod);
+
+            if ($queueMail) {
+                $uriBuilder->setUseRedirectLink(true)
+                    ->setQueueMail($queueMail);
+
+                if ($queueRecipient) {
+                    $uriBuilder->setQueueRecipient($queueRecipient);
+                }
+            }
+
+            return $uriBuilder->build();
+
+        } catch (\Exception $e) {
+
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->log(
+                LogLevel::ERROR,
+                sprintf(
+                    'Error while trying to set link: %s',
+                    $e->getMessage()
+                )
+            );
+        }
+
+        return '';
+    }
+
+}

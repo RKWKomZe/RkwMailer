@@ -19,13 +19,13 @@ namespace RKW\RkwMailer\Domain\Model;
  * OpeningStatistics
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-    
+
     /**
      * queueMail
      *
@@ -46,7 +46,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
     protected $queueRecipient;
-    
+
     /**
      * hash
      *
@@ -60,8 +60,8 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var integer
      */
     protected $counter = 0;
-    
-    
+
+
     /**
      * Returns the queueMail
      *
@@ -106,7 +106,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
 
-    
+
     /**
      * Returns the queueRecipient
      *
@@ -127,8 +127,8 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->queueRecipient = $queueRecipient;
     }
-    
-    
+
+
     /**
      * Returns the hash
      *

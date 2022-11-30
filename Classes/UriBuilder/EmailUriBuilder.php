@@ -26,7 +26,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * comment: implicitly tested
@@ -255,7 +255,29 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         ArrayUtility::mergeRecursiveWithOverrule($this->arguments, $prefixedControllerArguments);
 
         // Fix since TYPO3 9: Remove cHash-param manually!
-        return preg_replace('#([&|\?]cHash=[^&]+)#', '', $this->build());
+        $uri = $this->build();
+        if (! $this->getUseCacheHash()) {
+            $uri = preg_replace('#([&|\?]cHash=[^&]+)#', '', $uri);
+        }
+
+        return $uri;
+    }
+
+
+    /**
+     * Builds the URI, frontend flavour
+     *
+     * @return string The URI
+     */
+    public function buildFrontendUri(): string
+    {
+        // Fix since TYPO3 9: Remove cHash-param manually!
+        $uri = parent::buildFrontendUri();
+        if (! $this->getUseCacheHash()) {
+            $uri = preg_replace('#([&|\?]cHash=[^&]+)#', '', $uri);
+        }
+
+        return $uri;
     }
 
 
@@ -313,7 +335,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                $url = $this->uriFor(
+                $uri = $this->uriFor(
                     'redirect',
                     [],
                     'Tracking',
@@ -321,7 +343,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     'Rkwmailer'
                 );
 
-                return $url;
+                return $uri;
             }
         }
 
@@ -331,11 +353,8 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
             ->setCreateAbsoluteUri(true)
             ->setLinkAccessRestrictedPages(true);
 
-        $url = $this->buildFrontendUri();
-
-        return $url;
+        return $this->buildFrontendUri();
     }
-
 
 
     /**
@@ -343,13 +362,13 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      *
      * @param string $baseUrl
      * @return string
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
     */
     public function getUrlScheme(string $baseUrl): string
     {
         $parsedUrl = parse_url($baseUrl);
-        return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http');
+        return ($parsedUrl['scheme'] ?? 'http');
     }
+
 
     /**
      * Returns TYPO3 settings
@@ -358,7 +377,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
     {
         return GeneralUtility::getTyposcriptConfiguration('Rkwmailer', $which);
     }

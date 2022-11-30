@@ -21,7 +21,7 @@ use RKW\RkwMailer\Validation\EmailValidator;
  * BounceMail
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -322,6 +322,6 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setBodyFull($bodyFull)
     {
         $this->bodyFull = $bodyFull;
-    }    
-    
+    }
+
 }

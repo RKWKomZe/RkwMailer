@@ -19,13 +19,13 @@ namespace RKW\RkwMailer\Domain\Model;
  * ClickStatistics
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-  
+
     /**
      * queueMail
      *
@@ -61,8 +61,8 @@ class ClickStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var integer
      */
     protected $counter = 0;
-    
-    
+
+
     /**
      * Returns the queueMail
      *

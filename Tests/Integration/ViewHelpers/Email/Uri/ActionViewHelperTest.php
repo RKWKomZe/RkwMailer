@@ -27,7 +27,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * ActionViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -171,6 +171,11 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 10);
         $this->standAloneViewHelper->setTemplate('Check10.html');
+        $this->standAloneViewHelper->setTemplateRootPaths(
+            [
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
+            ]
+        );
         $result = $this->standAloneViewHelper->render();
 
         /** IMPORTANT HINT IN PhpDocs !!! */

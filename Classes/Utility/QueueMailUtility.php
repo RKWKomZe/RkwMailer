@@ -27,7 +27,7 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
  * QueueMailUtility
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -63,8 +63,8 @@ class QueueMailUtility
      * @var string
      */
     const STATUS_ERROR = 99;
-    
-    
+
+
     /**
      * Get a QueueMail-object with all initial properties set
      *
@@ -72,12 +72,12 @@ class QueueMailUtility
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
     public static function initQueueMail (
-        int $storagePid = 0 
+        int $storagePid = 0
     ): QueueMail {
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail*/
         $queueMail = GeneralUtility::makeInstance(QueueMail::class);
-          
+
         $queueMail->setPid($storagePid);
         $queueMail->setSettingsPid(intval($GLOBALS['TSFE']->id));
 
@@ -85,7 +85,7 @@ class QueueMailUtility
         $queueMail->setFromName($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']);
         $queueMail->setFromAddress($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
         $queueMail->setReplyToAddress(
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] ?: 
+            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress'] ?:
             $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
         );
         $queueMail->setReplyToName(
@@ -93,12 +93,12 @@ class QueueMailUtility
                 $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
         );
         $queueMail->setReturnPath(
-            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ?: 
+            $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReturnAddress'] ?:
                 $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
         );
 
         return $queueMail;
     }
-  
-    
+
+
 }

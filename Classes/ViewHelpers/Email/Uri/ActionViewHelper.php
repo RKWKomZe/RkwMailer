@@ -28,7 +28,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * Class ActionViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -67,6 +67,8 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
         RenderingContextInterface $renderingContext
     ): string {
 
+        $queueMail = $arguments['queueMail'];
+        $queueRecipient = $arguments['queueRecipient'];
         $pageUid = $arguments['pageUid'];
         $pageType = $arguments['pageType'];
         $noCache = $arguments['noCache'];
@@ -75,12 +77,9 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
         $format = $arguments['format'];
         $linkAccessRestrictedPages = $arguments['linkAccessRestrictedPages'];
         $additionalParams = $arguments['additionalParams'];
-        // $absolute = $arguments['absolute'];
         $addQueryString = $arguments['addQueryString'];
         $argumentsToBeExcludedFromQueryString = $arguments['argumentsToBeExcludedFromQueryString'];
         $addQueryStringMethod = $arguments['addQueryStringMethod'];
-        $queueMail = $arguments['queueMail'];
-        $queueRecipient = $arguments['queueRecipient'];
         $action = $arguments['action'];
         $controller = $arguments['controller'];
         $extensionName = $arguments['extensionName'];

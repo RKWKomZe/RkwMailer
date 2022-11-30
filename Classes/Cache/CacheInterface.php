@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Log\LogLevel;
  * CacheInterface
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -45,7 +45,7 @@ interface CacheInterface
      */
     public function getContent(string $cacheIdentifier);
 
-    
+
     /**
      * Sets cache content
      *
@@ -55,11 +55,11 @@ interface CacheInterface
      */
     public function setContent(string $cacheIdentifier, $value);
 
-    
+
     /**
      * Clear cached content
      */
     public function clearCache(): void;
-    
+
 
 }

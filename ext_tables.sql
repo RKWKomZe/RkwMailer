@@ -8,9 +8,9 @@ CREATE TABLE tx_rkwmailer_domain_model_queuemail (
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
 
-    status tinyint(2) unsigned DEFAULT '1',
+  status tinyint(2) unsigned DEFAULT '1',
 	type tinyint(2) unsigned DEFAULT '0',
-    pipeline tinyint(1) unsigned DEFAULT '0',
+  pipeline tinyint(1) unsigned DEFAULT '0',
 
 	from_name varchar(255) DEFAULT '' NOT NULL,
 	from_address varchar(255) DEFAULT '' NOT NULL,
@@ -203,9 +203,9 @@ CREATE TABLE tx_rkwmailer_domain_model_bouncemail (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-    KEY email (email),
-    KEY status (status),
-    KEY email_status (email, status)
+	KEY email (email),
+	KEY status (status),
+	KEY email_status (email, status)
 );
 
 
