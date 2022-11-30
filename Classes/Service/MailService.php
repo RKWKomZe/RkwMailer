@@ -14,11 +14,10 @@ namespace RKW\RkwMailer\Service;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Mail\Mailer;
-use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use TYPO3\CMS\Core\Log\LogLevel;

@@ -15,8 +15,8 @@ namespace RKW\RkwMailer\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwBasics\Persistence\MarkerReducer;
 use RKW\RkwMailer\Validation\EmailValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;

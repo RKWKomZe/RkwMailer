@@ -13,11 +13,10 @@ namespace RKW\RkwMailer\View;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Exception;
-use RKW\RkwBasics\Persistence\MarkerReducer;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
