@@ -2,7 +2,7 @@
 
 namespace RKW\RkwMailer\Example;
 
-use RKW\RkwBasics\Utility\GeneralUtility as Common;
+use Madj2k\CoreExtended\Utility\GeneralUtility as Common;
 use RKW\RkwMailer\Service\MailService;
 use RKW\RkwMailer\Utility\FrontendLocalizationUtility;
 use RKW\RkwRegistration\Domain\Model\FrontendUser;
@@ -205,7 +205,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
-        return Common::getTyposcriptConfiguration('Rkwregistration', $which);
+        return Common::getTypoScriptConfiguration('Rkwregistration', $which);
         //===
     }
 }

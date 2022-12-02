@@ -136,7 +136,7 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      */
     static protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
     {
-        return \RKW\RkwBasics\Utility\GeneralUtility::getTyposcriptConfiguration('Rkwmailer', $which);
+        return \Madj2k\CoreExtended\Utility\GeneralUtility::getTypoScriptConfiguration('Rkwmailer', $which);
     }
 
 }

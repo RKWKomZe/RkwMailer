@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Exception;
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
 

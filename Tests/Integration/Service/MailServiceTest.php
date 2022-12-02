@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Tests\Integration\Service;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Cache\MailCache;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Model\QueueMail;

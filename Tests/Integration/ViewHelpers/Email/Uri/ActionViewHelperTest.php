@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Tests\Integration\ViewHelpers\Email\Uri;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\View\EmailStandaloneView;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;

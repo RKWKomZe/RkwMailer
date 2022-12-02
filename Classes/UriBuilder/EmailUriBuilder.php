@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\UriBuilder;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwBasics\Utility\GeneralUtility;
+use Madj2k\CoreExtended\Utility\GeneralUtility;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
@@ -379,6 +379,6 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      */
     protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
     {
-        return GeneralUtility::getTyposcriptConfiguration('Rkwmailer', $which);
+        return GeneralUtility::getTypoScriptConfiguration('Rkwmailer', $which);
     }
 }
