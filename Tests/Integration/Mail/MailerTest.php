@@ -50,7 +50,8 @@ class MailerTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
 
@@ -61,39 +62,39 @@ class MailerTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Mail\Mailer
+     * @var \RKW\RkwMailer\Mail\Mailer|null
      */
-    private $subject;
+    private ?Mailer $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueMailRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
+     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository|null
      */
-    private $mailingStatisticsRepository;
+    private ?QueueRecipientRepository $mailingStatisticsRepository = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Cache\MailCache
+     * @var \RKW\RkwMailer\Cache\MailCache|null
      */
-    private $mailCache;
+    private ?MailCache $mailCache = null;
 
     /**
      * Setup
@@ -108,7 +109,8 @@ class MailerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -126,9 +128,7 @@ class MailerTest extends FunctionalTestCase
 
     }
 
-
     //=============================================
-
 
     /**
      * @test
@@ -336,7 +336,6 @@ class MailerTest extends FunctionalTestCase
         $queueMailDbThree = $this->queueMailRepository->findByIdentifier(122);
         self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDbThree->getStatus());
         self::assertEquals(QueueMailUtility::STATUS_FINISHED, $queueMailDbThree->getMailingStatistics()->getStatus());
-
     }
 
 
@@ -656,7 +655,6 @@ class MailerTest extends FunctionalTestCase
     }
 
 
-
     /**
      * @test
      * @throws \Exception
@@ -695,8 +693,8 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals($queueMail->getType(), $queueMailDb->getMailingStatistics()->getType());
 
     }
-    //=============================================
 
+    //=============================================
 
     /**
      * @test
@@ -732,6 +730,7 @@ class MailerTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -759,6 +758,7 @@ class MailerTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -771,8 +771,8 @@ class MailerTest extends FunctionalTestCase
          *
          * Given a queueMail with five queueRecipient-objects in database
          * Given all of the queueRecipient-objects have the status waiting
-         * Given as emailsPerInterval the value 3 is given
-         * Given as sleepParameter the value 3 is given
+         * Given as emailsPerInterval the value 3 is set
+         * Given as sleepParameter the value 3 is set
          * When the method is called
          * Then three queueRecipient-objects are returned
          * Then the process takes at least nine seconds to process
@@ -827,6 +827,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(QueueRecipientUtility::STATUS_FINISHED, $queueRecipientDb->getStatus());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -862,6 +863,7 @@ class MailerTest extends FunctionalTestCase
         $queueRecipientDb = $this->queueRecipientRepository->findByIdentifier(390);
         self::assertEquals(QueueRecipientUtility::STATUS_ERROR, $queueRecipientDb->getStatus());
     }
+
 
     /**
      * @test
@@ -938,6 +940,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(QueueRecipientUtility::STATUS_DEFERRED, $queueRecipientDb->getStatus());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1005,6 +1008,7 @@ class MailerTest extends FunctionalTestCase
         $this->subject->prepareEmailBody($queueMail, $queueRecipient);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1035,7 +1039,6 @@ class MailerTest extends FunctionalTestCase
     }
 
 
-
     /**
      * @test
      * @throws \Exception
@@ -1062,6 +1065,7 @@ class MailerTest extends FunctionalTestCase
 
         self::assertInstanceOf(MailMessage::class, $result);
     }
+
 
     /**
      * @test
@@ -1121,6 +1125,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals('meeting.ics', $mimePartCalendar->getFilename());
 
     }
+
 
     /**
      * @test
@@ -1255,6 +1260,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals('Let us test it', $result->getSubject());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1322,6 +1328,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(['debug@rkw.de' => 'Dr. Sebastian Schmidt'], $result->getTo());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1357,6 +1364,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(['debug@rkw.de' => 'Sebastian Schmidt'], $result->getTo());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1389,6 +1397,7 @@ class MailerTest extends FunctionalTestCase
         self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => 'Schmidt'], $result->getTo());
     }
+
 
     /**
      * @test
@@ -1424,6 +1433,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals(['debug@rkw.de' => 'Dr. Schmidt'], $result->getTo());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -1457,6 +1467,7 @@ class MailerTest extends FunctionalTestCase
         self::assertIsArray( $result->getTo());
         self::assertEquals(['debug@rkw.de' => null], $result->getTo());
     }
+
 
     /**
      * @test
@@ -1551,6 +1562,7 @@ class MailerTest extends FunctionalTestCase
         self::assertEquals('text/xml', $mimePartAttachment->getContentType());
         self::assertStringContainsString('tx_rkwmailer_domain_model_queuemail', $mimePartAttachment->getBody());
     }
+
 
     /**
      * @test
@@ -2079,6 +2091,7 @@ class MailerTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * TearDown
      */

@@ -15,8 +15,6 @@ namespace RKW\RkwMailer\Cache;
  * The TYPO3 project - inspiring people to share!
 */
 
-use TYPO3\CMS\Core\Log\LogLevel;
-
 /**
  * CacheInterface
  *
@@ -43,7 +41,7 @@ interface CacheInterface
      * @param string $cacheIdentifier
      * @return string
      */
-    public function getContent(string $cacheIdentifier);
+    public function getContent(string $cacheIdentifier): string;
 
 
     /**

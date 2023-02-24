@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\ClickStatistics;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -39,8 +40,10 @@ class ClickStatisticsRepository extends AbstractRepository
 
     /**
      * initializeObject
+     *
+     * @return void
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
         parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -53,14 +56,13 @@ class ClickStatisticsRepository extends AbstractRepository
      * findOneByHashAndQueueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return \RKW\RkwMailer\Domain\Model\ClickStatistics
+     * @return \RKW\RkwMailer\Domain\Model\ClickStatistics|null
      * comment: implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    ) {
+    ):? ClickStatistics {
 
         $query = $this->createQuery();
 

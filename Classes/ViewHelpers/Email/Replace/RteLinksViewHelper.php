@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
 
 /*
@@ -19,7 +18,7 @@ use RKW\RkwMailer\Utility\EmailTypolinkUtility;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
@@ -36,6 +35,7 @@ class RteLinksViewHelper extends AbstractViewHelper
 
     use CompileWithContentArgumentAndRenderStatic;
 
+
     /**
      * @var bool
      */
@@ -45,9 +45,10 @@ class RteLinksViewHelper extends AbstractViewHelper
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
@@ -78,7 +79,11 @@ class RteLinksViewHelper extends AbstractViewHelper
 
             // log deprecated attribute
             if ($arguments['isPlaintext']) {
-                trigger_error(__CLASS__ . ': Argument "plaintextFormat" on rkwMailer:email.replace.rteLinks is deprecated - use "isPlaintext" instead.');
+                trigger_error(
+                    __CLASS__ . ': Argument "plaintextFormat" on rkwMailer:email.replace.rteLinks is deprecated. '.
+                    'Use "isPlaintext" instead.',
+                    E_USER_DEPRECATED
+                );
             }
 
             // new version for TKE

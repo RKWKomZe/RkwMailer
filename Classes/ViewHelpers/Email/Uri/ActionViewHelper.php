@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Uri;
 
 /*
@@ -46,14 +45,16 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper
     /**
      * Initialize arguments
      *
+     * @return void
      * @api
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for redirecting links');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object of email');
     }
+
 
     /**
      * @param array $arguments

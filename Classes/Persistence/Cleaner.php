@@ -14,6 +14,11 @@ namespace RKW\RkwMailer\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -32,56 +37,44 @@ class Cleaner
 {
 
     /**
-     * queueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * queueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * openingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $openingStatisticsRepository;
+    protected OpeningStatisticsRepository $openingStatisticsRepository;
 
 
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickStatisticsRepository;
+    protected ClickStatisticsRepository $clickStatisticsRepository;
 
 
     /**
-     * mailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
 
 
     /**
-     * logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
-
+    protected ?Logger $logger = null;
 
 
     /**
@@ -117,7 +110,7 @@ class Cleaner
                 $types
             ))
             && (count($queueMails))
-            ) {
+        ) {
 
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
             foreach ($queueMails as $queueMail) {

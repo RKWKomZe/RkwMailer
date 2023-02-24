@@ -26,13 +26,14 @@ namespace RKW\RkwMailer\ViewHelpers\Security;
  */
 class IfIsAdminViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfAuthenticatedViewHelper
 {
+
     /**
      * This method decides if the condition is true or FALSE. It can be overriden in extending viewhelpers to adjust functionality.
      *
-     * @param array $arguments ViewHelper arguments to evaluate the condition for this ViewHelper, allows for flexiblity in overriding this method.
+     * @param array|null $arguments ViewHelper arguments to evaluate the condition for this ViewHelper, allows for flexiblity in overriding this method.
      * @return bool
      */
-    protected static function evaluateCondition($arguments = null): bool
+    protected static function evaluateCondition(?array $arguments = null): bool
     {
         return isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER']->user['admin'];
     }

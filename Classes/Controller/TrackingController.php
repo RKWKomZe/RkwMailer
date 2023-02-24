@@ -15,6 +15,9 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Tracking\ClickTracker;
+use RKW\RkwMailer\Tracking\OpeningTracker;
+
 /**
  * TrackingController
  *
@@ -27,21 +30,17 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 {
 
     /**
-     * ClickTracker
-     *
      * @var \RKW\RkwMailer\Tracking\ClickTracker
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickTracker;
+    protected ClickTracker $clickTracker;
 
 
     /**
-     * OpeningTracker
-     *
      * @var \RKW\RkwMailer\Tracking\OpeningTracker
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $openingTracker;
+    protected OpeningTracker $openingTracker;
 
 
     /**
@@ -50,8 +49,6 @@ class TrackingController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function redirectAction()
     {

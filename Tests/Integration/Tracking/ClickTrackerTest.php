@@ -45,34 +45,39 @@ class ClickTrackerTest extends FunctionalTestCase
      */
     const NUMBER_OF_STATISTIC_OPENINGS = 3;
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_registration',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [];
 
-    /**
-     * @var \RKW\RkwMailer\Tracking\ClickTracker
-     */
-    private $subject = null;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
+     * @var \RKW\RkwMailer\Tracking\ClickTracker|null
      */
-    private $clickStatisticsRepository;
+    private ?ClickTracker $subject = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository|null
      */
-    private $objectManager = null;
+    private ?ClickStatisticsRepository $clickStatisticsRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -84,11 +89,9 @@ class ClickTrackerTest extends FunctionalTestCase
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
-
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -99,9 +102,6 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->clickStatisticsRepository = $this->objectManager->get(ClickStatisticsRepository::class);
         $this->subject = $this->objectManager->get(ClickTracker::class);
     }
-
-
-
 
     //=============================================
 
@@ -129,6 +129,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertFalse( $result);
         self::assertEmpty($this->clickStatisticsRepository->findAll());
     }
+
 
     /**
      * @test
@@ -193,6 +194,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertEquals(1, $clickStatistics->getCounter());
 
     }
+
 
     /**
      * @test
@@ -350,8 +352,6 @@ class ClickTrackerTest extends FunctionalTestCase
     }
 
 
-
-
     /**
      * @test
      */
@@ -379,7 +379,6 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
-
 
 
     /**
@@ -410,6 +409,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
+
 
     /**
      * @test
@@ -456,6 +456,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertEmpty($this->subject->getPlainUrlByHash('abc'));
     }
 
+
     /**
      * @test
      */
@@ -474,7 +475,6 @@ class ClickTrackerTest extends FunctionalTestCase
         $result = $this->subject-> getPlainUrlByHash('48723b1aa49952c291e71078d6690caabd1370ae');
         self::assertEquals('http://aprodi-projekt.de', $result);
     }
-
 
     //=============================================
 

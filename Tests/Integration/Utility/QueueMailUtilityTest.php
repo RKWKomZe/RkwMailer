@@ -39,24 +39,28 @@ class QueueMailUtilityTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/QueueMailUtilityTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/rkw_registration',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
+
     /**
-     * @var \RKW\RkwMailer\Utility\QueueMailUtility
+     * @var \RKW\RkwMailer\Utility\QueueMailUtility|null
      */
-    private $subject;
+    private ?QueueMailUtility $subject = null;
+
 
     /**
      * Setup
@@ -71,21 +75,17 @@ class QueueMailUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
         $this->subject = GeneralUtility::makeInstance(QueueMailUtility::class);
-
     }
 
-
     //=============================================
-
-
 
     /**
      * @test
@@ -140,8 +140,8 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals('reply@mein.rkw.de', $result->getReplyToAddress());
         self::assertEquals('bounces@mein.rkw.de', $result->getReturnPath());
 
-
     }
+
 
     /**
      * @test
@@ -177,6 +177,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals('service@mein.rkw.de', $result->getReturnPath());
 
     }
+
 
     /**
      * @test
@@ -248,6 +249,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
 
     }
 
+    //=============================================
 
     /**
      * TearDown

@@ -40,25 +40,28 @@ class TranslateViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
+
     /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView
+     * @var \TYPO3\CMS\Fluid\View\StandaloneView|null
      */
-    private $standAloneViewHelper;
+    private ?StandaloneView $standAloneViewHelper = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -74,7 +77,8 @@ class TranslateViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -90,10 +94,9 @@ class TranslateViewHelperTest extends FunctionalTestCase
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
+    //=============================================
 
     /**
      * @test
@@ -117,7 +120,6 @@ class TranslateViewHelperTest extends FunctionalTestCase
 
         self::assertEquals($expected, $result);
     }
-
 
     //=============================================
 

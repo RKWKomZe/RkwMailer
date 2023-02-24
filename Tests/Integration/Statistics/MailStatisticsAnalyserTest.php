@@ -39,13 +39,16 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/MailStatisticsAnalyserTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
@@ -54,34 +57,33 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser
+     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser|null
      */
-    private $subject;
+    private ?MailingStatisticsAnalyser $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
-
-    /**
-     * persistenceManager
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null
      */
-    private $queueMailRepository;
+    private ?PersistenceManager $persistenceManager = null;
+
+
+    /**
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
+     */
+    private ?QueueMailRepository $queueMailRepository = null;
 
 
     /**
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      */
-    private $mailingStatisticsRepository;
+    private ?MailingStatisticsRepository $mailingStatisticsRepository = null;
 
 
     /**
@@ -97,7 +99,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -111,9 +114,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(MailingStatisticsAnalyser::class);
     }
 
-
     //=============================================
-
 
     /**
      * @test
@@ -233,8 +234,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(4, $queueMail->getMailingStatistics()->getDelivered());
         self::assertCount(1, $this->mailingStatisticsRepository->findAll());
-
     }
+
 
     /**
      * @test
@@ -273,7 +274,6 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(7,$queueMail->getMailingStatistics()->getFailed());
         self::assertCount(1, $this->mailingStatisticsRepository->findAll());
-
     }
 
 
@@ -359,6 +359,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -423,6 +424,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getType(), $mailingStatistics->getType());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -478,6 +480,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals(1, $mailingStatistics->getBounced());
 
     }
+
 
     /**
      * @test
@@ -562,7 +565,6 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics = $queueMail->getMailingStatistics();
         self::assertEquals($queueMail->getStatus(), $mailingStatistics->getStatus());
     }
-
 
     //=============================================
 

@@ -29,25 +29,27 @@ class BackendUser extends \TYPO3\CMS\Extbase\Domain\Model\BackendUser
     /**
      * @var string
      */
-    protected $lang = 'en';
+    protected string $lang = 'en';
 
 
     /**
      * Gets the lang of the user
      *
+     * @return void
      * @param string $lang
      */
-    public function setLang($lang)
+    public function setLang(string $lang): void
     {
         $this->lang = $lang;
     }
+
 
     /**
      * Gets the lang of the user
      *
      * @return string
      */
-    public function getLang()
+    public function getLang(): string
     {
         return $this->lang;
     }

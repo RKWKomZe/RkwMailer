@@ -15,6 +15,11 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use RKW\RkwMailer\Persistence\Cleaner;
 use RKW\RkwMailer\Utility\TimePeriodUtility;
 
 /**
@@ -30,48 +35,38 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 {
 
     /**
-     * mailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
 
 
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickStatisticsRepository;
+    protected ClickStatisticsRepository $clickStatisticsRepository;
 
 
     /**
-     * queueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
 
 
     /**
-     * queueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * cleaner
-     *
      * @var \RKW\RkwMailer\Persistence\Cleaner
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $cleaner;
+    protected Cleaner $cleaner;
 
 
     /**
@@ -80,8 +75,9 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
      * @param int $timeFrame
      * @param int $mailType
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function statisticsAction($timeFrame = 0, $mailType = -1)
+    public function statisticsAction(int $timeFrame = 0, int $mailType = -1)
     {
 
         $period = TimePeriodUtility::getTimePeriod($timeFrame);
@@ -127,7 +123,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     }
 
 
-
     /**
      * Lists all e-mails in queue
      *
@@ -163,6 +158,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         );
     }
 
+
     /**
      * Pauses given queueMail
      *
@@ -181,6 +177,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->redirect('list');
     }
 
+
     /**
      * Continues given queueMail
      *
@@ -198,6 +195,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->redirect('list');
     }
+
 
     /**
      * Resets given queueMail
@@ -234,6 +232,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->redirect('list');
     }
 
+
     /**
      * Deletes given queueMail and it's corresponding data
      *
@@ -250,6 +249,5 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->redirect('list');
     }
-
 
 }

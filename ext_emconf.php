@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = [
 	'description' => 'Extension sending e-mails and bulk-mailings',
 	'category' => 'plugin',
 	'author' => 'Maximilian Fäßler, Steffen Kroggel',
-	'author_email' => 'faesslerweb@web.de, developer@steffenkroggel.de',
+	'author_email' => 'maximilian@faesslerweb.de, developer@steffenkroggel.de',
 	'state' => 'stable',
 	'internal' => '',
 	'uploadfolder' => '0',
@@ -24,9 +24,9 @@ $EM_CONF[$_EXTKEY] = [
 	'version' => '9.5.9',
 	'constraints' => [
 		'depends' => [
-            'typo3' => '8.7.0-9.5.99',
-            'accelerator' => '9.5.0-9.5.99',
-            'rkw_basics' => '8.7.76-9.5.99'
+            'typo3' => '9.5.0-9.5.99',
+            'accelerator' => '9.5.2-9.5.99',
+            'core_extended' => '9.5.3-9.5.99'
 		],
 		'conflicts' => [
 		],

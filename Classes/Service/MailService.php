@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Service;
 
 /*
@@ -16,10 +15,12 @@ namespace RKW\RkwMailer\Service;
  */
 use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Mail\Mailer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -30,6 +31,7 @@ use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwMailer\Validation\QueueRecipientValidator;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * MailService
@@ -42,111 +44,92 @@ use RKW\RkwMailer\Validation\QueueRecipientValidator;
 class MailService
 {
 
-
     /**
-     * objectManager
-     *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
 
     /**
-     * configurationManager
-     *
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
 
 
     /**
-     * persistenceManager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
+
 
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
+
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * MailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
+
 
     /**
-     * QueueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueMailValidator
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailValidator = null;
+    protected QueueMailValidator $queueMailValidator;
 
 
     /**
-     * QueueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientValidator = null;
+    protected QueueRecipientValidator $queueRecipientValidator;
+
 
     /**
-     * Mailer
-     *
      * @var \RKW\RkwMailer\Mail\Mailer
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailer;
+    protected Mailer $mailer;
+
 
     /**
-     * Logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
-     * The normal settings
-     *
      * @var array
      */
-    protected $settings = array();
+    protected array $settings = [];
 
 
     /**
      * Constructor
      * @param bool $unitTest
      */
-    public function __construct($unitTest = false)
+    public function __construct(bool $unitTest = false)
     {
         self::debugTime(__LINE__, __METHOD__);
         if (! $unitTest) {
@@ -162,7 +145,7 @@ class MailService
      *
      * @return void
      */
-    public function initializeService()
+    public function initializeService(): void
     {
         // set objects if they haven't been injected yet
         if (!$this->objectManager) {
@@ -214,7 +197,7 @@ class MailService
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @api
      */
-    public function getQueueMail()
+    public function getQueueMail(): QueueMail
     {
         if (!$this->queueMail instanceof \RKW\RkwMailer\Domain\Model\QueueMail) {
 
@@ -252,7 +235,7 @@ class MailService
      * @throws \RKW\RkwMailer\Exception
      * @api
      */
-    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function setQueueMail(QueueMail $queueMail): void
     {
 
         if ($queueMail->_isNew()) {
@@ -322,11 +305,11 @@ class MailService
     /**
      * Returns the recipients
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    public function getTo()
+    public function getTo(): QueryResultInterface
     {
         return $this->queueRecipientRepository->findByQueueMail($this->getQueueMail());
     }
@@ -345,6 +328,7 @@ class MailService
     public function addQueueRecipient(
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
     ): bool {
+
         self::debugTime(__LINE__, __METHOD__);
         if (
             ($this->queueRecipientValidator->validate($queueRecipient))
@@ -563,6 +547,7 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
     }
 
+
     /**
      * unset several variables
      *
@@ -611,7 +596,7 @@ class MailService
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
@@ -623,7 +608,7 @@ class MailService
     /**
      * Does debugging of runtime
      *
-     * @param integer $line
+     * @param int $line
      * @param string  $function
      */
     protected static function debugTime(int $line, string $function): void
@@ -633,6 +618,4 @@ class MailService
             file_put_contents($path, microtime() . ' ' . $line . ' ' . $function . "\n", FILE_APPEND);
         }
     }
-
-
 }

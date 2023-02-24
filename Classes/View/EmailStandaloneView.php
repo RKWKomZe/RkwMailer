@@ -16,6 +16,7 @@ namespace RKW\RkwMailer\View;
 use Madj2k\Accelerator\Persistence\MarkerReducer;
 use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Exception;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -44,51 +45,39 @@ class EmailStandaloneView extends StandaloneView
 {
 
     /**
-     * settings
-     *
      * @var array
      */
-    protected $settings = [];
+    protected array $settings = [];
 
 
     /**
-     * settingsPid
-     *
      * @var int
      */
-    protected $settingsPid = 0;
+    protected int $settingsPid = 0;
 
 
     /**
-     * templateType
-     *
      * @var string
      */
-    protected $templateType = '';
+    protected string $templateType = '';
 
 
     /**
-     * objectManager
-     *
-     * @var ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    protected $objectManager;
+    protected $objectManager = null;
 
 
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
 
 
     /**
-     * queueRecipient
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      */
-    protected $queueRecipient;
+    protected ?QueueRecipient $queueRecipient;
 
 
     /**
@@ -158,9 +147,7 @@ class EmailStandaloneView extends StandaloneView
         ){
             $this->setTemplateRootPaths($this->settings['view']['templateRootPaths']);
         }
-
     }
-
 
 
     /**
@@ -346,9 +333,9 @@ class EmailStandaloneView extends StandaloneView
             $templatePathFile = GeneralUtility::getFileAbsFileName($templateName);
             $this->setTemplatePathAndFilename($templatePathFile);
 
-            // check if there is a template-path included
-            // Since TYPO3 8 templates are set via the given controller action.
-            // Thus using setTemplate with relative paths will result in using this path as controller action.
+        // check if there is a template-path included
+        // Since TYPO3 8 templates are set via the given controller action.
+        // Thus using setTemplate with relative paths will result in using this path as controller action.
         } else if (
             ($subFolder = dirname($templateName))
             && ($subFolder != '.')
@@ -418,10 +405,10 @@ class EmailStandaloneView extends StandaloneView
      * However, only the key "value" is accepted.
      *
      * @param array $values Keys and values - only a value with key "value" is considered
-     * @return $this
+     * @return self
      * @api
      */
-    public function assignMultiple($values): EmailStandaloneView
+    public function assignMultiple(array $values): self
     {
 
         // first merge existing settings with new settings in case of multiple method-calls
@@ -485,14 +472,15 @@ class EmailStandaloneView extends StandaloneView
      *
      * @param string $key The key of a view variable to set
      * @param mixed $value The value of the view variable
-     * @return $this
+     * @return self
      * @api
      */
-    public function assign($key, $value)
+    public function assign($key, $value): self
     {
         $this->assignMultiple([$key => $value]);
         return $this;
     }
+
 
     /**
      * Loads the template source and renders the template.
@@ -501,7 +489,7 @@ class EmailStandaloneView extends StandaloneView
      * @return string
      * @api
      */
-    public function render($actionName = null): string
+    public function render(?string $actionName = null): string
     {
         // empty call to inject settings and other fix variables
         $this->assignMultiple([]);
@@ -567,7 +555,7 @@ class EmailStandaloneView extends StandaloneView
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
-    public function getQueueMail()
+    public function getQueueMail():? QueueMail
     {
         return $this->queueMail;
     }
@@ -577,8 +565,9 @@ class EmailStandaloneView extends StandaloneView
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
+     * @throws \Exception
      */
-    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void
+    public function setQueueMail(QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
 
@@ -602,10 +591,11 @@ class EmailStandaloneView extends StandaloneView
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
-    public function getQueueRecipient()
+    public function getQueueRecipient():? QueueRecipient
     {
         return $this->queueRecipient;
     }
+
 
     /**
      * Sets the queueRecipient
@@ -613,7 +603,7 @@ class EmailStandaloneView extends StandaloneView
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return void
      */
-    public function setQueueRecipient(\RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient): void
+    public function setQueueRecipient(QueueRecipient $queueRecipient): void
     {
         $this->queueRecipient = $queueRecipient;
     }

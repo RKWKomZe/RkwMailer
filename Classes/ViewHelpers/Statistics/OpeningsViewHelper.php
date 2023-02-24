@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Statistics;
 
 /*
@@ -39,9 +38,10 @@ class OpeningsViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewH
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('queueMailUid', 'integer', 'queueMailUid to retrieve the number of openings from.');

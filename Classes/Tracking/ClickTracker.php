@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Tracking;
 
 /*
@@ -16,11 +15,16 @@ namespace RKW\RkwMailer\Tracking;
  */
 
 use RKW\RkwMailer\Domain\Model\ClickStatistics;
+use RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\LinkRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Utility\StatisticsUtility;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * ClickTracker
@@ -34,51 +38,44 @@ class ClickTracker
 {
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
+
 
     /**
-     * LinkRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\LinkRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $linkRepository;
+    protected LinkRepository $linkRepository;
 
 
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickStatisticsRepository;
+    protected ClickStatisticsRepository $clickStatisticsRepository;
+
 
     /**
-     * Persistence Manager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -155,8 +152,6 @@ class ClickTracker
      * Get getUrl by Hash
      *
      * @param string $hash
-     * @param int $queueMailId
-     * @param int $queueMailRecipientId
      * @return string
      * @deprecated
      */
@@ -175,7 +170,7 @@ class ClickTracker
      * Persists tracking-data to database
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param string $hash
+     * @param string $url
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
@@ -183,8 +178,8 @@ class ClickTracker
     protected function persistTrackingData (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         string $url
-    ): void
-    {
+    ): void {
+
         // decode url (just to be sure)
         $url = urldecode($url);
 
@@ -237,7 +232,7 @@ class ClickTracker
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);

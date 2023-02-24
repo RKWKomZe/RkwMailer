@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Statistics;
 
 /*
@@ -17,6 +16,12 @@ namespace RKW\RkwMailer\Statistics;
 
 use BounceMailHandler\BounceMailHandler;
 use RKW\RkwMailer\Domain\Model\BounceMail;
+use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
+use TYPO3\CMS\Core\Log\Logger;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * BounceMailAnalyser
@@ -31,52 +36,46 @@ class BounceMailAnalyser
 
 
     /**
-     * @var \BounceMailHandler\BounceMailHandler $bounceMailHandler
+     * @var \BounceMailHandler\BounceMailHandler|null
      */
-    protected $bounceMailHandler;
+    protected ?BounceMailHandler $bounceMailHandler = null;
 
 
     /**
-     * objectManager
-     *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
 
     /**
-     * objectManager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * bounceMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $bounceMailRepository;
+    protected BounceMailRepository $bounceMailRepository;
 
 
     /**
-     * Logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
      * BounceMail constructor.
+     *
      * @param array $params
+     * @return void
      * @throws \RKW\RkwMailer\Exception
      */
-    public function __construct($params)
+    public function __construct(array $params)
     {
 
         $defaultParams = [
@@ -139,16 +138,16 @@ class BounceMailAnalyser
     /**
      * analyseMails
      *
-     * @param int|false $limit
+     * @param false $limit
+     * @return void
      */
-    public function analyseMails ($limit = false) {
+    public function analyseMails (bool $limit = false): void {
 
         // now login and analyse the mails in mailbox
         $this->bounceMailHandler->openMailbox();
         $this->bounceMailHandler->processMailbox($limit);
         $this->persistenceManager->persistAll();
     }
-
 
 
     /**
@@ -171,8 +170,20 @@ class BounceMailAnalyser
      * @return boolean
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    function bounceMailCallback ($counter, $type, $email, $subject, $header, $remove, $ruleNumber = false, $ruleCategory = false, $totalFetched = 0, $body = '', $headerFull = '', $bodyFull = '')
-    {
+    function bounceMailCallback (
+        int $counter,
+        string $type,
+        string $email,
+        string $subject,
+        object $header,
+        bool $remove,
+        $ruleNumber = false,
+        $ruleCategory = false,
+        int $totalFetched = 0,
+        string $body = '',
+        string $headerFull = '',
+        string $bodyFull = ''
+    ): bool {
 
         $this->cleanupData($ruleNumber, $email, $type);
 
@@ -208,12 +219,10 @@ class BounceMailAnalyser
      * @param int $ruleNumber
      * @param string $email
      * @param string $type
+     * @return void
      */
-    public function cleanupData (&$ruleNumber, &$email, &$type)
+    public function cleanupData (int &$ruleNumber, string &$email, string &$type): void
     {
-
-        $ruleNumber = intval($ruleNumber);
-
         $type = trim($type);
         if (trim($type) == '') {
             $type = 'none';
@@ -241,11 +250,11 @@ class BounceMailAnalyser
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

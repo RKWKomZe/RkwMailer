@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Cache;
 
 /*
@@ -16,9 +15,8 @@ namespace RKW\RkwMailer\Cache;
 */
 
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -34,26 +32,22 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 abstract class AbstractCache
 {
 
-
-    /**
-     * Cache
-     *
-     * @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    /***
+     * @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend|null
      */
-    protected $cache;
+    protected ?VariableFrontend $cache= null;
 
 
-    /**
-     * Logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
+    /***
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
      * Constructor
      * @throws \RKW\RkwMailer\Exception
+     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
      */
     public function __construct()
     {
@@ -65,6 +59,7 @@ abstract class AbstractCache
 
     /**
      * Gets the cache object
+     *
      * @return \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
      */
     public function getCache(): \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
@@ -164,14 +159,14 @@ abstract class AbstractCache
 
                     '# Apache < 2.3' . "\n" .
                     '<IfModule !mod_authz_core.c>'. "\n" .
-                    'Order allow,deny'. "\n" .
-                    'Deny from all'. "\n" .
-                    'Satisfy All'. "\n" .
+                    "\t" . 'Order allow,deny'. "\n" .
+                    "\t" . 'Deny from all'. "\n" .
+                    "\t" . 'Satisfy All'. "\n" .
                     '</IfModule>'. "\n\n" .
 
                     '# Apache ≥ 2.3' . "\n" .
                     '<IfModule mod_authz_core.c>'. "\n" .
-                    'Require all denied' . "\n" .
+                    "\t" . 'Require all denied' . "\n" .
                     '</IfModule>';
                 if (! file_put_contents($pathToApacheFile, $content)) {
                     throw new \RKW\RkwMailer\Exception('Cache directory is not secure and file for directory protection can not be written. Please fix this first');

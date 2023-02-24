@@ -46,34 +46,39 @@ class OpeningTrackerTest extends FunctionalTestCase
      */
     const NUMBER_OF_STATISTIC_OPENINGS = 3;
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_registration',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [];
 
-    /**
-     * @var \RKW\RkwMailer\Tracking\OpeningTracker
-     */
-    private $subject = null;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
+     * @var \RKW\RkwMailer\Tracking\OpeningTracker|null
      */
-    private $openingStatisticsRepository;
+    private ?OpeningTracker $subject = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository|null
      */
-    private $objectManager = null;
+    private ?OpeningStatisticsRepository $openingStatisticsRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -89,7 +94,6 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -102,6 +106,7 @@ class OpeningTrackerTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      */
@@ -123,6 +128,7 @@ class OpeningTrackerTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      */
@@ -141,8 +147,8 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
         self::assertFalse($this->subject->track(20, 20));
         self::assertEmpty($this->openingStatisticsRepository->findAll());
-
     }
+
 
     /**
      * @test
@@ -223,6 +229,7 @@ class OpeningTrackerTest extends FunctionalTestCase
         self::assertEquals(1, $openingStatistics->getCounter());
     }
 
+
     /**
      * @test
      */
@@ -263,7 +270,6 @@ class OpeningTrackerTest extends FunctionalTestCase
     }
 
     //=============================================
-
 
     /**
      * TearDown

@@ -39,9 +39,10 @@ class ClickedLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('queueMailUid', 'integer', 'queueMailUid to retrieve the number of clicked links from.');

@@ -16,11 +16,15 @@ namespace RKW\RkwMailer\Tracking;
  */
 
 use RKW\RkwMailer\Domain\Model\OpeningStatistics;
+use RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Utility\StatisticsUtility;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * OpeningTracker
@@ -34,42 +38,37 @@ class OpeningTracker
 {
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
+
 
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $openingStatisticsRepository;
+    protected OpeningStatisticsRepository $openingStatisticsRepository;
+
 
     /**
-     * Persistence Manager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -111,12 +110,12 @@ class OpeningTracker
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \RKW\RkwMailer\Exception
      */
     protected function persistTrackingData (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-    ): void
-    {
+    ): void {
 
         // generate hash from recipient
         $hash = StatisticsUtility::generateRecipientHash($queueRecipient);
@@ -167,7 +166,7 @@ class OpeningTracker
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);

@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Utility;
 
 /*
@@ -15,13 +14,8 @@ namespace RKW\RkwMailer\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Model\QueueMail;
-use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * QueueMailUtility

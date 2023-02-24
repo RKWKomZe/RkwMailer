@@ -15,10 +15,7 @@ namespace RKW\RkwMailer\Cache;
  * The TYPO3 project - inspiring people to share!
 */
 
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogLevel;
-use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * RenderCache

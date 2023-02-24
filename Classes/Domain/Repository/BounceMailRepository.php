@@ -27,7 +27,10 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 class BounceMailRepository extends AbstractRepository
 {
 
-    public function initializeObject()
+    /**
+     * @return void
+     */
+    public function initializeObject(): void
     {
         parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -45,7 +48,7 @@ class BounceMailRepository extends AbstractRepository
     public function countByEmailAndType (
         string $email,
         string $type = 'hard'
-    ) {
+    ): int {
 
         $query = $this->createQuery();
         $query->matching(

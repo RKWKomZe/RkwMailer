@@ -18,10 +18,7 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use RKW\RkwMailer\Cache\MailCache;
 use RKW\RkwMailer\Cache\RenderCache;
 use RKW\RkwMailer\Domain\Model\QueueMail;
-use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
-use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use TYPO3\CMS\Core\Cache\Backend\NullBackend;
 use TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -46,7 +43,8 @@ class RenderCacheTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
 
@@ -57,21 +55,21 @@ class RenderCacheTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Cache\RenderCache
+     * @var \RKW\RkwMailer\Cache\RenderCache|null
      */
-    private $subject;
+    private ?RenderCache $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueMailRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
 
 
     /**
@@ -87,7 +85,8 @@ class RenderCacheTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 static::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -100,7 +99,6 @@ class RenderCacheTest extends FunctionalTestCase
         $this->subject->clearCache();
 
     }
-
 
     //=============================================
 
@@ -131,6 +129,7 @@ class RenderCacheTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -186,6 +185,7 @@ class RenderCacheTest extends FunctionalTestCase
         $this->subject->getIdentifier($queueMail, 'Abc');
 
     }
+
 
     /**
      * @test
@@ -255,6 +255,7 @@ class RenderCacheTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -281,6 +282,7 @@ class RenderCacheTest extends FunctionalTestCase
         self::assertEquals('Abc', $this->subject->getContent($identifier));
 
     }
+
 
     /**
      * @test
@@ -311,6 +313,7 @@ class RenderCacheTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * TearDown
      */

@@ -1,6 +1,6 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Cache;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -43,9 +43,10 @@ class RenderCacheViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractVi
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on.');

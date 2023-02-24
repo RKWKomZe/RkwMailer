@@ -39,38 +39,44 @@ class PageViewHelperTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/PageViewHelperTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
-    protected $coreExtensionsToLoad = [ ];
+    protected $coreExtensionsToLoad = [];
+
 
     /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $standAloneViewHelper;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueMailRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -85,7 +91,8 @@ class PageViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -104,8 +111,9 @@ class PageViewHelperTest extends FunctionalTestCase
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
     }
+
+    //=============================================
 
     /**
      * @test
@@ -157,7 +165,8 @@ class PageViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             10,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/RootpageHttps.typoscript',
             ],
@@ -211,6 +220,7 @@ class PageViewHelperTest extends FunctionalTestCase
         self::assertStringNotContainsString('cHash=', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -238,8 +248,8 @@ class PageViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
         self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/print', $result);
         self::assertStringNotContainsString('cHash=', $result);
-
     }
+
 
     /**
      * @test
@@ -277,9 +287,8 @@ class PageViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2F', $result);
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringContainsString('no_cache=1', $result);
-
-
     }
+
 
     /**
      * @test
@@ -319,8 +328,8 @@ class PageViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2F', $result);
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringContainsString('no_cache=1', $result);
-
     }
+
 
     /**
      * @test
@@ -365,7 +374,6 @@ class PageViewHelperTest extends FunctionalTestCase
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringNotContainsString('type=98', $result);
         self::assertStringContainsString('no_cache=1', $result);
-
 
     }
 

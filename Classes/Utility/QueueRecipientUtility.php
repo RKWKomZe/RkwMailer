@@ -100,13 +100,13 @@ class QueueRecipientUtility
     }
 
 
-
     /**
      * Get a QueueRecipient-object with properties set via FrontendUser
      *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaFrontendUser (
         FrontendUser $frontendUser,
@@ -143,6 +143,7 @@ class QueueRecipientUtility
      * @param \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaBackendUser (
         BackendUser $backendUser,
@@ -173,12 +174,12 @@ class QueueRecipientUtility
     }
 
 
-
     /**
      * Get a QueueRecipient-object with properties set via array
      *
      * @param array $data
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaArray (
         array $data = []
@@ -189,7 +190,7 @@ class QueueRecipientUtility
 
 
     /**
-     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user
+     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity|null $user
      * @param array $additionalPropertyMapper
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
@@ -292,7 +293,7 @@ class QueueRecipientUtility
      * @param array $additionalData
      * @return void
      */
-    protected static function explodeNameToAdditionalData(string $name, array &$additionalData)
+    protected static function explodeNameToAdditionalData(string $name, array &$additionalData): void
     {
 
         // split name

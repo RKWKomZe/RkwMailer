@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Widget;
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +14,6 @@ namespace RKW\RkwMailer\ViewHelpers\Widget;
  */
 
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-
 
 /**
  * Class UriViewHelper
@@ -68,6 +66,7 @@ class UriViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper
             ->setFormat($arguments['format'])
             ->build();
     }
+
 
     /**
      * Adds filter-arguments to normal ones

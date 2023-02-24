@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email;
 
 /*
@@ -15,11 +14,9 @@ namespace RKW\RkwMailer\ViewHelpers\Email;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
-
 
 /**
  * Class RecipientSalutationViewHelper
@@ -35,10 +32,13 @@ class RecipientSalutationViewHelper extends AbstractViewHelper
 
     use CompileWithRenderStatic;
 
+
     /**
      * initializeArguments
+     *
+     * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('queueRecipient', '\RKW\RkwMailer\Domain\Model\QueueRecipient', 'The queue recipient', true);
@@ -65,7 +65,7 @@ class RecipientSalutationViewHelper extends AbstractViewHelper
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient */
         $queueRecipient = $arguments['queueRecipient'];
-        $useFirstName = ($arguments['useFirstName'] ? true : false);
+        $useFirstName = (bool) $arguments['useFirstName'];
         $appendText = $arguments['appendText'] ? $arguments['appendText'] : '';
         $prependText = $arguments['prependText'] ? $arguments['prependText'] : '';
         $fallbackText = $arguments['fallbackText'] ? $arguments['fallbackText'] : '';

@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email;
 
 /*
@@ -39,9 +38,10 @@ class PlaintextLineBreaksViewHelper extends AbstractViewHelper
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to format');
@@ -68,7 +68,11 @@ class PlaintextLineBreaksViewHelper extends AbstractViewHelper
 
         // log deprecated attribute
         if ($arguments['keepLineBreaks']) {
-            trigger_error(__CLASS__ . ': Argument "keepLineBreaks" on rkwMailer:email.plaintextLineBreaks is deprecated - use "convertLineBreaks" instead.');
+            trigger_error(
+                __CLASS__ . ': Argument "keepLineBreaks" on rkwMailer:email.plaintextLineBreaks is deprecated. '.
+                'Use "convertLineBreaks" instead.',
+                E_USER_DEPRECATED
+            );
         }
 
         // convert line breaks to manual line breaks

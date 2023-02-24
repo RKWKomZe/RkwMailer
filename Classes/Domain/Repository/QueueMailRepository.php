@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * QueueMailRepository
@@ -33,7 +34,10 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 class QueueMailRepository extends AbstractRepository
 {
 
-    public function initializeObject()
+    /**
+     * @return void
+     */
+    public function initializeObject(): void
     {
         parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -45,11 +49,11 @@ class QueueMailRepository extends AbstractRepository
      * findByStatusWaitingOrSending
      * ordered by tstampRealSending and sorting and then priority
      *
-     * @param integer $limit
+     * @param int $limit
      * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * comment: implicitly tested
      */
-    public function findByStatusWaitingOrSending(int $limit = 100)
+    public function findByStatusWaitingOrSending(int $limit = 100): QueryResultInterface
     {
 
         $query = $this->createQuery();
@@ -83,7 +87,7 @@ class QueueMailRepository extends AbstractRepository
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      * comment: implicitly tested
      */
-    public function findByMissingMailingStatistics(int $limit = 100)
+    public function findByMissingMailingStatistics(int $limit = 100): QueryResultInterface
     {
 
         $query = $this->createQuery();
@@ -109,7 +113,7 @@ class QueueMailRepository extends AbstractRepository
      */
     public function findByTstampRealSending(
         int $daysAfterSendingStarted = 30
-    ) {
+    ): QueryResultInterface {
 
         $timestamp = time() - intval($daysAfterSendingStarted * 24 * 60 * 60);
         $query = $this->createQuery();
@@ -136,7 +140,7 @@ class QueueMailRepository extends AbstractRepository
     public function findByTstampFinishedSendingAndTypes(
         int $daysAfterSendingFinished = 30,
         array $types = []
-    ) {
+    ): QueryResultInterface {
 
         $timestamp = time() - intval($daysAfterSendingFinished * 24 * 60 * 60);
         $query = $this->createQuery();
@@ -178,7 +182,7 @@ class QueueMailRepository extends AbstractRepository
         int $fromTime,
         int $toTime,
         int $type = -1
-    ) {
+    ): QueryResultInterface {
 
         $query = $this->createQuery();
         $constraints = [];
@@ -200,11 +204,11 @@ class QueueMailRepository extends AbstractRepository
         );
 
         $query->setOrderings(
-            array(
+            [
                 'status' => QueryInterface::ORDER_ASCENDING,
                 'mailingStatistics.tstampFavSending' => QueryInterface::ORDER_DESCENDING,
                 'mailingStatistics.tstampFavSending' => QueryInterface::ORDER_DESCENDING,
-            )
+            ]
         );
 
         return $query->execute();

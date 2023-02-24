@@ -16,13 +16,12 @@ namespace RKW\RkwMailer\Command;
 
 use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
-use RKW\RkwMailer\Statistics\BounceMailAnalyser;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -34,32 +33,37 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  *
  * Execute on CLI with: 'vendor/bin/typo3 rkw_mailer:processBounceMails <username> <password> <host>'
  * @todo rework
+ *
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright RKW Kompetenzzentrum
+ * @package RKW_RkwMailer
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class ProcessBounceMailsCommand extends Command
 {
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    protected $queueRecipientRepository;
+    protected ?QueueRecipientRepository $queueRecipientRepository = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository|null
      */
-    protected $bounceMailRepository;
+    protected ?BounceMailRepository $bounceMailRepository = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null
      */
-    protected $persistenceManager;
+    protected ?PersistenceManager $persistenceManager = null;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -85,15 +89,15 @@ class ProcessBounceMailsCommand extends Command
      * This is mainly useful when a lot of commands extends one main command
      * where some things need to be initialized based on the input arguments and options.
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @see InputInterface::bind()
-     * @see InputInterface::validate()
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @see \Symfony\Component\Console\Input\InputInterface::bind()
+     * @see \Symfony\Component\Console\Input\InputInterface::validate()
      */
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
 
-        /** @var  TYPO3\CMS\Extbase\Object\ObjectManager$objectManager */
+        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->bounceMailRepository = $objectManager->get(BounceMailRepository::class);
         $this->queueRecipientRepository = $objectManager->get(QueueRecipientRepository::class);
@@ -104,11 +108,11 @@ class ProcessBounceMailsCommand extends Command
     /**
      * Executes the command for showing sys_log entries
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @return int
-     * @see InputInterface::bind()
-     * @see InputInterface::validate()
+     * @see \Symfony\Component\Console\Input\InputInterface::bind()
+     * @see \Symfony\Component\Console\Input\InputInterface::validate()
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

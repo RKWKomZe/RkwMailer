@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Mail;
 
 /*
@@ -15,15 +14,26 @@ namespace RKW\RkwMailer\Mail;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Cache\MailCache;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Repository\BounceMailRepository;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
+use RKW\RkwMailer\Validation\QueueMailValidator;
+use RKW\RkwMailer\Validation\QueueRecipientValidator;
 use RKW\RkwMailer\View\EmailStandaloneView;
+use RKW\RkwMailer\Validation\EmailValidator;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use RKW\RkwMailer\Validation\EmailValidator;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * Mailer
@@ -37,117 +47,96 @@ class Mailer
 {
 
     /**
-     * objectManager
-     *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
 
     /**
-     * configurationManager
-     *
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
 
 
     /**
-     * persistenceManager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * queueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
 
 
     /**
-     * queueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * bounceMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\BounceMailRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $bounceMailRepository;
+    protected BounceMailRepository $bounceMailRepository;
 
 
     /**
-     * mailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
 
 
     /**
-     * queueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueMailValidator
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailValidator;
+    protected QueueMailValidator $queueMailValidator;
 
 
     /**
-     * queueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientValidator;
+    protected QueueRecipientValidator $queueRecipientValidator;
 
 
     /**
-     * mailCache
-     *
      * @var \RKW\RkwMailer\Cache\MailCache
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailCache;
-
+    protected MailCache $mailCache;
 
 
     /**
      * logger
      *
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
      * EmailStandaloneView
      *
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    protected $view;
+    protected ?EmailStandaloneView $view = null;
 
 
     /**
      * Gets queueMails from queue and send mails to associated recipients
      *
-     * @param integer $emailsPerJob How many queueMails are to be processed during one processing of the queue
-     * @param integer $emailsPerInterval How may emails are to be sent for each queueMail
+     * @param int $emailsPerJob How many queueMails are to be processed during one processing of the queue
+     * @param int $emailsPerInterval How may emails are to be sent for each queueMail
      * @param int $settingsPid
      * @param float $sleep how many seconds the script will sleep after each e-mail sent
      * @return array processed queueMails
@@ -278,7 +267,7 @@ class Mailer
      * Gets queueRecipients for a given queueMail from queue and send mails to associated recipients
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param integer $emailsPerInterval How may emails are to be sent for each queueMail
+     * @param int $emailsPerInterval How may emails are to be sent for each queueMail
      * @param float $sleep how many seconds the script will sleep after each e-mail sent
      * @return array processed queueRecipients
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
@@ -394,7 +383,7 @@ class Mailer
     public function prepareEmailBody (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-    ): \TYPO3\CMS\Core\Mail\MailMessage {
+    ): MailMessage {
 
         self::debugTime(__LINE__, __METHOD__);
 
@@ -494,7 +483,11 @@ class Mailer
                 LogLevel::WARNING,
                 'This method to add attachments is deprecated. Please use $this->setAttachmentPath to add attachments.'
             );
-            trigger_error(__CLASS__ .':' . __METHOD__ . ' will be removed soon. Do not use it any more. lease use $this->setAttachmentPath to add attachments.', E_USER_DEPRECATED);
+            trigger_error(
+                __CLASS__ .':' . __METHOD__ . ' will be removed soon. Do not use it any more. '.
+                'Use $this->setAttachmentPath to add attachments.',
+                E_USER_DEPRECATED
+            );
 
             // via BLOB: old version from Max
             /** @deprecated */
@@ -574,8 +567,7 @@ class Mailer
     public function renderTemplates(
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-    ): void
-    {
+    ): void {
 
         self::debugTime(__LINE__, __METHOD__);
 
@@ -659,12 +651,13 @@ class Mailer
         self::debugTime(__LINE__, __METHOD__);
     }
 
+
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
@@ -676,7 +669,7 @@ class Mailer
     /**
      * Does debugging of runtime
      *
-     * @param integer $line
+     * @param int $line
      * @param string  $function
      */
     private static function debugTime(int $line, string $function): void

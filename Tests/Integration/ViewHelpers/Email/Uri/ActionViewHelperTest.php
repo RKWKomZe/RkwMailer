@@ -39,38 +39,44 @@ class ActionViewHelperTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/ActionViewHelperTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $queueMailRepository;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $objectManager;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -85,7 +91,8 @@ class ActionViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -106,6 +113,8 @@ class ActionViewHelperTest extends FunctionalTestCase
         );
 
     }
+
+    //=============================================
 
     /**
      * @test
@@ -129,7 +138,7 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/rkw-basics/mediasources', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/coreextended/mediasources', $result);
         self::assertStringNotContainsString('cHash=', $result);
     }
 
@@ -157,7 +166,8 @@ class ActionViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             10,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/RootpageHttps.typoscript',
             ],
@@ -179,7 +189,7 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         /** IMPORTANT HINT IN PhpDocs !!! */
-        self::assertStringContainsString('https://www.rkw.local/rkw-basics/mediasources', $result);
+        self::assertStringContainsString('https://www.rkw.local/coreextended/mediasources', $result);
         self::assertStringNotContainsString('cHash=', $result);
     }
 
@@ -207,7 +217,7 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/rkw-basics/mediasources', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/coreextended/mediasources', $result);
         self::assertStringNotContainsString('cHash=', $result);
     }
 
@@ -236,9 +246,10 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check40.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/rkw-basics/mediasources', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/coreextended/mediasources', $result);
         self::assertStringNotContainsString('cHash=', $result);
     }
+
 
     /**
      * @test
@@ -265,10 +276,10 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check50.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/rkw-basics/mediasources/print', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/coreextended/mediasources/print', $result);
         self::assertStringNotContainsString('cHash=', $result);
-
     }
+
 
     /**
      * @test
@@ -303,12 +314,12 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/?', $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Frkw-basics%2Fmediasources%2F', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2F', $result);
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringContainsString('no_cache=1', $result);
 
-
     }
+
 
     /**
      * @test
@@ -345,11 +356,12 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/1/?', $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Frkw-basics%2Fmediasources%2F', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2F', $result);
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringContainsString('no_cache=1', $result);
 
     }
+
 
     /**
      * @test
@@ -390,11 +402,10 @@ class ActionViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/1/?', $result);
-        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Frkw-basics%2Fmediasources%2Fprint%2F', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2Fprint%2F', $result);
         self::assertStringNotContainsString('cHash=', $result);
         self::assertStringNotContainsString('type=98', $result);
         self::assertStringContainsString('no_cache=1', $result);
-
 
     }
 

@@ -43,34 +43,41 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Cache\RenderCache
+     * @var \TYPO3\CMS\Fluid\View\StandaloneView|null
      */
-    private $renderCache;
+    private ?StandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Cache\RenderCache|null
      */
-    private $objectManager;
+    private ?RenderCache $renderCache = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $queueMailRepository;
+    private ?ObjectManager $objectManager = null;
+
+
+    /**
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
+     */
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
      * Setup
@@ -85,7 +92,8 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 static::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -106,6 +114,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
 
     }
 
+    //=============================================
 
     /**
      * @test
@@ -148,6 +157,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString('This is to be cached.', $cachedContent);
 
     }
+
 
     /**
      * @test
@@ -201,6 +211,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString('###test2###', $cachedContent);
 
     }
+
 
     /**
      * @test

@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers;
 
 /*
@@ -36,9 +35,10 @@ class CalcPercentageViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstrac
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('percentage', 'integer', 'Value to calculate percentage from.');

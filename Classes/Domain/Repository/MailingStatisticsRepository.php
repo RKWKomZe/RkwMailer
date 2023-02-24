@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * MailingStatisticsRepository
@@ -34,7 +35,7 @@ class MailingStatisticsRepository extends AbstractRepository
     /**
      * initializeObject
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
         parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -56,7 +57,7 @@ class MailingStatisticsRepository extends AbstractRepository
         int $fromTime,
         int $toTime,
         int $type = -1
-    ) {
+    ): QueryResultInterface {
 
         $query = $this->createQuery();
         $constraints = [

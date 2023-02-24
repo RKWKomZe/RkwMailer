@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
 
 /*
@@ -47,9 +46,10 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
@@ -159,8 +159,8 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
      * Replaces the link
      *
      * @param string $link
-     * @param QueueMail $queueMail
-     * @param QueueRecipient $queueRecipient
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient|null $queueRecipient
      * @param array $additionalParams
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
@@ -169,7 +169,7 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
     static protected function replace(
         string $link,
         QueueMail $queueMail,
-        QueueRecipient $queueRecipient = null,
+        ?QueueRecipient $queueRecipient = null,
         array $additionalParams = []
     ): string {
 

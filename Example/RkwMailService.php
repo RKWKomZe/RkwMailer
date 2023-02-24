@@ -1,14 +1,5 @@
 <?php
-
 namespace RKW\RkwMailer\Example;
-
-use Madj2k\CoreExtended\Utility\GeneralUtility as Common;
-use RKW\RkwMailer\Service\MailService;
-use RKW\RkwMailer\Utility\FrontendLocalizationUtility;
-use RKW\RkwRegistration\Domain\Model\FrontendUser;
-use RKW\RkwRegistration\Domain\Model\OptIn;
-use \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -22,6 +13,14 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+use Madj2k\CoreExtended\Utility\GeneralUtility;
+use RKW\RkwMailer\Service\MailService;
+use RKW\RkwMailer\Utility\FrontendLocalizationUtility;
+use RKW\RkwRegistration\Domain\Model\FrontendUser;
+use RKW\RkwRegistration\Domain\Model\OptIn;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * RkwMailService
@@ -50,7 +49,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    public function sendOptInEmail(FrontendUser $frontendUser, OptIn $optIn)
+    public function sendOptInEmail(FrontendUser $frontendUser, OptIn $optIn): void
     {
 
         /** Load configuration an template path */
@@ -99,7 +98,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
              * Here we use a user-specific translation based on the languageKey of the user.
              */
             $mailService->getQueueMail()->setSubject(
-                \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate(
+                FrontendLocalizationUtility::translate(
                     'rkwMailService.optIn.subject',
                     'rkw_registration',
                     null,
@@ -120,7 +119,6 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
              */
             $mailService->send();
         }
-
     }
 
 
@@ -132,13 +130,12 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\RKW\RkwRegistration\Domain\Model\BackendUser> $approvals
      * @return void
      * @throws \RKW\RkwMailer\Exception
-     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    public function sendGroupOptInEmailAdmin(FrontendUser $frontendUser, OptIn $optIn, ObjectStorage $approvals)
+    public function sendGroupOptInEmailAdmin(FrontendUser $frontendUser, OptIn $optIn, ObjectStorage $approvals): void
     {
 
         // get settings
@@ -183,7 +180,7 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
              * Here we use a user-specific translation based on the languageKey of the user.
              */
             $mailService->getQueueMail()->setSubject(
-                \RKW\RkwMailer\Utility\FrontendLocalizationUtility::translate(
+                FrontendLocalizationUtility::translate(
                     'rkwMailService.group.optInAdmin.subject',
                     'rkw_registration',
                 )
@@ -203,9 +200,8 @@ class RkwMailService implements \TYPO3\CMS\Core\SingletonInterface
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
+    protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
-        return Common::getTypoScriptConfiguration('Rkwregistration', $which);
-        //===
+        return GeneralUtility::getTypoScriptConfiguration('Rkwregistration', $which);
     }
 }

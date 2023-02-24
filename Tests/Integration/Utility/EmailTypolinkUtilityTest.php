@@ -35,13 +35,16 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/EmailTypolinkUtilityTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
@@ -62,7 +65,8 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -73,7 +77,6 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
     }
 
     //=============================================
-
 
     /**
      * @test
@@ -115,6 +118,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('target="blank" rel="nofollow" style="font-family:Arial; color:red"', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -136,6 +140,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -158,8 +163,8 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::expectExceptionCode(1652102609);
 
         EmailTypolinkUtility::getTypolinkUrl('9999 _blank test Titel');
-
     }
+
 
     /**
      * @test
@@ -180,6 +185,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -199,6 +205,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -217,6 +224,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         $result = EmailTypolinkUtility::getTypolinkUrl('http://www.google.de _blank test Titel');
         self::assertEquals('http://www.google.de', $result);
     }
+
 
     /**
      * @test
@@ -291,6 +299,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -316,6 +325,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -340,6 +350,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         $result = EmailTypolinkUtility::getTypolink('testen','http://www.google.de _self test Titel', '', 'color:red');
         self::assertEquals('<a href="http://www.google.de" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
+
 
     /**
      * @test

@@ -1,7 +1,5 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email;
-
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,11 +15,6 @@ namespace RKW\RkwMailer\ViewHelpers\Email;
  */
 
 use RKW\RkwMailer\Utility\FrontendLocalizationUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-
 
 /**
  * Class TranslateViewHelper
@@ -30,6 +23,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * @deprecated since TYPO3 v9.5 all relevant functions are already included in the core-class
  */
 class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelper
 {
@@ -40,8 +34,9 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
     public function initializeArguments()
     {
         parent::initializeArguments();
-        //$this->registerArgument('languageKey', 'string', 'Language Key', false, null);
+        trigger_error(__CLASS__ . ' is deprecated and will be removed soon', E_USER_DEPRECATED);
     }
+
 
     /**
      * Return array element by key.
@@ -51,7 +46,6 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
      * @return string
-
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
@@ -91,6 +85,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
         return $value;
     } */
 
+
     /**
      * Wrapper call to static LocalizationUtility
      *
@@ -99,13 +94,12 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelp
      * @param array $arguments Arguments to be replaced in the resulting string
      * @param string $languageKey Language key to use for this translation
      * @param string[] $alternativeLanguageKeys Alternative language keys if no translation does exist
-     *
      * @return string|null
-     */
+
     protected static function translate($id, $extensionName, $arguments, $languageKey, $alternativeLanguageKeys): ?string
     {
         return FrontendLocalizationUtility::translate($id, $extensionName, $arguments, $languageKey);
-    }
+    } */
 }
 
 

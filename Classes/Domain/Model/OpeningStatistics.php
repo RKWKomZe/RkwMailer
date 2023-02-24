@@ -27,39 +27,33 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
+
 
     /**
-     * queueMailUid
-     *
      * @var int
      */
-    protected $queueMailUid;
+    protected int $queueMailUid = 0;
+
 
     /**
-     * queueRecipient
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      */
-    protected $queueRecipient;
+    protected ?QueueRecipient $queueRecipient = null;
+
 
     /**
-     * hash
-     *
      * @var string
      */
-    protected $hash = '';
+    protected string $hash = '';
+
 
     /**
-     * counter
-     *
-     * @var integer
+     * @var int
      */
-    protected $counter = 0;
+    protected int $counter = 0;
 
 
     /**
@@ -67,10 +61,11 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
-    public function getQueueMail()
+    public function getQueueMail():? QueueMail
     {
         return $this->queueMail;
     }
+
 
     /**
      * Sets the queueMail
@@ -84,6 +79,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->setQueueMailUid($queueMail->getUid());
     }
 
+
     /**
      * Returns the queueMailUid
      *
@@ -93,6 +89,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->queueMailUid;
     }
+
 
     /**
      * Sets the queueMail
@@ -106,16 +103,16 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
 
-
     /**
      * Returns the queueRecipient
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      */
-    public function getQueueRecipient()
+    public function getQueueRecipient():? QueueRecipient
     {
         return $this->queueRecipient;
     }
+
 
     /**
      * Sets the queueRecipient
@@ -139,6 +136,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         return $this->hash;
     }
 
+
     /**
      * Sets the hash
      *
@@ -160,6 +158,7 @@ class OpeningStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->counter;
     }
+
 
     /**
      * Sets the counter

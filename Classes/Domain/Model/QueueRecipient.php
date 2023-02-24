@@ -339,7 +339,7 @@ class QueueRecipient extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the status
      *
-     * @param integer $status
+     * @param int $status
      * @return void
      */
     public function setStatus(int $status): void

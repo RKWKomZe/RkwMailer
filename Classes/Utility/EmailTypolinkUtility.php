@@ -59,7 +59,7 @@ class EmailTypolinkUtility
 
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $content = $contentObject->typoLink(
+        return $contentObject->typoLink(
             $linkText,
             [
                 'parameter'         => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
@@ -70,8 +70,6 @@ class EmailTypolinkUtility
                 'ATagParams'        => ($styles ? 'style="' . $styles . '"' : '')
             ]
         );
-
-        return $content;
     }
 
 
@@ -95,7 +93,7 @@ class EmailTypolinkUtility
 
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $content = $contentObject->typoLink_URL(
+        return $contentObject->typoLink_URL(
             [
                 'parameter'         => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
                 'forceAbsoluteUrl'  => 1, // force absolute URL
@@ -104,8 +102,6 @@ class EmailTypolinkUtility
                 'fileTarget'        => '_blank',
             ]
         );
-
-        return $content;
     }
 
 
@@ -143,12 +139,14 @@ class EmailTypolinkUtility
      *
      * @param string $parameter Example: 19 _blank - "testtitle with whitespace" &X=y
      * @param string $additionalParameters
-     *
      * @return string The final TypoLink string
      * @see \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
      */
-    protected static function createTypolinkParameterFromArguments($parameter, $additionalParameters = '')
-    {
+    protected static function createTypolinkParameterFromArguments(
+        string $parameter,
+        string $additionalParameters = ''
+    ): string {
+
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typolinkConfiguration = $typoLinkCodec->decode($parameter);
 

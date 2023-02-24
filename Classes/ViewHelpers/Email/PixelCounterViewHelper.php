@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email;
 
 /*
@@ -39,6 +38,7 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
 
     use CompileWithRenderStatic;
 
+
     /**
      * @var bool
      */
@@ -48,9 +48,10 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for counter');
@@ -134,7 +135,7 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    static protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    static protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
         return \Madj2k\CoreExtended\Utility\GeneralUtility::getTypoScriptConfiguration('Rkwmailer', $which);
     }

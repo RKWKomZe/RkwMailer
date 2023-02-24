@@ -44,7 +44,8 @@ class MailCacheTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
 
@@ -55,21 +56,21 @@ class MailCacheTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Cache\MailCache
+     * @var \RKW\RkwMailer\Cache\MailCache|null
      */
-    private $subject;
+    private ?MailCache $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager<null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
@@ -85,7 +86,8 @@ class MailCacheTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 static::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -99,9 +101,7 @@ class MailCacheTest extends FunctionalTestCase
 
     }
 
-
     //=============================================
-
 
     /**
      * @test
@@ -156,6 +156,7 @@ class MailCacheTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -188,7 +189,6 @@ class MailCacheTest extends FunctionalTestCase
     }
 
     //=============================================
-
 
     /**
      * @test
@@ -242,6 +242,7 @@ class MailCacheTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -267,6 +268,7 @@ class MailCacheTest extends FunctionalTestCase
         self::assertEquals('Abc', $this->subject->getPlaintextBody($queueRecipient));
 
     }
+
 
     /**
      * @test
@@ -299,7 +301,6 @@ class MailCacheTest extends FunctionalTestCase
     }
 
     //=============================================
-
 
     /**
      * @test
@@ -353,6 +354,7 @@ class MailCacheTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -378,6 +380,7 @@ class MailCacheTest extends FunctionalTestCase
         self::assertEquals('Abc', $this->subject->getHtmlBody($queueRecipient));
 
     }
+
 
     /**
      * @test
@@ -410,6 +413,7 @@ class MailCacheTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -462,6 +466,7 @@ class MailCacheTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -487,6 +492,7 @@ class MailCacheTest extends FunctionalTestCase
         self::assertEquals('Abc', $this->subject->getCalendarBody($queueRecipient));
 
     }
+
 
     /**
      * @test
@@ -519,6 +525,7 @@ class MailCacheTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * TearDown
      */

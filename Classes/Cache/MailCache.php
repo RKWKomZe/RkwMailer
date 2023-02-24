@@ -46,7 +46,7 @@ class MailCache extends AbstractCache
      * Sets the plaintextBody
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @param string                                     $plaintextBody
+     * @param string $plaintextBody
      * @return void
      * @throws \RKW\RkwMailer\Exception
      */

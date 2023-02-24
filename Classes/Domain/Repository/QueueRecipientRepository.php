@@ -15,9 +15,12 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * QueueRecipientRepository
@@ -31,10 +34,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class QueueRecipientRepository extends AbstractRepository
 {
 
-    public function initializeObject()
+    /**
+     * @return void
+     */
+    public function initializeObject(): void
     {
         parent::initializeObject();
-        $this->defaultQuerySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
 
@@ -43,14 +49,14 @@ class QueueRecipientRepository extends AbstractRepository
      * findAllByQueueMailWithStatusWaiting
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param integer $limit
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     * @param int $limit
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * comment: implicitly tested
      */
     public function findAllByQueueMailWithStatusWaiting(
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         int $limit = 25
-    ) {
+    ): QueryResultInterface {
 
         $query = $this->createQuery();
         $query->matching(
@@ -73,14 +79,13 @@ class QueueRecipientRepository extends AbstractRepository
      *
      * @param int $uid
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      * comment: implicitly tested
      */
     public function findOneByUidAndQueueMail(
         int $uid,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    )
-    {
+    ):? QueueRecipient {
 
         $query = $this->createQuery();
         $query->matching(
@@ -98,13 +103,13 @@ class QueueRecipientRepository extends AbstractRepository
      *
      * @param string $email
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|NULL
+     * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      * comment: implicitly tested
      */
     public function findOneByEmailAndQueueMail(
         string $email,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    ) {
+    ):? QueueRecipient {
 
         $query = $this->createQuery();
         $query->matching(
@@ -174,7 +179,6 @@ class QueueRecipientRepository extends AbstractRepository
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      * comment: implicitly tested
      */
     public function countDeliveredByQueueMail(
@@ -198,7 +202,6 @@ class QueueRecipientRepository extends AbstractRepository
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      * comment: implicitly tested
      */
     public function countFailedByQueueMail(
@@ -216,12 +219,12 @@ class QueueRecipientRepository extends AbstractRepository
         return $query->execute()->count();
     }
 
+
     /**
      * countDeferredByQueueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      * comment: implicitly tested
      */
     public function countDeferredByQueueMail(
@@ -245,7 +248,6 @@ class QueueRecipientRepository extends AbstractRepository
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      * comment: implicitly tested
      */
     public function countBouncedByQueueMail(
@@ -268,11 +270,11 @@ class QueueRecipientRepository extends AbstractRepository
      * findAllLastBounced
      *
      * @param int $limit
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface|NULL
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @todo rework
      * @todo write tests
      */
-    public function findAllLastBounced($limit = 100)
+    public function findAllLastBounced(int $limit = 100): QueryResultInterface
     {
 
         $query = $this->createQuery();

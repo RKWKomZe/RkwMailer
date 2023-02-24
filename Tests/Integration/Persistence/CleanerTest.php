@@ -45,7 +45,8 @@ class CleanerTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
 
@@ -56,49 +57,52 @@ class CleanerTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Persistence\Cleaner
+     * @var \RKW\RkwMailer\Persistence\Cleaner|null
      */
-    private $subject;
+    private ?Cleaner $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
-
-    /**
-     * persistenceManager
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    private $persistenceManager;
-
-    /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     */
-    private $queueMailRepository;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null
      */
-    private $queueRecipientRepository;
+    private ?PersistenceManager $persistenceManager = null;
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $mailingStatisticsRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $openingStatisticsRepository;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
+     * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository|null
      */
-    private $clickStatisticsRepository;
+    private ?MailingStatisticsRepository $mailingStatisticsRepository = null;
+
+
+    /**
+     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository|null
+     */
+    private ?OpeningStatisticsRepository $openingStatisticsRepository = null;
+
+
+    /**
+     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository|null
+     */
+    private ?ClickStatisticsRepository $clickStatisticsRepository = null;
+
 
     /**
      * Setup
@@ -113,7 +117,8 @@ class CleanerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -130,8 +135,6 @@ class CleanerTest extends FunctionalTestCase
         $this->clickStatisticsRepository = $this->objectManager->get(ClickStatisticsRepository::class);
 
     }
-
-
 
     //=============================================
 
@@ -162,6 +165,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertEquals(1, $result);
         self::assertCount(1, $this->queueMailRepository->findAll());
     }
+
 
     /**
      * @test
@@ -297,6 +301,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(2, $this->clickStatisticsRepository->findAll());
         self::assertCount(0, $this->clickStatisticsRepository->findByQueueMail($queueMail));
     }
+
     //=============================================
 
     /**
@@ -334,9 +339,8 @@ class CleanerTest extends FunctionalTestCase
 
         self::assertFalse($result);
         self::assertCount(2, $this->queueMailRepository->findAll());
-
-
     }
+
 
     /**
      * @test
@@ -368,8 +372,8 @@ class CleanerTest extends FunctionalTestCase
 
         self::assertFalse($result);
         self::assertCount(1, $this->queueMailRepository->findAll());
-
     }
+
 
     /**
      * @test
@@ -403,6 +407,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(1, $this->queueMailRepository->findAll());
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -435,6 +440,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertFalse($result);
         self::assertCount(1, $this->queueMailRepository->findAll());
     }
+
 
     /**
      * @test
@@ -511,6 +517,7 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(1, $this->queueMailRepository->findByType(1));
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -554,8 +561,8 @@ class CleanerTest extends FunctionalTestCase
         self::assertCount(1, $this->mailingStatisticsRepository->findByQueueMail(100));
         self::assertCount(2, $this->openingStatisticsRepository->findByQueueMail(100));
         self::assertCount(2, $this->clickStatisticsRepository->findByQueueMail(100));
-
     }
+
 
     /**
      * @test

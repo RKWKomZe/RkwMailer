@@ -30,10 +30,12 @@ class EmailValidator
 {
 
     /**
+     * Cleans email
+     *
      * @param string $email
      * @return string
      */
-    public static function cleanUpEmail($email)
+    public static function cleanUpEmail(string $email): string
     {
         return trim(str_replace('mailto:', '', $email));
     }

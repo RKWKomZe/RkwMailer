@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\OpeningStatistics;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -38,8 +39,9 @@ class OpeningStatisticsRepository extends AbstractRepository
 
     /**
      * initializeObject
+     * @return void
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
         parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -59,7 +61,7 @@ class OpeningStatisticsRepository extends AbstractRepository
     public function findOneByHashAndQueueMail(
         string $hash,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    ) {
+    ):? OpeningStatistics {
 
         $query = $this->createQuery();
         $query->matching(

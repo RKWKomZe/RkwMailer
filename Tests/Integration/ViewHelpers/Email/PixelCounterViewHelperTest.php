@@ -21,7 +21,6 @@ use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-
 /**
  * PixelCounterViewHelperTest
  *
@@ -43,34 +42,39 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $queueMailRepository;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $objectManager;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -86,7 +90,8 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -108,6 +113,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
 
     }
 
+    //=============================================
 
     /**
      * @test
@@ -137,6 +143,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         self::assertStringNotContainsString('<img', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -164,6 +171,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
         self::assertStringNotContainsString('<img', $result);
     }
+
 
     /**
      * @test
@@ -196,7 +204,6 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString('<img src="http://www.rkw-kompetenzzentrum.rkw.local/pixelcounterseite/rkw-mailer/track/1/1?no_cache=1" width="1" height="1" alt="" />', $result);
 
     }
-
 
     //=============================================
 

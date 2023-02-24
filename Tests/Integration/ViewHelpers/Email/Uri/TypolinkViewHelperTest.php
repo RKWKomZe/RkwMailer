@@ -41,25 +41,27 @@ class TypolinkViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
+
     /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $standAloneViewHelper;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
 
 
     /**
@@ -74,7 +76,8 @@ class TypolinkViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ],
@@ -90,10 +93,9 @@ class TypolinkViewHelperTest extends FunctionalTestCase
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
+    //=============================================
 
     /**
      * @test
@@ -134,7 +136,6 @@ class TypolinkViewHelperTest extends FunctionalTestCase
 
         self::assertEquals($expected, $result);
     }
-
 
     //=============================================
 
