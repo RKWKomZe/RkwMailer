@@ -15,16 +15,13 @@ namespace RKW\RkwMailer\Cache;
  * The TYPO3 project - inspiring people to share!
 */
 
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogLevel;
-use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * RenderCache
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -53,7 +50,7 @@ class RenderCache extends AbstractCache
                 1634648093
             );
         }
-        
+
         return 'ViewHelperCache_' . intval($queueMail->getUid()) . '_' . ($isPlaintext ? 'plaintext' : 'html') . '_' . sha1($additionalIdentifier);
     }
 
@@ -67,7 +64,7 @@ class RenderCache extends AbstractCache
      */
     public function replaceMarkers (string $content, array $marker = []): string
     {
-    
+
         // replace marker
         foreach ($marker as $key => $value) {
 

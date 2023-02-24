@@ -20,16 +20,19 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
  * BounceMailRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class BounceMailRepository extends AbstractRepository
 {
 
-    public function initializeObject()
+    /**
+     * @return void
+     */
+    public function initializeObject(): void
     {
-
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
     }
@@ -40,12 +43,12 @@ class BounceMailRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param string $email
      * @param string $type
      * @return int
-     * @toDo: write tests
+     * @todo write tests
      */
     public function countByEmailAndType (
-        string $email, 
+        string $email,
         string $type = 'hard'
-    ) {
+    ): int {
 
         $query = $this->createQuery();
         $query->matching(

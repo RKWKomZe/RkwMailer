@@ -15,10 +15,11 @@ namespace RKW\RkwMailer\Tests\Integration\ViewHelpers\Email\Uri;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\View\EmailStandaloneView;
 use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -26,90 +27,94 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * ActionViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class ActionViewHelperTest extends FunctionalTestCase
 {
-    
+
     /**
      * @const
      */
     const FIXTURE_PATH = __DIR__ . '/ActionViewHelperTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/core_extended',
+        'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $queueMailRepository;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $objectManager;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/Uri/ActionViewHelperTest/Fixtures/RealUrlConfiguration.php');
-
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
-
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
-        
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
+
     }
+
+    //=============================================
 
     /**
      * @test
@@ -130,17 +135,18 @@ class ActionViewHelperTest extends FunctionalTestCase
         * Then the link uses the http-protocol
         * Then no cHash is used
          */
-       
+
         $this->standAloneViewHelper->setTemplate('Check10.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/tx-rkw-basics/media/list/', $result);
-        self::assertNotContains('cHash=', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/coreextended/mediasources', $result);
+        self::assertStringNotContainsString('cHash=', $result);
     }
 
-    
+
     /**
      * @test
      * @throws \TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException
+     * @todo this test runs smoothly if you select the ViewHelper-tests directory. If you run ALL tests, this test fails for mysterious reasons
      */
     public function itRendersAbsoluteLinkHttps ()
     {
@@ -158,24 +164,36 @@ class ActionViewHelperTest extends FunctionalTestCase
          * Then no cHash is used
          */
         $this->setUpFrontendRootPage(
-            100,
+            10,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/RootpageHttps.typoscript',
+            ],
+            ['rkw.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/configHttps.yaml']
+        );
+
+        // Flush all caches because of file-cache for YAML-files!
+        FrontendSimulatorUtility::resetFrontendEnvironment();
+        GeneralUtility::makeInstance(CacheManager::class)->flushCaches();
+        sleep(3);
+
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 10);
+        $this->standAloneViewHelper->setTemplate('Check10.html');
+        $this->standAloneViewHelper->setTemplateRootPaths(
+            [
+                0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-        FrontendSimulatorUtility::resetFrontendEnvironment();
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
-
-        $this->standAloneViewHelper->setTemplate('Check10.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('https://www.rkw-kompetenzzentrum.rkw.local/tx-rkw-basics/media/list/', $result);
-        self::assertNotContains('cHash=', $result);
+
+        /** IMPORTANT HINT IN PhpDocs !!! */
+        self::assertStringContainsString('https://www.rkw.local/coreextended/mediasources', $result);
+        self::assertStringNotContainsString('cHash=', $result);
     }
-    
-    
+
+
     /**
      * @test
      * @throws \Exception
@@ -199,8 +217,8 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check20.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/test/tx-rkw-basics/media/list/', $result);
-        self::assertNotContains('cHash=', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/coreextended/mediasources', $result);
+        self::assertStringNotContainsString('cHash=', $result);
     }
 
 
@@ -228,9 +246,10 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check40.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/test/tx-rkw-basics/media/list/', $result);
-        self::assertNotContains('cHash=', $result);
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/test/coreextended/mediasources', $result);
+        self::assertStringNotContainsString('cHash=', $result);
     }
+
 
     /**
      * @test
@@ -257,11 +276,11 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $this->standAloneViewHelper->setTemplate('Check50.html');
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/pagetype-print/tx-rkw-basics/media/list/', $result);
-        self::assertNotContains('cHash=', $result);
-
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/coreextended/mediasources/print', $result);
+        self::assertStringNotContainsString('cHash=', $result);
     }
-    
+
+
     /**
      * @test
      * @throws \Exception
@@ -286,7 +305,7 @@ class ActionViewHelperTest extends FunctionalTestCase
          * Then no cHash is used
          * Then a noCache-parameter is set
          */
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
 
@@ -294,16 +313,13 @@ class ActionViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
         $result = $this->standAloneViewHelper->render();
 
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
-        self::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
-        self::assertContains('http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2F', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);       
-
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/?', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2F', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('no_cache=1', $result);
 
     }
+
 
     /**
      * @test
@@ -339,15 +355,13 @@ class ActionViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
         $result = $this->standAloneViewHelper->render();
 
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
-        self::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
-       
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/1/?', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2F', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('no_cache=1', $result);
+
     }
+
 
     /**
      * @test
@@ -387,15 +401,11 @@ class ActionViewHelperTest extends FunctionalTestCase
 
         $result = $this->standAloneViewHelper->render();
 
-        self::assertContains('http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?', $result);
-        self::assertContains('&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Burl%5D=', $result);
-        self::assertContains('http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Fpagetype-print%2Ftest%2F', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertNotContains('type=999', $result);
-        self::assertContains('/nc/', $result);
-
+        self::assertStringContainsString('http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1/1/?', $result);
+        self::assertStringContainsString('tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.rkw-kompetenzzentrum.rkw.local%2Ftest%2Fcoreextended%2Fmediasources%2Fprint%2F', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringNotContainsString('type=98', $result);
+        self::assertStringContainsString('no_cache=1', $result);
 
     }
 
@@ -404,7 +414,7 @@ class ActionViewHelperTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

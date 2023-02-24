@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\ClickStatistics;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -23,11 +24,11 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  * ClickStatisticsRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class ClickStatisticsRepository extends AbstractRepository
 {
 
     /** @var array $defaultOrderings */
@@ -35,16 +36,19 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
         'counter' => QueryInterface::ORDER_DESCENDING,
         'url' => QueryInterface::ORDER_ASCENDING,
     ];
-    
-    
+
+
     /**
      * initializeObject
+     *
+     * @return void
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
-        
+
     }
 
 
@@ -52,14 +56,13 @@ class ClickStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repositor
      * findOneByHashAndQueueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
-     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return \RKW\RkwMailer\Domain\Model\ClickStatistics
-     * @comment implicitly tested
+     * @return \RKW\RkwMailer\Domain\Model\ClickStatistics|null
+     * comment: implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    ) {
+    ):? ClickStatistics {
 
         $query = $this->createQuery();
 

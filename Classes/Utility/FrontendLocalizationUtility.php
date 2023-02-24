@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Utility;
 
 /*
@@ -19,13 +18,23 @@ namespace RKW\RkwMailer\Utility;
  * FrontendLocalization
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @see \TYPO3\CMS\Extbase\Utility\LocalizationUtility
+ * @deprecated since TYPO3 v9.5 all relevant functions are already included in the core-class
  */
-class FrontendLocalizationUtility extends \RKW\RkwBasics\Utility\FrontendLocalizationUtility
+class FrontendLocalizationUtility extends \TYPO3\CMS\Extbase\Utility\LocalizationUtility
 {
 
+    /**
+     * constructor
+     */
+    public function __construct() {
+        trigger_error(
+            __CLASS__ . ' is deprecated and will be removed soon. Use \TYPO3\CMS\Extbase\Utility\LocalizationUtility instead.',
+            E_USER_DEPRECATED
+        );
+    }
 
 }

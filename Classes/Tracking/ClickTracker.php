@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Tracking;
 
 /*
@@ -16,17 +15,22 @@ namespace RKW\RkwMailer\Tracking;
  */
 
 use RKW\RkwMailer\Domain\Model\ClickStatistics;
+use RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\LinkRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Utility\StatisticsUtility;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * ClickTracker
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -34,51 +38,44 @@ class ClickTracker
 {
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
+
 
     /**
-     * LinkRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\LinkRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $linkRepository;
+    protected LinkRepository $linkRepository;
 
-    
+
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickStatisticsRepository;
+    protected ClickStatisticsRepository $clickStatisticsRepository;
+
 
     /**
-     * Persistence Manager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -104,11 +101,11 @@ class ClickTracker
             $this->persistTrackingData($queueMail, $string);
             return true;
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Get the redirect url with all relevant parameters
      *
@@ -122,10 +119,10 @@ class ClickTracker
         int $queueMailId = 0,
         int $queueMailRecipientId = 0
     ): string {
-        
+
         // decode url (just to be sure)
         $url = urldecode($url);
-        
+
         // additional params
         $additionalParams = [];
 
@@ -148,15 +145,13 @@ class ClickTracker
 
         return StatisticsUtility::addParamsToUrl($url, $additionalParams);
     }
-    
-    
+
+
 
     /**
      * Get getUrl by Hash
      *
      * @param string $hash
-     * @param int $queueMailId
-     * @param int $queueMailRecipientId
      * @return string
      * @deprecated
      */
@@ -169,13 +164,13 @@ class ClickTracker
 
         return '';
     }
-    
-        
+
+
     /**
      * Persists tracking-data to database
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @param string $hash
+     * @param string $url
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
@@ -183,11 +178,11 @@ class ClickTracker
     protected function persistTrackingData (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
         string $url
-    ): void
-    {
+    ): void {
+
         // decode url (just to be sure)
         $url = urldecode($url);
-        
+
         // generate hash from url
         $hash = StatisticsUtility::generateLinkHash($url);
 
@@ -230,14 +225,14 @@ class ClickTracker
             );
         }
     }
-    
-    
+
+
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);

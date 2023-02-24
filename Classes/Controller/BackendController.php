@@ -15,6 +15,11 @@ namespace RKW\RkwMailer\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use RKW\RkwMailer\Persistence\Cleaner;
 use RKW\RkwMailer\Utility\TimePeriodUtility;
 
 /**
@@ -22,7 +27,7 @@ use RKW\RkwMailer\Utility\TimePeriodUtility;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -30,64 +35,55 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 {
 
     /**
-     * mailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
 
-    
+
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $clickStatisticsRepository;
-    
-    
+    protected ClickStatisticsRepository $clickStatisticsRepository;
+
+
     /**
-     * queueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
 
 
     /**
-     * queueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * cleaner
-     *
      * @var \RKW\RkwMailer\Persistence\Cleaner
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $cleaner;
-    
-    
+    protected Cleaner $cleaner;
+
+
     /**
      * Shows statistics
      *
      * @param int $timeFrame
      * @param int $mailType
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function statisticsAction($timeFrame = 0, $mailType = -1)
+    public function statisticsAction(int $timeFrame = 0, int $mailType = -1)
     {
 
         $period = TimePeriodUtility::getTimePeriod($timeFrame);
         $mailingStatisticsList = $this->mailingStatisticsRepository->findByTstampFavSendingAndType(
-            $period['from'], 
-            $period['to'], 
+            $period['from'],
+            $period['to'],
             $mailType
         );
 
@@ -98,7 +94,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         }
         asort($mailTypeList);
 
-        
+
         $this->view->assignMultiple(
             array(
                 'mailingStatisticsList' => $mailingStatisticsList,
@@ -127,7 +123,6 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     }
 
 
-
     /**
      * Lists all e-mails in queue
      *
@@ -145,7 +140,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $period['to'],
             $mailType
         );
-        
+
         $mailTypeList = [];
         if (is_array($this->settings['types'])) {
             foreach ($this->settings['types'] as $key => $value)
@@ -162,6 +157,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             )
         );
     }
+
 
     /**
      * Pauses given queueMail
@@ -181,6 +177,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->redirect('list');
     }
 
+
     /**
      * Continues given queueMail
      *
@@ -198,6 +195,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->redirect('list');
     }
+
 
     /**
      * Resets given queueMail
@@ -220,7 +218,7 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
             $this->mailingStatisticsRepository->update($mailingStatistics);
         }
         $this->queueMailRepository->update($queueMail);
-        
+
         // reset status of all recipients
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $recipient */
         foreach ($this->queueRecipientRepository->findByQueueMail($queueMail) as $recipient) {
@@ -230,9 +228,10 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         // reset statistics by queueMail
         $this->cleaner->deleteStatistics($queueMail);
-        
+
         $this->redirect('list');
     }
+
 
     /**
      * Deletes given queueMail and it's corresponding data
@@ -250,6 +249,5 @@ class BackendController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         $this->redirect('list');
     }
-
 
 }

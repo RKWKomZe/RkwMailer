@@ -16,7 +16,7 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Utility\QueueMailUtility;
@@ -26,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * QueueMailUtilityTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -39,53 +39,53 @@ class QueueMailUtilityTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/QueueMailUtilityTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/rkw_registration',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
+
     /**
-     * @var \RKW\RkwMailer\Utility\QueueMailUtility
+     * @var \RKW\RkwMailer\Utility\QueueMailUtility|null
      */
-    private $subject;
+    private ?QueueMailUtility $subject = null;
+
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             100,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
         $this->subject = GeneralUtility::makeInstance(QueueMailUtility::class);
-
     }
 
-
     //=============================================
-
-    
 
     /**
      * @test
@@ -99,7 +99,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          * When the method is called
          * Then a QueueMail-object is returned
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail();
         self::assertInstanceOf(QueueMail::class, $result);
@@ -140,8 +140,8 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals('reply@mein.rkw.de', $result->getReplyToAddress());
         self::assertEquals('bounces@mein.rkw.de', $result->getReturnPath());
 
-        
     }
+
 
     /**
      * @test
@@ -178,6 +178,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
 
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -194,7 +195,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          */
 
         FrontendSimulatorUtility::simulateFrontendEnvironment(100);
-       
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail();
         self::assertInstanceOf(QueueMail::class, $result);
@@ -219,7 +220,7 @@ class QueueMailUtilityTest extends FunctionalTestCase
          * Then a QueueMail-object is returned
          * Then pid-property is set to the storagePid given
          */
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $result */
         $result = $this->subject->initQueueMail(987);
         self::assertInstanceOf(QueueMail::class, $result);
@@ -247,12 +248,13 @@ class QueueMailUtilityTest extends FunctionalTestCase
         self::assertEquals(QueueMailUtility::STATUS_DRAFT, $result->getStatus());
 
     }
-    
-    
+
+    //=============================================
+
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

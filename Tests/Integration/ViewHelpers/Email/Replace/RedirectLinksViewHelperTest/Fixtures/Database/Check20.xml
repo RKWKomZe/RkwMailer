@@ -3,7 +3,7 @@
 
     <tx_rkwmailer_domain_model_queuemail>
         <uid>1</uid>
-        <pid>0</pid>
+        <pid>1</pid>
         <from_name>Test</from_name>
         <from_address />
         <reply_to_name>RKW Reply</reply_to_name>

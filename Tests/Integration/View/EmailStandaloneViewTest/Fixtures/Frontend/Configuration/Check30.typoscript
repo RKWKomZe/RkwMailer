@@ -5,7 +5,7 @@ plugin.tx_rkwmailer {
         templateRootPaths >
         partialRootPaths >
     }
-        
+
     persistence {
         # cat=module.tx_rkwmailer//a; type=string; label=Default storage PID
         storagePid = 1010
@@ -53,8 +53,6 @@ config {
     sendCacheHeaders = 0
     absRefPrefix = /
     contentObjectExceptionHandler = 0
-
-    tx_realurl_enable = 1
 }
 
 page = PAGE

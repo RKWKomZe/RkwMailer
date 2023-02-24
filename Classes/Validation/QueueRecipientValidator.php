@@ -14,26 +14,29 @@ namespace RKW\RkwMailer\Validation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\QueueRecipient;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * QueueRecipientValidator
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 {
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -42,17 +45,16 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return boolean
      */
-    public function validate(
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-    ): bool {
+    public function validate(QueueRecipient $queueRecipient): bool
+    {
 
         $valid = true;
 
         if (!$queueRecipient->getEmail()) {
             $this->getLogger()->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'No email-address is set (queueRecipient with uid %s).', 
+                    'No email-address is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
@@ -67,15 +69,15 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
                     $queueRecipient->getUid()
                 )
             );
-            
+
             $valid = false;
         }
-        
+
         if (!$queueRecipient->getFirstName()) {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'No firstName is set (queueRecipient with uid %s).', 
+                    'No firstName is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
@@ -83,14 +85,14 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
 
         if (!$queueRecipient->getLastName()) {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'No lastName is set (queueRecipient with uid %s).', 
+                    'No lastName is set (queueRecipient with uid %s).',
                     $queueRecipient->getUid()
                 )
             );
         }
-        
+
         return $valid;
     }
 
@@ -100,11 +102,11 @@ class QueueRecipientValidator implements \TYPO3\CMS\Core\SingletonInterface
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
 
-        if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        if (!$this->logger instanceof Logger) {
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

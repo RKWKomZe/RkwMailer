@@ -65,8 +65,6 @@ config {
     sendCacheHeaders = 0
     absRefPrefix = /
     contentObjectExceptionHandler = 0
-
-    tx_realurl_enable = 1
 }
 
 page = PAGE

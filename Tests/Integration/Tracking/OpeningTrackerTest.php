@@ -26,7 +26,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * OpeningTracker
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -46,41 +46,46 @@ class OpeningTrackerTest extends FunctionalTestCase
      */
     const NUMBER_OF_STATISTIC_OPENINGS = 3;
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_registration',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [];
 
-    /**
-     * @var \RKW\RkwMailer\Tracking\OpeningTracker
-     */
-    private $subject = null;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
+     * @var \RKW\RkwMailer\Tracking\OpeningTracker|null
      */
-    private $openingStatisticsRepository;
+    private ?OpeningTracker $subject = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository|null
      */
-    private $objectManager = null;
+    private ?OpeningStatisticsRepository $openingStatisticsRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -89,7 +94,6 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -100,8 +104,9 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->openingStatisticsRepository = $this->objectManager->get(OpeningStatisticsRepository::class);
         $this->subject = $this->objectManager->get(OpeningTracker::class);
     }
-    
+
     //=============================================
+
     /**
      * @test
      */
@@ -115,13 +120,14 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Given a persistent queueRecipient-object
          * When the method is called
          * Then false is returned
-         * Then no entry in the statistic table is generated 
+         * Then no entry in the statistic table is generated
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check10.xml');
         self::assertFalse($this->subject->track(10, 10));
         self::assertEmpty($this->openingStatisticsRepository->findAll());
 
     }
+
 
     /**
      * @test
@@ -141,8 +147,8 @@ class OpeningTrackerTest extends FunctionalTestCase
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
         self::assertFalse($this->subject->track(20, 20));
         self::assertEmpty($this->openingStatisticsRepository->findAll());
-
     }
+
 
     /**
      * @test
@@ -166,7 +172,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then this entry in the statistic table has the counter-property set to one
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
-        
+
         self::assertTrue($this->subject->track(30, 30));
 
         $statisticResultList = $this->openingStatisticsRepository->findAll();
@@ -201,7 +207,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then this entry in the statistic table has a queueMail-Object set
          * Then the queueMail-Object of this entry in the statistic table has the uid of the given queueMail
          * Then this entry in the statistic table has a queueRecipient-Object set
-         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient 
+         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient
          * Then this entry in the statistic table has a unique value for the hash-property set
          * Then this entry in the statistic table has the counter-property set to one
          */
@@ -218,10 +224,11 @@ class OpeningTrackerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
         self::assertEquals(40, $openingStatistics->getQueueMail()->getUid());
         self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        self::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertEquals(40, $openingStatistics->getQueueRecipient()->getUid());
         self::assertNotEmpty($openingStatistics->getHash());
         self::assertEquals(1, $openingStatistics->getCounter());
     }
+
 
     /**
      * @test
@@ -241,7 +248,7 @@ class OpeningTrackerTest extends FunctionalTestCase
          * Then the existing entry in the statistic table has a queueMail-Object set
          * Then the queueMail-Object of this entry in the statistic table has the uid of the given queueMail
          * Then this entry in the statistic table has a queueRecipient-Object set
-         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient         
+         * Then the queueRecipient-Object of this entry in the statistic table has the uid of the given queueRecipient
          * Then this entry in the statistic table has a unique value for the hash-property set
          * Then this entry in the statistic table has the counter-property set to two
          */
@@ -257,18 +264,17 @@ class OpeningTrackerTest extends FunctionalTestCase
         self::assertInstanceOf(QueueMail::class, $openingStatistics->getQueueMail());
         self::assertEquals(50, $openingStatistics->getQueueMail()->getUid());
         self::assertInstanceOf(QueueRecipient::class, $openingStatistics->getQueueRecipient());
-        self::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());        
+        self::assertEquals(50, $openingStatistics->getQueueRecipient()->getUid());
         self::assertNotEmpty($openingStatistics->getHash());
         self::assertEquals(2, $openingStatistics->getCounter());
     }
 
     //=============================================
 
-
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

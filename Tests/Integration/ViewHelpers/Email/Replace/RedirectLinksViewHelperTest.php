@@ -21,12 +21,11 @@ use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-
 /**
  * RedirectLinksViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -43,58 +42,60 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/core_extended',
+        'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $queueMailRepository;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $objectManager;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/Replace/RedirectLinksViewHelperTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -103,7 +104,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
@@ -111,6 +112,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         );
     }
 
+    //=============================================
 
     /**
      * @test
@@ -142,6 +144,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         self::assertEquals($expected, $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -162,7 +165,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Then a queueMail-parameter is set in the redirect-links
          * Then no queueRecipient-parameter is set in the redirect-links
          * Then no cHash-parameter is set
-         * Then a noCache-parameter is set 
+         * Then a noCache-parameter is set
          */
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
@@ -175,11 +178,11 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertNotContains('tx_rkwmailer_rkwmailer%5Buid%5D', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
+        self::assertStringContainsString('rkw-mailer/redirect/1?', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('no_cache=1', $result);
     }
+
 
     /**
      * @test
@@ -197,7 +200,7 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
          * Given a queueRecipient-object is defined
          * When the ViewHelper is rendered
          * Then all normal links are replaced by a redirect link
-         * Then anchor- and e-mail-links are left unchanged 
+         * Then anchor- and e-mail-links are left unchanged
          * Then a queueMail-parameter is set in the redirect-links
          * Then a queueRecipient-parameter is set in the redirect-links
          * Then no cHash-parameter is set
@@ -216,19 +219,17 @@ class RedirectLinksViewHelperTest extends FunctionalTestCase
         $result = $this->standAloneViewHelper->render();
 
         self::assertEquals($expected, $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Bmid%5D=1', $result);
-        self::assertContains('tx_rkwmailer_rkwmailer%5Buid%5D=1', $result);
-        self::assertNotContains('cHash=', $result);
-        self::assertContains('/nc/', $result);
+        self::assertStringContainsString('rkw-mailer/redirect/1/1?', $result);
+        self::assertStringNotContainsString('cHash=', $result);
+        self::assertStringContainsString('no_cache=1', $result);
     }
-
 
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

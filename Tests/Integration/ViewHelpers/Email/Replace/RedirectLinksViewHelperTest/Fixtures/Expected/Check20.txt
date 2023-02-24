@@ -1,18 +1,19 @@
 
 
 
-    Testen Sie hier: http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.google.de&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking
-    Testen Sie da: [http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.yahoo.de%2F%23anchor-1&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking
+    Testen Sie hier: http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1?no_cache=1&tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.google.de
+    Testen Sie da: [http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1?no_cache=1&tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.yahoo.de%2F%23anchor-1
     Testen Sie dort: mail@rkw.de
     Testen Sie überall: #anchor-2
 
 
 
     <p>
-        <a href="http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.google.de&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking">Testen Sie hier</a>
-        <a href="http://www.rkw-kompetenzzentrum.rkw.local/nc/umleitungsseite-der-umleitungen/?tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.yahoo.de%2F%23anchor-1&tx_rkwmailer_rkwmailer%5Bmid%5D=1&tx_rkwmailer_rkwmailer%5Baction%5D=redirect&tx_rkwmailer_rkwmailer%5Bcontroller%5D=Tracking">Testen Sie da</a>
+        <a href="http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1?no_cache=1&tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.google.de">Testen Sie hier</a>
+        <a href="http://www.rkw-kompetenzzentrum.rkw.local/umleitungsseite-der-umleitungen/rkw-mailer/redirect/1?no_cache=1&tx_rkwmailer_rkwmailer%5Burl%5D=http%3A%2F%2Fwww.yahoo.de%2F%23anchor-1">Testen Sie da</a>
         <a href="mailto:mail@rkw.de">Testen Sie dort</a>
         <a href="#anchor-2">Testen Sie überall</a>
     </p>
+
 
 

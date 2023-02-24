@@ -1,7 +1,6 @@
 <?php
 namespace RKW\RkwMailer\Tests\Integration\Utility;
 
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -26,7 +25,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * StatisticsUtilityTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -44,9 +43,11 @@ class StatisticsUtilityTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
@@ -55,46 +56,48 @@ class StatisticsUtilityTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager = null;
-    
-    
+    private ?ObjectManager $objectManager = null;
+
+
     /**
-     * @var \RKW\RkwMailer\Utility\StatisticsUtility
+     * @var \RKW\RkwMailer\Utility\StatisticsUtility|null
      */
-    private $subject;
+    private ?StatisticsUtility $subject = null;
+
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-       
+
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH .  '/Database/Global.xml');
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
         );
 
         $this->subject = GeneralUtility::makeInstance(StatisticsUtility::class);
-        
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
     }
-
 
     //=============================================
 
@@ -113,13 +116,13 @@ class StatisticsUtilityTest extends FunctionalTestCase
          * Then the SHA1-Hash does not include the protocol
          * Then the SHA1-Hash does not include a trailing slash
          */
-        
+
         $link = 'https://www.php.net/manual/de/';
         $linkTrimmed = 'www.php.net/manual/de';
         $expected = sha1($linkTrimmed);
-        
+
         $result = $this->subject::generateLinkHash($link);
-        self::assertEquals($expected, $result);        
+        self::assertEquals($expected, $result);
     }
 
 
@@ -141,12 +144,13 @@ class StatisticsUtilityTest extends FunctionalTestCase
          */
         $linkOne = 'https://www.php.net/manual/de/?test=1';
         $linkTwo = 'https://www.php.net/manual/de/?test=2';
-        
+
         $resultOne = $this->subject::generateLinkHash($linkOne);
         $resultTwo = $this->subject::generateLinkHash($linkTwo);
 
         self::assertNotEquals($resultOne, $resultTwo);
     }
+
 
     /**
      * @test
@@ -169,10 +173,9 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $result = $this->subject::generateLinkHash($link);
         self::assertEquals($expected, $result);
     }
-    
-    
+
     //=============================================
-    
+
     /**
      * @test
      * @throws \Exception
@@ -184,15 +187,16 @@ class StatisticsUtilityTest extends FunctionalTestCase
          *
          * Given a queueRecipient object
          * Given the queueRecipient-object is not persisted
-         * When the method is called 
+         * When the method is called
          * Then an exception is thrown
          */
         static::expectException(\RKW\RkwMailer\Exception::class);
 
         $queueRecipient = new QueueRecipient();
         $result = $this->subject::generateRecipientHash($queueRecipient);
-       
+
     }
+
 
     /**
      * @test
@@ -230,7 +234,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
          *
          * Given an url as string
          * Given no additional parameters
-         * When the method is called 
+         * When the method is called
          * Then the given link is returned unchanged
          */
         $url = 'https://www.php.net/manual/de/';
@@ -239,6 +243,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
         self::assertEquals($url, $result);
     }
+
 
     /**
      * @test
@@ -267,6 +272,7 @@ class StatisticsUtilityTest extends FunctionalTestCase
         $result = $this->subject::addParamsToUrl($url, $additionalParameters);
         self::assertEquals($expected, $result);
     }
+
 
     /**
      * @test
@@ -328,11 +334,12 @@ class StatisticsUtilityTest extends FunctionalTestCase
         self::assertEquals($expected, $result);
     }
 
-    
+    //=============================================
+
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

@@ -43,7 +43,7 @@ plugin.tx_rkwmailer {
 
         # cat=module.tx_rkwmailer; type=integer; label=URL for logo in templates
         basePathLogo = EXT:rkw_mailer/Resources/Public/Images/logo.png
-        
+
         # For testing
         arraySettings {
             test = Wonderful!
@@ -70,8 +70,6 @@ config {
     sendCacheHeaders = 0
     absRefPrefix = /
     contentObjectExceptionHandler = 0
-
-    tx_realurl_enable = 1
 }
 
 page = PAGE

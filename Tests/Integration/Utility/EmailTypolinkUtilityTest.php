@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\Tests\Integration\Utility;
  */
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use RKW\RkwBasics\Utility\FrontendSimulatorUtility;
+use Madj2k\CoreExtended\Utility\FrontendSimulatorUtility;
 use RKW\RkwMailer\Exception;
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
 
@@ -23,7 +23,7 @@ use RKW\RkwMailer\Utility\EmailTypolinkUtility;
  * EmailTypolinkUtilityTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -35,14 +35,16 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/EmailTypolinkUtilityTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
+        'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
@@ -54,10 +56,8 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/Utility/EmailTypolinkUtilityTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
@@ -65,10 +65,12 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         FrontendSimulatorUtility::simulateFrontendEnvironment(1);
@@ -76,7 +78,6 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
 
     //=============================================
 
-    
     /**
      * @test
      * @throws \Exception
@@ -117,6 +118,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
         self::assertEquals('target="blank" rel="nofollow" style="font-family:Arial; color:red"', $result);
     }
 
+
     /**
      * @test
      * @throws \Exception
@@ -138,6 +140,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -153,16 +156,16 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Then an exception of instance \RKW\RkwMailer\Exception is thrown
          * Then this exception has the code 1652102609
          */
-       
+
         FrontendSimulatorUtility::resetFrontendEnvironment();
-        
+
         self::expectException(Exception::class);
         self::expectExceptionCode(1652102609);
 
         EmailTypolinkUtility::getTypolinkUrl('9999 _blank test Titel');
-
     }
-    
+
+
     /**
      * @test
      * @throws \Exception
@@ -177,10 +180,11 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * When the method is called
          * Then an absolute url to the internal site is returned
          */
-        
+
         $result = EmailTypolinkUtility::getTypolinkUrl('9999 _blank test Titel');
-        self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite/', $result);
+        self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite', $result);
     }
+
 
     /**
      * @test
@@ -196,10 +200,11 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * When the method is called
          * Then an absolute url to the internal site is returned
          */
-        
+
         $result = EmailTypolinkUtility::getTypolinkUrl('t3://page?uid=9999 _blank test Titel');
-        self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite/', $result);
+        self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/testseite', $result);
     }
+
 
     /**
      * @test
@@ -211,14 +216,15 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Scenario:
          *
          * Given the frontend is instantiated
-         * Given a typolink to an external site 
+         * Given a typolink to an external site
          * When the method is called
          * Then an absolute url to the external site is returned
          */
-        
+
         $result = EmailTypolinkUtility::getTypolinkUrl('http://www.google.de _blank test Titel');
         self::assertEquals('http://www.google.de', $result);
     }
+
 
     /**
      * @test
@@ -234,7 +240,7 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * When the method is called
          * Then an absolute url to the file is returned
          */
-        
+
         $result = EmailTypolinkUtility::getTypolinkUrl('file:999 _blank test Titel');
         self::assertEquals('http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf', $result);
     }
@@ -259,15 +265,15 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          */
 
         FrontendSimulatorUtility::resetFrontendEnvironment();
-        
+
         self::expectException(Exception::class);
         self::expectExceptionCode(1652102610);
 
         EmailTypolinkUtility::getTypolink('testen', 't3://page?uid=9999 _self test Titel', '', 'color:red');
 
     }
-    
-    
+
+
     /**
      * @test
      * @throws \Exception
@@ -288,10 +294,11 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Then a styles-attribute is set according to the given styles
          * Then the given link-text is used
          */
-        
+
         $result = EmailTypolinkUtility::getTypolink('testen', '9999 _self test Titel', '', 'color:red');
-        self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
+        self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
+
 
     /**
      * @test
@@ -313,10 +320,11 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Then a styles-attribute is set according to the given styles
          * Then the given link-text is used
          */
-        
+
         $result = EmailTypolinkUtility::getTypolink('testen', 't3://page?uid=9999 _self test Titel', '', 'color:red');
-        self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite/" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
+        self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/testseite" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
+
 
     /**
      * @test
@@ -338,10 +346,11 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Then a styles-attribute is set according to the given styles
          * Then the given link-text is used
          */
-        
+
         $result = EmailTypolinkUtility::getTypolink('testen','http://www.google.de _self test Titel', '', 'color:red');
         self::assertEquals('<a href="http://www.google.de" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
+
 
     /**
      * @test
@@ -363,17 +372,17 @@ class EmailTypolinkUtilityTest extends FunctionalTestCase
          * Then a styles-attribute is set according to the given styles
          * Then the given link-text is used
          */
-        
+
         $result = EmailTypolinkUtility::getTypolink('testen','file:999 _self test Titel', '', 'color:red');
         self::assertEquals('<a href="http://www.rkw-kompetenzzentrum.rkw.local/fileadmin/test.pdf" title="Titel" target="_self" class="test" style="color:red">testen</a>', $result);
     }
-    
+
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         FrontendSimulatorUtility::resetFrontendEnvironment();
         parent::tearDown();

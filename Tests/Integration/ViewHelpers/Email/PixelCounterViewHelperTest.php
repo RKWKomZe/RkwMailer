@@ -21,12 +21,11 @@ use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-
 /**
  * PixelCounterViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -43,76 +42,78 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/core_extended',
+        'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $queueMailRepository;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueRecipientRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $objectManager;
+    private ?QueueRecipientRepository $queueRecipientRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/PixelCounterViewHelperTest/Fixtures/RealUrlConfiguration.php');
 
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
-        
+
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
         $this->queueMailRepository = $this->objectManager->get(QueueMailRepository::class);
         $this->queueRecipientRepository = $this->objectManager->get(QueueRecipientRepository::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
 
-
     }
 
+    //=============================================
 
     /**
      * @test
@@ -139,8 +140,9 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertNotContains('<img', $result);
+        self::assertStringNotContainsString('<img', $result);
     }
+
 
     /**
      * @test
@@ -167,8 +169,9 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueMail', $queueMail);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertNotContains('<img', $result);
+        self::assertStringNotContainsString('<img', $result);
     }
+
 
     /**
      * @test
@@ -187,7 +190,7 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
          * When the ViewHelper is rendered
          * Then a valid tracking link is returned
          */
-        $this->importDataSet(self::FIXTURE_PATH . '//Database/Check30.xml');
+        $this->importDataSet(self::FIXTURE_PATH . '/Database/Check30.xml');
 
         $queueMail = $this->queueMailRepository->findByIdentifier(1);
         $queueRecipient = $this->queueRecipientRepository->findByIdentifier(1);
@@ -197,17 +200,17 @@ class PixelCounterViewHelperTest extends FunctionalTestCase
         $this->standAloneViewHelper->assign('queueRecipient', $queueRecipient);
 
         $result = $this->standAloneViewHelper->render();
-        self::assertContains('<img src="http://www.rkw-kompetenzzentrum.rkw.local/nc/pixelcounterseite/?tx_rkwmailer_rkwmailer[uid]=1&tx_rkwmailer_rkwmailer[mid]=1&tx_rkwmailer_rkwmailer[action]=opening&tx_rkwmailer_rkwmailer[controller]=Tracking" width="1" height="1" alt="" />', $result);
+
+        self::assertStringContainsString('<img src="http://www.rkw-kompetenzzentrum.rkw.local/pixelcounterseite/rkw-mailer/track/1/1?no_cache=1" width="1" height="1" alt="" />', $result);
 
     }
-
 
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

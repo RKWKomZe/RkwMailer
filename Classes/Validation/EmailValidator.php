@@ -21,19 +21,21 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * EmailValidationUtility
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class EmailValidator
 {
 
     /**
+     * Cleans email
+     *
      * @param string $email
      * @return string
      */
-    public static function cleanUpEmail($email)
+    public static function cleanUpEmail(string $email): string
     {
         return trim(str_replace('mailto:', '', $email));
     }

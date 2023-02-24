@@ -14,6 +14,7 @@ namespace RKW\RkwMailer\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use RKW\RkwMailer\Domain\Model\OpeningStatistics;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -23,27 +24,29 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  * OpeningStatisticsRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class OpeningStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class OpeningStatisticsRepository extends AbstractRepository
 {
 
     /** @var array $defaultOrderings */
     protected $defaultOrderings = [
         'counter' => QueryInterface::ORDER_DESCENDING,
     ];
-    
-    
+
+
     /**
      * initializeObject
+     * @return void
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
+        parent::initializeObject();
         $this->defaultQuerySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $this->defaultQuerySettings->setRespectStoragePage(false);
-        
+
     }
 
 
@@ -53,12 +56,12 @@ class OpeningStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      * @param \RKW\RkwMailer\Domain\Model\queueMail $queueMail
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
      * @return \RKW\RkwMailer\Domain\Model\OpeningStatistics
-     * @comment implicitly tested
+     * comment: implicitly tested
      */
     public function findOneByHashAndQueueMail(
         string $hash,
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-    ) {
+    ):? OpeningStatistics {
 
         $query = $this->createQuery();
         $query->matching(
@@ -78,7 +81,7 @@ class OpeningStatisticsRepository extends \TYPO3\CMS\Extbase\Persistence\Reposit
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return int
-     * @comment implicitly tested
+     * comment: implicitly tested
      */
     public function deleteByQueueMail(
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail

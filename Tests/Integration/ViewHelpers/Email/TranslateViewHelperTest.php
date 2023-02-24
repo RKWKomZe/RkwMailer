@@ -23,7 +23,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * TranslateViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -40,33 +40,35 @@ class TranslateViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView
-     */
-    private $standAloneViewHelper;
-    
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Fluid\View\StandaloneView|null
      */
-    private $objectManager;
+    private ?StandaloneView $standAloneViewHelper = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -75,11 +77,12 @@ class TranslateViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
@@ -91,10 +94,9 @@ class TranslateViewHelperTest extends FunctionalTestCase
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
+    //=============================================
 
     /**
      * @test
@@ -119,13 +121,12 @@ class TranslateViewHelperTest extends FunctionalTestCase
         self::assertEquals($expected, $result);
     }
 
-
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

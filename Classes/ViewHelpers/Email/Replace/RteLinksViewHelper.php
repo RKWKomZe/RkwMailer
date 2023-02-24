@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
 
 /*
@@ -16,10 +15,10 @@ namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
  */
 
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
-use RKW\RkwMailer\ViewHelpers\Email\Uri\TypolinkViewHelper;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
@@ -27,28 +26,31 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  * Class RteLinks
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RteLinksViewHelper extends TypolinkViewHelper
+class RteLinksViewHelper extends AbstractViewHelper
 {
 
     use CompileWithContentArgumentAndRenderStatic;
-    
+
+
     /**
      * @var bool
      */
     protected $escapeOutput = false;
 
-    
+
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
+        parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
         $this->registerArgument('plaintextFormat', 'boolean', 'Use plaintext-format for links. DEPRECATED.');
         $this->registerArgument('isPlaintext', 'boolean', 'Use plaintext-format for links.');
@@ -65,25 +67,25 @@ class RteLinksViewHelper extends TypolinkViewHelper
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
-        
+    ): string {
+
         $value = $renderChildrenClosure();
-        $plaintextFormat = (bool) ($arguments['isPlaintext'] ? $arguments['isPlaintext'] : $arguments['plaintextFormat']);
-        $style = ($arguments['style'] ? $arguments['style'] : '');
+        $plaintextFormat = (bool) ($arguments['isPlaintext'] ?: $arguments['plaintextFormat']);
+        $style = ($arguments['style'] ?: '');
         try {
 
             // log deprecated attribute
             if ($arguments['isPlaintext']) {
-                \RKW\RkwAjax\Utilities\GeneralUtility::logDeprecatedViewHelperAttribute(
-                    'plaintextFormat',
-                    $renderingContext,
-                    'Argument "plaintextFormat" on rkwMailer:frontend.replace.rteLinks is deprecated - use "isPlaintext" instead'
+                trigger_error(
+                    __CLASS__ . ': Argument "plaintextFormat" on rkwMailer:email.replace.rteLinks is deprecated. '.
+                    'Use "isPlaintext" instead.',
+                    E_USER_DEPRECATED
                 );
             }
-            
+
             // new version for TKE
             $value = preg_replace_callback(
                 '/(<a([^>]+)href="([^"]+)"([^>]+)>([^<]+)<\/a>)/',
@@ -106,7 +108,7 @@ class RteLinksViewHelper extends TypolinkViewHelper
                 $value
             );
 
-            // Old version for RTE 
+            // Old version for RTE
             // Plaintext replacement
             if ($plaintextFormat) {
                 $value = preg_replace_callback(
@@ -140,12 +142,12 @@ class RteLinksViewHelper extends TypolinkViewHelper
             }
 
         } catch (\Exception $e) {
-            
+
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to replace links: %s', 
+                    'Error while trying to replace links: %s',
                     $e->getMessage()
                 )
             );

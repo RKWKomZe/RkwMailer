@@ -26,7 +26,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * RenderCacheViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -43,40 +43,47 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView
-     */
-    private $standAloneViewHelper;
 
     /**
-     * @var \RKW\RkwMailer\Cache\RenderCache
+     * @var \TYPO3\CMS\Fluid\View\StandaloneView|null
      */
-    private $renderCache;
+    private ?StandaloneView $standAloneViewHelper = null;
+
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Cache\RenderCache|null
      */
-    private $objectManager;
-    
+    private ?RenderCache $renderCache = null;
+
+
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $queueMailRepository;
+    private ?ObjectManager $objectManager = null;
+
+
+    /**
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
+     */
+    private ?QueueMailRepository $queueMailRepository = null;
+
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -85,8 +92,8 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 static::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -107,7 +114,8 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
 
     }
 
-   
+    //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -123,7 +131,7 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
          * Given an array with one marker is set
          * Given this marker is a queueMail-object
          * Given this queueMail-object is persisted
-         * Given there are no nonCachedMarkers 
+         * Given there are no nonCachedMarkers
          * When the ViewHelper is rendered
          * Then the string is cached
          * Then the string cached is equal to the original rendered string
@@ -141,14 +149,15 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         );
 
         $content = $this->standAloneViewHelper->render();
-        
+
         $cacheIdentifier = $this->renderCache->getIdentifier($queueMail, true);
         $cachedContent = $this->renderCache->getContent($cacheIdentifier);
         self::assertNotEmpty($cachedContent);
-        self::assertContains('This is to be cached.', $content);
-        self::assertContains('This is to be cached.', $cachedContent);
-       
+        self::assertStringContainsString('This is to be cached.', $content);
+        self::assertStringContainsString('This is to be cached.', $cachedContent);
+
     }
+
 
     /**
      * @test
@@ -190,18 +199,19 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         );
 
         $content = $this->standAloneViewHelper->render();
-        self::assertContains('This is to be cached.', $content);
-        self::assertContains('"test1"=' . $timestampStart, $content);
-        self::assertContains('"test2"=' . $timestampStart, $content);
+        self::assertStringContainsString('This is to be cached.', $content);
+        self::assertStringContainsString('"test1"=' . $timestampStart, $content);
+        self::assertStringContainsString('"test2"=' . $timestampStart, $content);
 
         $cacheIdentifier = $this->renderCache->getIdentifier($queueMail, true);
         $cachedContent = $this->renderCache->getContent($cacheIdentifier);
         self::assertNotEmpty($cachedContent);
-        self::assertContains('This is to be cached.', $cachedContent);
-        self::assertNotContains('{test1}', $cachedContent);
-        self::assertContains('###test2###', $cachedContent);
-        
+        self::assertStringContainsString('This is to be cached.', $cachedContent);
+        self::assertStringNotContainsString('{test1}', $cachedContent);
+        self::assertStringContainsString('###test2###', $cachedContent);
+
     }
+
 
     /**
      * @test
@@ -248,16 +258,16 @@ class RenderCacheViewHelperTest extends FunctionalTestCase
         $timestampStart = microtime(true);
         $this->standAloneViewHelper->render();
         $durationSecond = microtime(true) - $timestampStart;
-        
+
         self::assertLessThan($durationFirst - 0.2, $durationSecond);
     }
-    
+
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->renderCache->clearCache();

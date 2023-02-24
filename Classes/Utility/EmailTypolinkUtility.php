@@ -26,11 +26,11 @@ use TYPO3\CMS\Frontend\Service\TypoLinkCodecService;
  * We can not extend the basic class here, since the methods are used as static methods and this confuses translation-handling
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class EmailTypolinkUtility 
+class EmailTypolinkUtility
 {
 
     /**
@@ -44,22 +44,22 @@ class EmailTypolinkUtility
      * @throws \RKW\RkwMailer\Exception
      */
     public static function getTypolink (
-        string $linkText, 
-        string $parameter, 
+        string $linkText,
+        string $parameter,
         string $additionalParams = '',
         string $styles = ''
     ): string {
-        
+
         if (!$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             throw new Exception(
                 'Frontend has to be instantiated, but is not.',
                 1652102610
             );
         }
-        
+
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $content = $contentObject->typoLink(
+        return $contentObject->typoLink(
             $linkText,
             [
                 'parameter'         => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
@@ -70,8 +70,6 @@ class EmailTypolinkUtility
                 'ATagParams'        => ($styles ? 'style="' . $styles . '"' : '')
             ]
         );
-
-        return $content;
     }
 
 
@@ -85,17 +83,17 @@ class EmailTypolinkUtility
      */
     public static function getTypolinkUrl (string $parameter, string $additionalParams = ''): string
     {
-        
+
         if (!$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             throw new Exception(
                 'Frontend has to be instantiated, but is not.',
                 1652102609
             );
         }
-        
+
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $content = $contentObject->typoLink_URL(
+        return $contentObject->typoLink_URL(
             [
                 'parameter'         => self::createTypolinkParameterFromArguments($parameter, $additionalParams),
                 'forceAbsoluteUrl'  => 1, // force absolute URL
@@ -104,8 +102,6 @@ class EmailTypolinkUtility
                 'fileTarget'        => '_blank',
             ]
         );
-        
-        return $content;
     }
 
 
@@ -122,7 +118,7 @@ class EmailTypolinkUtility
         if ($style) {
             if (strpos($string, 'style="') !== false) {
                 $string = preg_replace_callback(
-                    '/style="([^"]+)"/', 
+                    '/style="([^"]+)"/',
                     function ($matches) use ($style) {
                         return 'style="' . trim($matches[1], ' ;') . '; ' . $style . '"';
                     },
@@ -132,7 +128,7 @@ class EmailTypolinkUtility
                 $string = trim($string) . ' style="' . $style . '"';
             }
         }
-        
+
         return trim($string);
     }
 
@@ -143,12 +139,14 @@ class EmailTypolinkUtility
      *
      * @param string $parameter Example: 19 _blank - "testtitle with whitespace" &X=y
      * @param string $additionalParameters
-     *
      * @return string The final TypoLink string
      * @see \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
      */
-    protected static function createTypolinkParameterFromArguments($parameter, $additionalParameters = '')
-    {
+    protected static function createTypolinkParameterFromArguments(
+        string $parameter,
+        string $additionalParameters = ''
+    ): string {
+
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typolinkConfiguration = $typoLinkCodec->decode($parameter);
 

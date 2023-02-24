@@ -27,7 +27,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * MailStatisticsAnalyserTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -39,13 +39,16 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
      */
     const FIXTURE_PATH = __DIR__ . '/MailStatisticsAnalyserTest/Fixtures';
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
@@ -54,41 +57,40 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
 
 
     /**
-     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser
+     * @var \RKW\RkwMailer\Statistics\MailingStatisticsAnalyser|null
      */
-    private $subject;
+    private ?MailingStatisticsAnalyser $subject = null;
 
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager;
+    private ?ObjectManager $objectManager = null;
+
 
     /**
-     * persistenceManager
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null
      */
-    private $persistenceManager;
+    private ?PersistenceManager $persistenceManager = null;
 
-    
+
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository|null
      */
-    private $queueMailRepository;
+    private ?QueueMailRepository $queueMailRepository = null;
 
 
     /**
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
      */
-    private $mailingStatisticsRepository;
+    private ?MailingStatisticsRepository $mailingStatisticsRepository = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
         parent::setUp();
@@ -97,7 +99,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -110,10 +113,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $this->mailingStatisticsRepository = $this->objectManager->get(MailingStatisticsRepository::class);
         $this->subject = $this->objectManager->get(MailingStatisticsAnalyser::class);
     }
-    
 
     //=============================================
-
 
     /**
      * @test
@@ -145,9 +146,9 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(10);
-        
+
         $this->subject->analyseQueueMail($queueMail);
-        
+
         self::assertInstanceOf(MailingStatistics::class, $queueMail->getMailingStatistics());
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(6, $queueMail->getMailingStatistics()->getTotalRecipients());
@@ -180,7 +181,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          * Then the totalSent-property of the mailingStatistics-object is set to the value three
          * Then the mailingStatistics-object is persisted
          */
-        
+
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check20.xml');
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -233,8 +234,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(4, $queueMail->getMailingStatistics()->getDelivered());
         self::assertCount(1, $this->mailingStatisticsRepository->findAll());
-
     }
+
 
     /**
      * @test
@@ -273,9 +274,8 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getUid(), $queueMail->getMailingStatistics()->getQueueMail()->getUid());
         self::assertEquals(7,$queueMail->getMailingStatistics()->getFailed());
         self::assertCount(1, $this->mailingStatisticsRepository->findAll());
-
     }
-    
+
 
     /**
      * @test
@@ -359,6 +359,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
     }
 
     //=============================================
+
     /**
      * @test
      * @throws \Exception
@@ -398,15 +399,15 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
          */
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Check70.xml');
-        
+
         $this->subject->analyse();
-        
+
         $result = $this->mailingStatisticsRepository->findAll();
         self::assertCount(2, $result);
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(70);
-               
+
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
         $mailingStatistics = $queueMail->getMailingStatistics();
         self::assertEquals(70, $mailingStatistics->getQueueMail()->getUid());
@@ -422,6 +423,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getSubject(), $mailingStatistics->getSubject());
         self::assertEquals($queueMail->getType(), $mailingStatistics->getType());
     }
+
 
     /**
      * @test
@@ -463,7 +465,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time());
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $this->subject->analyse();
 
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -478,6 +480,7 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals(1, $mailingStatistics->getBounced());
 
     }
+
 
     /**
      * @test
@@ -509,18 +512,18 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time() - intval(31 * 24 * 60 * 60));
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         // remove linkage
         $mailingStatistics = unserialize(serialize($mailingStatistics));
 
         $this->subject->analyse();
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(90);
 
         /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatisticsAfter */
         $mailingStatisticsAfter = $queueMail->getMailingStatistics();
-        
+
         self::assertEquals($mailingStatistics, $mailingStatisticsAfter);
 
     }
@@ -552,9 +555,9 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         $mailingStatistics->setTstampRealSending(time());
         $this->mailingStatisticsRepository->update($mailingStatistics);
         $this->persistenceManager->persistAll();
-        
+
         $this->subject->analyse();
-        
+
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
         $queueMail = $this->queueMailRepository->findByIdentifier(100);
 
@@ -563,13 +566,12 @@ class MailStatisticsAnalyserTest extends FunctionalTestCase
         self::assertEquals($queueMail->getStatus(), $mailingStatistics->getStatus());
     }
 
-
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }
