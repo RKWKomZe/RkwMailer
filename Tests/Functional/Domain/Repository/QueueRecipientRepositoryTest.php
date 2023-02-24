@@ -23,11 +23,11 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  * QueueRecipientRepositoryTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated
- * @toDo: rework
+ * @todo rework
  */
 class QueueRecipientRepositoryTest extends FunctionalTestCase
 {
@@ -35,31 +35,41 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_registration',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
+
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [];
+
+
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
+     * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository|null
      */
-    private $subject = null;
+    private ?QueueRecipientRepository $subject = null;
+
+
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null
      */
-    private $persistenceManager = null;
+    private ?PersistenceManager $persistenceManager = null;
+
+
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
      */
-    private $objectManager = null;
+    private ?ObjectManager $objectManager = null;
+
+
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->importDataSet(__DIR__ . '/Fixtures/Database/QueueRecipientRepository/Pages.xml');
@@ -70,7 +80,6 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.txt',
                 'EXT:rkw_mailer/Tests/Functional/Utility/Fixtures/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -96,9 +105,10 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
         /** @var \RKW\RkwMailer\Domain\Model\QueueRecipient $objectTwo */
         $objectTwo = $result[1];
 
-        static::assertEquals(2, count($result));
-        static::assertEquals(8, $objectOne->getUid());
-        static::assertEquals(9, $objectTwo->getUid());
+        self::assertEquals(2, count($result));
+
+        self::assertEquals(8, $objectOne->getUid());
+        self::assertEquals(9, $objectTwo->getUid());
 
     }
 
@@ -106,7 +116,7 @@ class QueueRecipientRepositoryTest extends FunctionalTestCase
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

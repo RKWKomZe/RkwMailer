@@ -22,11 +22,6 @@ call_user_func(
         );
 
         //=================================================================
-        // Register CommandController
-        //=================================================================
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = 'RKW\\RkwMailer\\Controller\\MailerCommandController';
-
-        //=================================================================
         // Register Caching
         //=================================================================
         if( !is_array($GLOBALS['TYPO3_CONF_VARS'] ['SYS']['caching']['cacheConfigurations'][$extKey] ) ) {
@@ -40,20 +35,13 @@ call_user_func(
         }
 
         //=================================================================
-        // Register xClass
-        //=================================================================
-        /*$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager::class] = [
-            'className' => RKW\RkwMailer\Xclass\BackendConfigurationManager::class
-        ];*/
-
-        //=================================================================
         // Register Logger
         //=================================================================
         $GLOBALS['TYPO3_CONF_VARS']['LOG']['RKW']['RkwMailer']['writerConfiguration'] = array(
 
             // configuration for WARNING severity, including all
             // levels with higher severity (ERROR, CRITICAL, EMERGENCY)
-            \TYPO3\CMS\Core\Log\LogLevel::INFO => array(
+            \TYPO3\CMS\Core\Log\LogLevel::DEBUG => array(
                 // add a FileWriter
                 'TYPO3\\CMS\\Core\\Log\\Writer\\FileWriter' => array(
                     // configuration for the writer
@@ -61,11 +49,6 @@ call_user_func(
                 )
             ),
         );
-        
-        //=================================================================
-        // register update wizard
-        //=================================================================
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\RKW\RkwMailer\Updates\MigrateStatisticsWizard::class] = \RKW\RkwMailer\Updates\MigrateStatisticsWizard::class;
     },
     'rkw_mailer'
 );

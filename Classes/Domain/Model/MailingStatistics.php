@@ -19,131 +19,107 @@ namespace RKW\RkwMailer\Domain\Model;
  * MailingStatistics
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-  
+
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
-    
+    protected ?QueueMail $queueMail = null;
+
+
     /**
-     * queueMailUid
-     *
      * @var int
      */
-    protected $queueMailUid;
-    
+    protected int $queueMailUid = 0;
+
+
     /**
-     * subject
-     *
      * @var string
      */
-    protected $subject;
+    protected string $subject = '';
 
 
     /**
-     * status
-     *
-     * @var integer
+     * @var int
      */
-    protected $status = 0;
-
-    
-    /**
-     * type
-     *
-     * @var integer
-     */
-    protected $type = 0;
-
-    
-    /**
-     * total
-     *
-     * @var integer
-     */
-    protected $totalRecipients = 0;
-
-    /**
-     * totalSent
-     *
-     * @var integer
-     */
-    protected $totalSent = 0;
-
-    
-    /**
-     * delivered
-     *
-     * @var integer
-     */
-    protected $delivered = 0;
-
-    
-    /**
-     * failed
-     *
-     * @var integer
-     */
-    protected $failed = 0;
-
-    
-    /**
-     * deferred
-     *
-     * @var integer
-     */
-    protected $deferred = 0;
+    protected int $status = 0;
 
 
     /**
-     * sendingBounced
-     *
-     * @var integer
+     * @var int
      */
-    protected $bounced = 0;
+    protected int $type = 0;
 
 
     /**
-     * tstampFavSending
-     *
-     * @var integer
+     * @var int
      */
-    protected $tstampFavSending = 0;
+    protected int $totalRecipients = 0;
 
-    
-    /**
-     * tstampRealSending
-     *
-     * @var integer
-     */
-    protected $tstampRealSending = 0;
 
-    
     /**
-     * tstampFinishedSending
-     *
-     * @var integer
+     * @var int
      */
-    protected $tstampFinishedSending = 0;
-    
-    
+    protected int $totalSent = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $delivered = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $failed = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $deferred = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $bounced = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $tstampFavSending = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $tstampRealSending = 0;
+
+
+    /**
+     * @var int
+     */
+    protected int $tstampFinishedSending = 0;
+
+
     /**
      * Returns the queueMail
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
-    public function getQueueMail()
+    public function getQueueMail():? QueueMail
     {
         return $this->queueMail;
     }
+
 
     /**
      * Sets the queueMail
@@ -157,6 +133,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->setQueueMailUid($queueMail->getUid());
     }
 
+
     /**
      * Returns the queueMailUid
      *
@@ -166,6 +143,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->queueMailUid;
     }
+
 
     /**
      * Sets the queueMail
@@ -189,6 +167,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         return $this->subject;
     }
 
+
     /**
      * Sets the subject
      *
@@ -199,8 +178,8 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->subject = $subject;
     }
-    
-    
+
+
     /**
      * Returns the status
      *
@@ -243,8 +222,8 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->type = $type;
     }
-    
-    
+
+
     /**
      * Returns the totalRecipients
      *
@@ -254,6 +233,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->totalRecipients;
     }
+
 
     /**
      * Sets the totalRecipients
@@ -266,6 +246,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->totalRecipients = $totalRecipients;
     }
 
+
     /**
      * Returns the totalSent
      *
@@ -275,6 +256,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->totalSent;
     }
+
 
     /**
      * Sets the totalSent
@@ -287,7 +269,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->totalSent = $totalSent;
     }
 
-    
+
     /**
      * Returns the delivered
      *
@@ -297,6 +279,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->delivered;
     }
+
 
     /**
      * Sets the delivered
@@ -308,7 +291,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->delivered = $delivered;
     }
-    
+
 
     /**
      * Returns the failed
@@ -319,6 +302,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->failed;
     }
+
 
     /**
      * Sets the failed
@@ -331,7 +315,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->failed = $failed;
     }
 
-    
+
     /**
      * Returns the deferred
      *
@@ -341,6 +325,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->deferred;
     }
+
 
     /**
      * Sets the deferred
@@ -364,6 +349,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         return $this->bounced;
     }
 
+
     /**
      * Sets the bounced
      *
@@ -379,17 +365,18 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the tstampFavSending
      *
-     * @return int $tstampFavSending
+     * @return int
      */
     public function getTstampFavSending(): int
     {
         return $this->tstampFavSending;
     }
 
+
     /**
      * Sets the tstampFavSending
      *
-     * @param integer $tstampFavSending
+     * @param int $tstampFavSending
      * @return void
      */
     public function setTstampFavSending(int $tstampFavSending): void
@@ -397,7 +384,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->tstampFavSending = $tstampFavSending;
     }
 
-    
+
     /**
      * Returns the tstampRealSending
      *
@@ -407,6 +394,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         return $this->tstampRealSending;
     }
+
 
     /**
      * Sets the tstampRealSending
@@ -419,7 +407,7 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->tstampRealSending = $tstampRealSending;
     }
 
-    
+
     /**
      * Returns the tstampFinishedSending
      *
@@ -430,10 +418,11 @@ class MailingStatistics extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         return $this->tstampFinishedSending;
     }
 
+
     /**
      * Sets the tstampFinishedSending
      *
-     * @param integer $tstampFinishedSending
+     * @param int $tstampFinishedSending
      * @return void
      */
     public function setTstampFinishedSending (int $tstampFinishedSending): void

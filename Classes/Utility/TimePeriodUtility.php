@@ -20,10 +20,10 @@ namespace RKW\RkwMailer\Utility;
 
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class TimePeriodUtility
 {
@@ -32,10 +32,10 @@ class TimePeriodUtility
      * function getTimePeriod
      * The given param is a numeric identifier between 0-8 which stands for some time period
      *
-     * @param integer $timeFrame
+     * @param int $timeFrame
      * @return array $period
      */
-    public static function getTimePeriod($timeFrame = 0)
+    public static function getTimePeriod(int $timeFrame = 0): array
     {
 
         $period = array();
@@ -150,9 +150,9 @@ class TimePeriodUtility
      * findHalfYear
      * get this halfyear, then conclude last halfyear
      *
-     * @return array $quarters
+     * @return array
      */
-    public static function findHalfYear()
+    public static function findHalfYear(): array
     {
 
         $halfYear = array();
@@ -171,7 +171,6 @@ class TimePeriodUtility
             $halfYear['this']['start'] = mktime(0, 0, 0, date(7), date(1), date("Y")); //
             $halfYear['this']['end'] = mktime(0, 0, 0, date(1), date(1), date("Y") + 1); //
         }
-
 
         // last halfyear
         $halfYear['last']['start'] = $halfYear['this']['start'] - (60 * 60 * 24 * 180);

@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Replace;
 
 /*
@@ -29,7 +28,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  * Class RedirectLinksViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -47,17 +46,19 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
+        parent::initializeArguments();
         $this->registerArgument('value', 'string', 'String to work on');
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for redirecting links');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object of email');
         $this->registerArgument('isPlaintext', 'boolean', 'QueueRecipient-object of email');
         $this->registerArgument('additionalParams', 'array', 'Additional params for links');
     }
-  
+
 
     /**
      * Render typolinks
@@ -68,11 +69,11 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
-        
+    ): string {
+
         $value = $renderChildrenClosure();
         $queueMail = $arguments['queueMail'];
         $queueRecipient = $arguments['queueRecipient'];
@@ -84,7 +85,7 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
             if ($queueMail) {
 
                 // plaintext replacement
-                if ($isPlaintext == true) {
+                if ($isPlaintext) {
 
                     return preg_replace_callback(
                         '/(http[s]?:\/\/[^\s]+)/',
@@ -141,10 +142,10 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
         } catch (\Exception $e) {
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-            $logger()->log(
-                LogLevel::ERROR, 
+            $logger->log(
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to replace links: %s', 
+                    'Error while trying to replace links: %s',
                     $e->getMessage()
                 )
             );
@@ -152,26 +153,26 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
 
         return $value;
     }
-    
+
 
     /**
      * Replaces the link
      *
      * @param string $link
-     * @param QueueMail $queueMail
-     * @param QueueRecipient $queueRecipient
+     * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
+     * @param \RKW\RkwMailer\Domain\Model\QueueRecipient|null $queueRecipient
      * @param array $additionalParams
      * @return string
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     static protected function replace(
-        string $link, 
+        string $link,
         QueueMail $queueMail,
-        QueueRecipient $queueRecipient = null, 
+        ?QueueRecipient $queueRecipient = null,
         array $additionalParams = []
     ): string {
-        
+
         // load EmailUriBuilder
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -188,8 +189,8 @@ class RedirectLinksViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstract
         if ($queueRecipient) {
             $uriBuilder->setQueueRecipient($queueRecipient);
         }
-        
+
         return $uriBuilder->build();
-       
+
     }
 }

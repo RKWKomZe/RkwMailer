@@ -15,13 +15,11 @@ namespace RKW\RkwMailer\Cache;
  * The TYPO3 project - inspiring people to share!
 */
 
-use TYPO3\CMS\Core\Log\LogLevel;
-
 /**
  * CacheInterface
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -43,9 +41,9 @@ interface CacheInterface
      * @param string $cacheIdentifier
      * @return string
      */
-    public function getContent(string $cacheIdentifier);
+    public function getContent(string $cacheIdentifier): string;
 
-    
+
     /**
      * Sets cache content
      *
@@ -55,11 +53,11 @@ interface CacheInterface
      */
     public function setContent(string $cacheIdentifier, $value);
 
-    
+
     /**
      * Clear cached content
      */
     public function clearCache(): void;
-    
+
 
 }

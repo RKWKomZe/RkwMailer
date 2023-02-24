@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email\Uri;
 
 /*
@@ -15,7 +14,7 @@ namespace RKW\RkwMailer\ViewHelpers\Email\Uri;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use RKW\RkwMailer\Utility\EmailTypolinkUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -23,22 +22,26 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * Class TypolinkViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper
+class TypolinkViewHelper extends AbstractViewHelper
 {
 
     /**
      * Initialize arguments
+     *
+     * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('pageUid', 'int', 'pageUid for FE-configuration - DEPRECATED', false, null);
-
+        $this->registerArgument('parameter', 'string', 'stdWrap.typolink style parameter string', true);
+        $this->registerArgument('additionalParams', 'string', 'stdWrap.typolink additionalParams', false, '');
     }
+
 
     /**
      * Render typolinks
@@ -47,32 +50,32 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHe
      * @param \Closure $renderChildrenClosure
      * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
      * @return string
+     * @throws \RKW\RkwMailer\Exception
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ){
-        
+
         $parameter = $arguments['parameter'];
         $additionalParams = $arguments['additionalParams'];
 
         // log deprecated attribute
         if ($arguments['pageUid']) {
-            GeneralUtility::logDeprecatedViewHelperAttribute(
-                'pageUid',
-                $renderingContext,
-                'Argument "pageUid" on rkwMailer:frontend.uri.typolink is deprecated and has no effect any more.'
+            trigger_error(
+                __CLASS__ . ': Argument "pageUid" on rkwMailer:email.uri.typolink is deprecated and has no effect any more.',
+                E_USER_DEPRECATED
             );
         }
-        
+
         $content = '';
         if ($parameter) {
             $content = EmailTypolinkUtility::getTypolinkUrl($parameter, $additionalParams);
         }
 
         return $content;
-    }   
+    }
 
 }
 

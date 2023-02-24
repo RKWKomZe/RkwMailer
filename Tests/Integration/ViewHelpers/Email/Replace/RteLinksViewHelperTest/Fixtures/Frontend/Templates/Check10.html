@@ -2,7 +2,7 @@
     xmlns:rkwMailer="http://typo3.org/ns/RKW/RkwMailer/ViewHelpers"
     data-namespace-typo3-fluid="true">
 
-<rkwMailer:frontend.replace.rteLinks isPlaintext="true" style="color:green;">
+<rkwMailer:email.replace.rteLinks isPlaintext="true" style="color:green;">
     Testen Sie hier <link https://www.google.de _blank external-link Titel ist Titel>mit Klick</link>!
     Testen Sie da <link http://www.yahoo.de/#anchor-1 _blank external-link "Titel ist Titel">mit Klick</link>!
     Testen Sie dort <link mail@rkw.de _blank mail "Titel ist Titel">mit Klick</link>!
@@ -17,9 +17,9 @@
     Testen Sie hüben <a class="internal-link" href="t3://page?uid=9999#anchor-1" title="Test">mit Klick</a>!
     Testen Sie drüben <a class="download" href="t3://file?uid=999" title="Test">mit Klick</a>!
 
-</rkwMailer:frontend.replace.rteLinks>
+</rkwMailer:email.replace.rteLinks>
 
-<rkwMailer:frontend.replace.rteLinks style="color:green;">
+<rkwMailer:email.replace.rteLinks style="color:green;">
     <p>
         Testen Sie hier <link http://www.google.de _blank external-link "Titel ist Titel">mit Klick</link>!<br />
         Testen Sie da <link http://www.yahoo.de/#anchor-1 _blank external-link "Titel ist Titel">mit Klick</link>!<br />
@@ -36,6 +36,6 @@
         Testen Sie hüben <a class="internal-link" href="t3://page?uid=9999#anchor-1" title="Titel ist Titel" style="color:red;">mit Klick</a>!<br />
         Testen Sie drüben <a class="download" href="t3://file?uid=999" target="_blank" title="Titel ist Titel" style="color:red;">mit Klick</a>!
     </p>
-</rkwMailer:frontend.replace.rteLinks>
+</rkwMailer:email.replace.rteLinks>
 
 </html>

@@ -15,8 +15,8 @@ namespace RKW\RkwMailer\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
-use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Validation\EmailValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
@@ -28,7 +28,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * QueueRecipientUtility
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -63,17 +63,17 @@ class QueueRecipientUtility
     /**
      * @var string
      */
-    const STATUS_BOUNCED = 98;    
+    const STATUS_BOUNCED = 98;
 
     /**
      * @var string
      */
     const STATUS_ERROR = 99;
-    
-    
+
+
     /**
      * Get a QueueRecipient-object based on properties of a given object
-     * 
+     *
      * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity|array $basicData
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
@@ -98,18 +98,18 @@ class QueueRecipientUtility
         }
         return self::initQueueRecipientViaArray($additionalData);
     }
-  
-    
-    
+
+
     /**
      * Get a QueueRecipient-object with properties set via FrontendUser
-     * 
+     *
      * @param \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $frontendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaFrontendUser (
-        FrontendUser $frontendUser, 
+        FrontendUser $frontendUser,
         array $additionalData = []
     ): QueueRecipient {
 
@@ -117,7 +117,7 @@ class QueueRecipientUtility
         $additionalPropertyMapper = [
             'username' => 'email'
         ];
-        
+
         if ($frontendUser instanceof \RKW\RkwRegistration\Domain\Model\FrontendUser) {
             $additionalPropertyMapper['txRkwregistrationGender'] = 'salutation';
             $additionalPropertyMapper['txRkwregistrationLanguageKey'] = 'languageCode';
@@ -127,32 +127,33 @@ class QueueRecipientUtility
         // set all relevant values according to given data
         $queueRecipient = self::setProperties($frontendUser, $additionalData, $additionalPropertyMapper);
 
-        /* @toDo: Leeds to problems since this does an implicit update on the object
+        /* @todo Leeds to problems since this does an implicit update on the object
          * which may lead to persisting data before having received a confirmation via opt-in-mail!!!
         if (!$frontendUser->_isNew()) {
             $queueRecipient->setFrontendUser($frontendUser);
         }*/
-        
+
         return $queueRecipient;
     }
 
 
     /**
      * Get a QueueRecipient-object with properties set via BackendUser
-     * 
+     *
      * @param \TYPO3\CMS\Extbase\Domain\Model\BackendUser $backendUser
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaBackendUser (
-        BackendUser $backendUser, 
+        BackendUser $backendUser,
         array $additionalData = []
     ): QueueRecipient {
-        
+
         // expand mapping for \RKW\RkwRegistration\Domain\Model\BackendUser
         $additionalPropertyMapper = [];
         if ($backendUser instanceof \RKW\RkwRegistration\Domain\Model\BackendUser) {
-            $additionalPropertyMapper['lang'] = 'languageCode'; 
+            $additionalPropertyMapper['lang'] = 'languageCode';
         }
 
         // find realName
@@ -171,33 +172,33 @@ class QueueRecipientUtility
         // set all relevant values according to given data
        return self::setProperties($backendUser, $additionalData, $additionalPropertyMapper);
     }
-    
-   
+
 
     /**
      * Get a QueueRecipient-object with properties set via array
-     * 
+     *
      * @param array $data
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     public static function initQueueRecipientViaArray (
         array $data = []
     ): QueueRecipient {
-        
+
         return self::setProperties(null, $data);
     }
 
 
     /**
-     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user
+     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity|null $user
      * @param array $additionalPropertyMapper
      * @param array $additionalData
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient
      * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
      */
     protected static function setProperties (
-        \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null, 
-        array $additionalData = [], 
+        \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $user = null,
+        array $additionalData = [],
         array $additionalPropertyMapper = []
     ): QueueRecipient {
 
@@ -206,9 +207,6 @@ class QueueRecipientUtility
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        
-        /** @var \RKW\RkwMailer\Persistence\MarkerReducer $markerReducer */
-        $markerReducer = $objectManager->get(MarkerReducer::class);
 
         // define property mapping - ordering is important!
         $defaultPropertyMapper = [
@@ -243,7 +241,7 @@ class QueueRecipientUtility
                     && ($value !== '') // We cannot check with empty() here, because 0 is a valid value
                     && ($value !== 99)
                 ) {
-                    
+
                     // only if value is valid email
                     if ($propertyTarget == 'email') {
                         if (EmailValidator::validateEmail($value)) {
@@ -252,7 +250,7 @@ class QueueRecipientUtility
                     } elseif ($propertyTarget == 'marker'){
                         if (is_array($value)) {
                             $queueRecipient->$setter(
-                                $markerReducer->implodeMarker($value)
+                                MarkerReducer::implode($value)
                             );
                         }
                     } else {
@@ -274,16 +272,16 @@ class QueueRecipientUtility
                     } elseif ($propertyTarget == 'marker'){
                         if (is_array($value)) {
                             $queueRecipient->$setter(
-                                $markerReducer->implodeMarker($value)
+                                MarkerReducer::implode($value)
                             );
                         }
                     } else {
                         $queueRecipient->$setter($value);
-                    }              
+                    }
                 }
             }
         }
-        
+
         return $queueRecipient;
     }
 
@@ -291,14 +289,14 @@ class QueueRecipientUtility
     /**
      * Explodes name on spaces and sets values in additionalData-Array accordingly
      *
-     * @param $name
-     * @param $additionalData
+     * @param string $name
+     * @param array $additionalData
      * @return void
      */
-    protected static function explodeNameToAdditionalData(string $name, array &$additionalData)
+    protected static function explodeNameToAdditionalData(string $name, array &$additionalData): void
     {
 
-        // split name 
+        // split name
         $nameArray = explode(' ', $name);
 
         // set default

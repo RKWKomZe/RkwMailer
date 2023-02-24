@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Domain\Model;
 
 /*
@@ -21,7 +20,7 @@ use RKW\RkwMailer\Validation\EmailValidator;
  * BounceMail
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -29,80 +28,63 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 
     /**
-     * status
-     *
      * @var string
      */
-    protected $status;
-
-    /**
-     * type
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * email
-     *
-     * @var string
-     */
-    protected $email;
-
-    /**
-     * subject
-     *
-     * @var string
-     */
-    protected $subject;
+    protected string $status = '';
 
 
     /**
-     * ruleNumber
-     *
+     * @var string
+     */
+    protected string $type = '';
+
+
+    /**
+     * @var string
+     */
+    protected string $email = '';
+
+
+    /**
+     * @var string
+     */
+    protected string $subject = '';
+
+
+    /**
      * @var int
      */
-    protected $ruleNumber;
+    protected int $ruleNumber = 0;
 
 
     /**
-     * ruleCategory
-     *
      * @var string
      */
-    protected $ruleCategory;
+    protected string $ruleCategory = '';
 
 
     /**
-     * header
-     *
      * @var string
      */
-    protected $header;
-
-    /**
-     * body
-     *
-     * @var string
-     */
-    protected $body;
+    protected string $header = '';
 
 
     /**
-     * headerFull
-     *
      * @var string
      */
-    protected $headerFull;
+    protected string $body = '';
 
 
     /**
-     * bodyFull
-     *
      * @var string
      */
-    protected $bodyFull;
+    protected string $headerFull = '';
 
+
+    /**
+     * @var string
+     */
+    protected string $bodyFull = '';
 
 
     /**
@@ -110,10 +92,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $status
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
+
 
     /**
      * Sets the status
@@ -121,7 +104,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $status
      * @return void
      */
-    public function setStatus($status)
+    public function setStatus(string $status)
     {
         $this->status = $status;
     }
@@ -132,10 +115,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $type
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
+
 
     /**
      * Sets the type
@@ -143,7 +127,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $type
      * @return void
      */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
     }
@@ -154,10 +138,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $email
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
+
 
     /**
      * Sets the email
@@ -165,7 +150,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $email
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = EmailValidator::cleanUpEmail($email);
     }
@@ -176,10 +161,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $subject
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
+
 
     /**
      * Sets the subject
@@ -187,11 +173,10 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $subject
      * @return void
      */
-    public function setSubject($subject)
+    public function setSubject(string $subject)
     {
         $this->subject = $subject;
     }
-
 
 
     /**
@@ -199,10 +184,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return int $ruleNumber
      */
-    public function getRuleNumber()
+    public function getRuleNumber(): int
     {
         return $this->ruleNumber;
     }
+
 
     /**
      * Sets the ruleNumber
@@ -210,7 +196,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param int $ruleNumber
      * @return void
      */
-    public function setRuleNumber($ruleNumber)
+    public function setRuleNumber(int $ruleNumber)
     {
         $this->ruleNumber = $ruleNumber;
     }
@@ -221,10 +207,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $ruleCategory
      */
-    public function getRuleCategory()
+    public function getRuleCategory(): string
     {
         return $this->ruleCategory;
     }
+
 
     /**
      * Sets the ruleCategory
@@ -232,20 +219,22 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $ruleCategory
      * @return void
      */
-    public function setRuleCategory($ruleCategory)
+    public function setRuleCategory(string $ruleCategory)
     {
         $this->ruleCategory = $ruleCategory;
     }
+
 
     /**
      * Returns the header
      *
      * @return array $header
      */
-    public function getHeader()
+    public function getHeader(): array
     {
         return unserialize($this->header);
     }
+
 
     /**
      * Sets the header
@@ -253,7 +242,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param array $header
      * @return void
      */
-    public function setHeader($header)
+    public function setHeader(array $header)
     {
         $this->header = serialize($header);
     }
@@ -264,10 +253,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $body
      */
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
+
 
     /**
      * Sets the body
@@ -275,7 +265,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $body
      * @return void
      */
-    public function setBody($body)
+    public function setBody(string $body)
     {
         $this->body = $body;
     }
@@ -286,10 +276,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $headerFull
      */
-    public function getHeaderFull()
+    public function getHeaderFull(): string
     {
         return $this->headerFull;
     }
+
 
     /**
      * Sets the headerFull
@@ -297,7 +288,7 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $headerFull
      * @return void
      */
-    public function setHeaderFull($headerFull)
+    public function setHeaderFull(string $headerFull)
     {
         $this->headerFull = $headerFull;
     }
@@ -308,10 +299,11 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $bodyFull
      */
-    public function getBodyFull()
+    public function getBodyFull(): string
     {
         return $this->bodyFull;
     }
+
 
     /**
      * Sets the bodyFull
@@ -319,9 +311,9 @@ class BounceMail extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $bodyFull
      * @return void
      */
-    public function setBodyFull($bodyFull)
+    public function setBodyFull(string $bodyFull)
     {
         $this->bodyFull = $bodyFull;
-    }    
-    
+    }
+
 }

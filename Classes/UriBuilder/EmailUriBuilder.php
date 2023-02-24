@@ -15,7 +15,7 @@ namespace RKW\RkwMailer\UriBuilder;
  * The TYPO3 project - inspiring people to share!
  */
 
-use RKW\RkwBasics\Utility\GeneralUtility;
+use Madj2k\CoreExtended\Utility\GeneralUtility;
 use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Model\QueueRecipient;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
@@ -26,90 +26,101 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @comment implicitly tested
+ * comment: implicitly tested
  */
 class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
 {
 
     /**
-     * @var integer
+     * @var int
      */
-    protected $redirectPid = 0;
+    protected int $redirectPid = 0;
+
 
     /**
-     * @var boolean
+     * @var bool
      */
-    protected $useRedirectLink = false;
+    protected bool $useRedirectLink = false;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
+
 
     /**
-     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient
+     * @var \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      */
-    protected $queueRecipient;
+    protected ?QueueRecipient $queueRecipient = null;
+
 
     /**
      * @var string
      */
-    protected $redirectLink = '';
+    protected string $redirectLink = '';
+
 
     /**
      * @var array
      */
-    protected $settings = [];
+    protected array $settings = [];
 
-    
+
     /**
      * Life-cycle method that is called by the DI container as soon as this object is completely built
+     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
     public function initializeObject(): void
     {
-        
+
         // set url scheme based on settings
         $this->settings = $this->getSettings();
-        if (isset($this->settings['baseUrl'])) {
+
+        /* @todo: guess we don't need this any more because it is overwritten by routing */
+        if (
+            (isset($this->settings['baseUrl']))
+            || (\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL'))
+        ){
             $this->setAbsoluteUriScheme($this->getUrlScheme($this->settings['baseUrl']));
         }
 
         parent::initializeObject();
     }
 
-    
+
     /**
      * Uid of the target page
      *
      * @param int $targetPageUid
-     * @return $this
+     * @return self
      * @api
      */
-    public function setTargetPageUid($targetPageUid): EmailUriBuilder
+    public function setTargetPageUid($targetPageUid): self
     {
         $this->targetPageUid = $targetPageUid;
         return $this;
     }
 
 
-
     /**
-     * Sets $useRedirectLink
+     * Sets useRedirectLink
      *
      * @param boolean $useRedirectLink
-     * @return $this the current UriBuilder to allow method chaining
+     * @return self
      */
-    public function setUseRedirectLink(bool $useRedirectLink): EmailUriBuilder
+    public function setUseRedirectLink(bool $useRedirectLink): self
     {
         $this->useRedirectLink = (boolean) $useRedirectLink;
         return $this;
     }
 
+
     /**
-     * Gets $useRedirectLink
+     * Gets useRedirectLink
      *
      * @return boolean
      */
@@ -118,52 +129,57 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         return $this->useRedirectLink;
     }
 
+
     /**
-     * Sets $queueMail
+     * Sets queueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
-     * @return $this the current UriBuilder to allow method chaining
+     * @return self
      */
-    public function setQueueMail(QueueMail $queueMail): EmailUriBuilder
+    public function setQueueMail(QueueMail $queueMail):  self
     {
         $this->queueMail = $queueMail;
         return $this;
     }
 
+
     /**
-     * Gets $queueMail
+     * Gets queueMail
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    public function getQueueMail()
+    public function getQueueMail():? QueueMail
     {
         return $this->queueMail;
     }
 
+
     /**
-     * Sets $mail
+     * Sets queueRecipient
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
-     * @return $this the current UriBuilder to allow method chaining
+     * @return self
      */
-    public function setQueueRecipient(QueueRecipient $queueRecipient): EmailUriBuilder
+    public function setQueueRecipient(QueueRecipient $queueRecipient): self
     {
         $this->queueRecipient = $queueRecipient;
         return $this;
     }
 
+
     /**
-     * Gets $queueRecipient
+     * Gets queueRecipient
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueRecipient|null
      */
-    public function getQueueRecipient()
+    public function getQueueRecipient():? QueueRecipient
     {
         return $this->queueRecipient;
     }
 
+
     /**
-     * Sets $redirectLink
+     * Sets redirectLink
      *
      * @param string $redirectLink
      * @return $this the current UriBuilder to allow method chaining
@@ -174,32 +190,35 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         return $this;
     }
 
+
     /**
-     * Gets $redirectLink
+     * Gets redirectLink
      *
      * @return string
      */
-    public function getRedirectLink()
+    public function getRedirectLink(): string
     {
         return $this->redirectLink;
     }
 
+
     /**
-     * Sets $redirectPid
+     * Sets redirectPid
      *
-     * @param integer $redirectPid
-     * @return $this the current UriBuilder to allow method chaining
+     * @param int $redirectPid
+     * @return self
      */
-    public function setRedirectPid(int $redirectPid): EmailUriBuilder
+    public function setRedirectPid(int $redirectPid): self
     {
         $this->redirectPid = $redirectPid;
         return $this;
     }
 
+
     /**
      * Gets $redirectLPid
      *
-     * @return integer
+     * @return int
      */
     public function getRedirectPid(): int
     {
@@ -214,11 +233,11 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * Creates an URI used for linking to an Extbase action.
      * Works in Frontend and Backend mode of TYPO3.
      *
-     * @param string $actionName Name of the action to be called
+     * @param string|null $actionName Name of the action to be called
      * @param array $controllerArguments Additional query parameters. Will be "namespaced" and merged with $this->arguments.
-     * @param string $controllerName Name of the target controller. If not set, current ControllerName is used.
-     * @param string $extensionName Name of the target extension, without underscores. If not set, current ExtensionName is used.
-     * @param string $pluginName Name of the target plugin. If not set, current PluginName is used.
+     * @param string|null $controllerName Name of the target controller. If not set, current ControllerName is used.
+     * @param string|null $extensionName Name of the target extension, without underscores. If not set, current ExtensionName is used.
+     * @param string|null $pluginName Name of the target plugin. If not set, current PluginName is used.
      * @return string the rendered URI
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
@@ -226,8 +245,13 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @api
      * @see build()
      */
-    public function uriFor($actionName = null, $controllerArguments = array(), $controllerName = null, $extensionName = null, $pluginName = null)
-    {
+    public function uriFor(
+        ?string $actionName = null,
+        $controllerArguments = [],
+        ?string $controllerName = null,
+        ?string $extensionName = null,
+        ?string $pluginName = null
+    ): string {
 
         // kill request-calls for non-set values
         if ($actionName !== null) {
@@ -248,10 +272,34 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         }
 
         ArrayUtility::mergeRecursiveWithOverrule($this->arguments, $prefixedControllerArguments);
-        return $this->build();
+
+        // Fix since TYPO3 9: Remove cHash-param manually!
+        $uri = $this->build();
+        if (! $this->getUseCacheHash()) {
+            $uri = preg_replace('#([&|\?]cHash=[^&]+)#', '', $uri);
+        }
+
+        return $uri;
     }
 
-    
+
+    /**
+     * Builds the URI, frontend flavour
+     *
+     * @return string The URI
+     */
+    public function buildFrontendUri(): string
+    {
+        // Fix since TYPO3 9: Remove cHash-param manually!
+        $uri = parent::buildFrontendUri();
+        if (! $this->getUseCacheHash()) {
+            $uri = preg_replace('#([&|\?]cHash=[^&]+)#', '', $uri);
+        }
+
+        return $uri;
+    }
+
+
     /**
      * Builds the URI
      *
@@ -262,7 +310,7 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @api
      * @see buildFrontendUri()
      */
-    public function build()
+    public function build(): string
     {
 
         if (
@@ -271,24 +319,24 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
         ) {
 
             if ($this->getRedirectPid()) {
-                
+
                 // unset redirect to avoid an infinite loop since uriFor() calls build()!
                 // keep the set arguments (addition to queryString)
                 //$this->reset();
                 $this->setUseRedirectLink(false);
-                
+
                 // get url
                 $url = $this->buildFrontendUri();
                 if ($this->getRedirectLink()) {
                     $url = $this->getRedirectLink();
-                } 
+                }
 
                 // set params
                 $arguments = [
                     'tx_rkwmailer_rkwmailer[url]' => $url,
                     'tx_rkwmailer_rkwmailer[mid]'  => intval($this->getQueueMail()->getUid()),
                 ];
-                
+
                 if ($this->getQueueRecipient()) {
                     $arguments['tx_rkwmailer_rkwmailer[uid]']  = intval($this->getQueueRecipient()->getUid());
                 }
@@ -306,15 +354,15 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
                     );
 
                 // generate redirect link
-                $url = $this->uriFor(
-                    'redirect', 
-                    [], 
-                    'Tracking', 
-                    'rkwmailer', 
+                $uri = $this->uriFor(
+                    'redirect',
+                    [],
+                    'Tracking',
+                    'rkwmailer',
                     'Rkwmailer'
                 );
 
-                return $url;
+                return $uri;
             }
         }
 
@@ -324,26 +372,23 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
             ->setCreateAbsoluteUri(true)
             ->setLinkAccessRestrictedPages(true);
 
-        $url = $this->buildFrontendUri();
-
-        return $url;
+        return $this->buildFrontendUri();
     }
 
 
-    
     /**
      * Get UrlScheme
      *
      * @param string $baseUrl
      * @return string
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
     */
     public function getUrlScheme(string $baseUrl): string
     {
         $parsedUrl = parse_url($baseUrl);
-        return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http');
+        return ($parsedUrl['scheme'] ?? 'http');
     }
-    
+
+
     /**
      * Returns TYPO3 settings
      *
@@ -351,8 +396,8 @@ class EmailUriBuilder extends \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
-        return GeneralUtility::getTyposcriptConfiguration('Rkwmailer', $which);
+        return GeneralUtility::getTypoScriptConfiguration('Rkwmailer', $which);
     }
 }

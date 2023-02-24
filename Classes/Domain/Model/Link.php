@@ -20,7 +20,7 @@ namespace RKW\RkwMailer\Domain\Model;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @deprecated This class is only kept for backwards compatibility with old mails
@@ -29,33 +29,27 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
 
 
     /**
-     * crdate
-     *
-     * @var string
+     * @var int
      */
-    protected $crdate;
+    protected int $crdate = 0;
+
 
     /**
-     * hash
-     *
      * @var string
      */
-    protected $hash;
+    protected string $hash = '';
+
 
     /**
-     * url
-     *
      * @var string
      */
-    protected $url;
+    protected string $url = '';
 
 
     /**
@@ -63,10 +57,11 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return \RKW\RkwMailer\Domain\Model\QueueMail
      */
-    public function getQueueMail()
+    public function getQueueMail():? QueueMail
     {
         return $this->queueMail;
     }
+
 
     /**
      * Sets the queueMail
@@ -74,7 +69,7 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
      */
-    public function setQueueMail($queueMail)
+    public function setQueueMail(QueueMail $queueMail): void
     {
         $this->queueMail = $queueMail;
     }
@@ -83,33 +78,36 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the crdate
      *
-     * @return string $crdate
+     * @return int
      */
-    public function getCrdate()
+    public function getCrdate(): int
     {
         return $this->crdate;
     }
 
+
     /**
      * Sets the crdate
      *
-     * @param string $crdate
+     * @param int $crdate
      * @return void
      */
-    public function setCrdate($crdate)
+    public function setCrdate(int $crdate): void
     {
         $this->crdate = $crdate;
     }
+
 
     /**
      * Returns the hash
      *
      * @return string $hash
      */
-    public function getHash()
+    public function getHash(): string
     {
         return $this->hash;
     }
+
 
     /**
      * Sets the hash
@@ -117,20 +115,22 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $hash
      * @return void
      */
-    public function setHash($hash)
+    public function setHash(string $hash): void
     {
         $this->hash = $hash;
     }
+
 
     /**
      * Returns the url
      *
      * @return string $url
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
+
 
     /**
      * Sets the url
@@ -138,7 +138,7 @@ class Link extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $url
      * @return void
      */
-    public function setUrl($url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }

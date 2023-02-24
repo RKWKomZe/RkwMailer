@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers;
 
 /*
@@ -15,7 +14,7 @@ namespace RKW\RkwMailer\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
@@ -23,28 +22,29 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  *
  * @author Maximilian Fäßler <maximilian@faesslerweb.de>
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @toDo: write tests
+ * @todo write tests
  */
 class CalcPercentageViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
     use CompileWithRenderStatic;
-    
+
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('percentage', 'integer', 'Value to calculate percentage from.');
         $this->registerArgument('total', 'integer', 'Total value  to calculate percentage from.');
     }
-    
+
 
     /**
      * @param array $arguments
@@ -52,8 +52,12 @@ class CalcPercentageViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstrac
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+
         $percentage = $arguments['percentage'];
         $total = $arguments['total'];
 
@@ -63,5 +67,5 @@ class CalcPercentageViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstrac
 
         return '0 %';
     }
-    
+
 }

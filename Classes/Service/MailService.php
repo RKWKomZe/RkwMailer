@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Service;
 
 /*
@@ -14,13 +13,14 @@ namespace RKW\RkwMailer\Service;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use Madj2k\Accelerator\Persistence\MarkerReducer;
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Model\QueueMail;
 use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
 use RKW\RkwMailer\Mail\Mailer;
-use RKW\RkwMailer\Persistence\MarkerReducer;
 use RKW\RkwMailer\Utility\QueueMailUtility;
 use RKW\RkwMailer\Utility\QueueRecipientUtility;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -31,123 +31,105 @@ use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
 use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Validation\QueueMailValidator;
 use RKW\RkwMailer\Validation\QueueRecipientValidator;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * MailService
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class MailService
 {
-    
 
     /**
-     * objectManager
-     *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
 
     /**
-     * configurationManager
-     *
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
 
 
     /**
-     * persistenceManager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
+
 
     /**
-     * queueMail
-     *
-     * @var \RKW\RkwMailer\Domain\Model\QueueMail
+     * @var \RKW\RkwMailer\Domain\Model\QueueMail|null
      */
-    protected $queueMail;
+    protected ?QueueMail $queueMail = null;
+
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * MailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
+
 
     /**
-     * QueueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueMailValidator
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailValidator = null;
+    protected QueueMailValidator $queueMailValidator;
 
 
     /**
-     * QueueMailValidator
-     *
      * @var \RKW\RkwMailer\Validation\QueueRecipientValidator
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientValidator = null;
+    protected QueueRecipientValidator $queueRecipientValidator;
+
 
     /**
-     * Mailer
-     *
      * @var \RKW\RkwMailer\Mail\Mailer
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailer;    
-    
-    /**
-     * Logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
-     */
-    protected $logger;
+    protected Mailer $mailer;
 
-    
+
     /**
-     * The normal settings
-     *
+     * @var \TYPO3\CMS\Core\Log\Logger|null
+     */
+    protected ?Logger $logger = null;
+
+
+    /**
      * @var array
      */
-    protected $settings = array();
+    protected array $settings = [];
 
 
     /**
      * Constructor
      * @param bool $unitTest
      */
-    public function __construct($unitTest = false)
+    public function __construct(bool $unitTest = false)
     {
         self::debugTime(__LINE__, __METHOD__);
         if (! $unitTest) {
@@ -157,13 +139,13 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
     }
 
-    
+
     /**
      * function initializeService
      *
      * @return void
      */
-    public function initializeService()
+    public function initializeService(): void
     {
         // set objects if they haven't been injected yet
         if (!$this->objectManager) {
@@ -193,20 +175,20 @@ class MailService
         if (!$this->mailingStatisticsRepository) {
             $this->mailingStatisticsRepository = $this->objectManager->get(MailingStatisticsRepository::class);
         }
-        GeneralUtility::deprecationLog(__CLASS__ . ': Please use the ObjectManager to load this class.');
+        trigger_error(__CLASS__ . ': Please use the ObjectManager to load this class.', E_USER_DEPRECATED);
     }
 
-    
+
     /**
      * Returns mailer
      * @return \RKW\RkwMailer\Mail\Mailer
      */
-    public function getMailer (): Mailer 
+    public function getMailer (): Mailer
     {
         return $this->mailer;
     }
-    
-    
+
+
     /**
      * Init and return the queueMail
      *
@@ -215,13 +197,13 @@ class MailService
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @api
      */
-    public function getQueueMail()
+    public function getQueueMail(): QueueMail
     {
         if (!$this->queueMail instanceof \RKW\RkwMailer\Domain\Model\QueueMail) {
 
             // init object
             $storagePid = intval($this->getSettings('storagePid', 'persistence'));
-            
+
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail queueMail */
             $this->queueMail = QueueMailUtility::initQueueMail($storagePid);
 
@@ -229,7 +211,7 @@ class MailService
             /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
             $this->queueMailRepository->add($this->queueMail);
             $this->persistenceManager->persistAll();
-            
+
             // add mailingStatistics - we do it now because before the persist-call we had no uid!
             /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
             $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
@@ -244,7 +226,7 @@ class MailService
         return $this->queueMail;
     }
 
-    
+
     /**
      * Sets the queueMail
      *
@@ -253,19 +235,19 @@ class MailService
      * @throws \RKW\RkwMailer\Exception
      * @api
      */
-    public function setQueueMail(\RKW\RkwMailer\Domain\Model\QueueMail $queueMail)
+    public function setQueueMail(QueueMail $queueMail): void
     {
 
         if ($queueMail->_isNew()) {
             throw new \RKW\RkwMailer\Exception (
-                'The queueMail-object has to be persisted before it can be used.', 
+                'The queueMail-object has to be persisted before it can be used.',
                 1540193242
             );
         }
 
         // add mailingStatistics if not already existent
         if (! $queueMail->getMailingStatistics()) {
-            
+
             /** @var \RKW\RkwMailer\Domain\Model\MailingStatistics $mailingStatistics */
             $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
             $mailingStatistics->setQueueMail($queueMail);
@@ -275,7 +257,7 @@ class MailService
             $this->queueMailRepository->update($queueMail);
             $this->persistenceManager->persistAll();
         }
-        
+
         $this->queueMail = $queueMail;
     }
 
@@ -294,7 +276,7 @@ class MailService
      * @api
      */
     public function setTo(
-        $basicData, 
+        $basicData,
         array $additionalData = [],
         bool $renderTemplates = false
     ): bool {
@@ -323,11 +305,11 @@ class MailService
     /**
      * Returns the recipients
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    public function getTo()
+    public function getTo(): QueryResultInterface
     {
         return $this->queueRecipientRepository->findByQueueMail($this->getQueueMail());
     }
@@ -346,6 +328,7 @@ class MailService
     public function addQueueRecipient(
         \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
     ): bool {
+
         self::debugTime(__LINE__, __METHOD__);
         if (
             ($this->queueRecipientValidator->validate($queueRecipient))
@@ -366,19 +349,19 @@ class MailService
             $this->persistenceManager->persistAll();
 
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'Added recipient with email "%s" (uid %s) to queueMail with uid %s.', 
-                    $queueRecipient->getEmail(), 
+                    'Added recipient with email "%s" (uid %s) to queueMail with uid %s.',
+                    $queueRecipient->getEmail(),
                     $queueRecipient->getUid(),
                     $this->getQueueMail()->getUid()
                 )
             );
-            
+
             self::debugTime(__LINE__, __METHOD__);
             return true;
         }
-        
+
         self::debugTime(__LINE__, __METHOD__);
         return false;
     }
@@ -399,25 +382,25 @@ class MailService
         if ($email instanceof \RKW\RkwMailer\Domain\Model\QueueRecipient){
             $email = $email->getEmail();
         }
-       
+
         if ($this->queueRecipientRepository->findOneByEmailAndQueueMail($email, $this->getQueueMail())) {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'Recipient with email "%s" already exists for queueMail with uid %s.', 
-                    $email, 
+                    'Recipient with email "%s" already exists for queueMail with uid %s.',
+                    $email,
                     $this->getQueueMail()->getUid()
                 )
-            );  
-            
+            );
+
             self::debugTime(__LINE__, __METHOD__);
             return true;
         }
-        
+
         self::debugTime(__LINE__, __METHOD__);
         return false;
     }
-    
+
 
     /**
      * function send
@@ -437,7 +420,7 @@ class MailService
         $queueMail = $this->getQueueMail();
         if (!$this->queueMailValidator->validate($queueMail)) {
             throw new \RKW\RkwMailer\Exception(
-                'Invalid or missing data in queueMail-object.', 
+                'Invalid or missing data in queueMail-object.',
                 1540186577
             );
         }
@@ -447,10 +430,10 @@ class MailService
 
             // find all final recipients of waiting mails!
             $recipientCount = $this->queueRecipientRepository->findAllByQueueMailWithStatusWaiting(
-                $queueMail, 
+                $queueMail,
                 0
             )->count();
-            
+
             if ($recipientCount > 0) {
 
                 // set status to waiting so the email will be processed
@@ -461,26 +444,26 @@ class MailService
                 $this->queueMailRepository->update($queueMail);
                 $this->persistenceManager->persistAll();
 
-                /** @toDo: can we savely remove this? It interferes with rkw_newsletter */
+                /** @todo can we savely remove this? It interferes with rkw_newsletter */
                 // $this->unsetVariables();
 
                 $this->getLogger()->log(
-                    LogLevel::INFO, 
+                    LogLevel::INFO,
                     sprintf(
-                        'Marked queueMail with uid %s for cronjob (%s recipients).', 
-                        $queueMail->getUid(), 
+                        'Marked queueMail with uid %s for cronjob (%s recipients).',
+                        $queueMail->getUid(),
                         $recipientCount
                     )
                 );
-                
+
                 self::debugTime(__LINE__, __METHOD__);
                 return true;
 
             } else {
                 $this->getLogger()->log(
-                    LogLevel::INFO, 
+                    LogLevel::INFO,
                     sprintf(
-                        'QueueMail with uid %s has no recipients.', 
+                        'QueueMail with uid %s has no recipients.',
                         $queueMail->getUid()
                     )
                 );
@@ -488,10 +471,10 @@ class MailService
 
         } else {
             $this->getLogger()->log(
-                LogLevel::INFO, 
+                LogLevel::INFO,
                 sprintf(
-                    'QueueMail with uid %s is not a draft (status %s).', 
-                    $queueMail->getUid(), 
+                    'QueueMail with uid %s is not a draft (status %s).',
+                    $queueMail->getUid(),
                     $queueMail->getStatus()
                 )
             );
@@ -516,7 +499,7 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
 
         $queueMail = $this->getQueueMail();
-        
+
         // set status to draft and activate pipelining
         $queueMail->setStatus(1);
         $queueMail->setPipeline(true);
@@ -530,7 +513,7 @@ class MailService
                 $queueMail->getUid()
             )
         );
-        
+
         self::debugTime(__LINE__, __METHOD__);
     }
 
@@ -564,6 +547,7 @@ class MailService
         self::debugTime(__LINE__, __METHOD__);
     }
 
+
     /**
      * unset several variables
      *
@@ -573,7 +557,7 @@ class MailService
     {
         unset($this->queueMail);
     }
-    
+
 
     /**
      * Gets TypoScript framework settings
@@ -605,14 +589,14 @@ class MailService
 
         return $this->settings[$type];
     }
-    
+
 
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
@@ -624,16 +608,14 @@ class MailService
     /**
      * Does debugging of runtime
      *
-     * @param integer $line
+     * @param int $line
      * @param string  $function
      */
     protected static function debugTime(int $line, string $function): void
     {
         if (GeneralUtility::getApplicationContext()->isDevelopment()) {
-            $path = PATH_site . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
+            $path = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/typo3temp/var/logs/tx_rkwmailer_runtime.txt';
             file_put_contents($path, microtime() . ' ' . $line . ' ' . $function . "\n", FILE_APPEND);
         }
     }
-
-
 }

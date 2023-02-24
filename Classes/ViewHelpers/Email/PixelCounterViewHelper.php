@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\ViewHelpers\Email;
 
 /*
@@ -30,15 +29,16 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  * Class PixelCounterViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
-    
+
     use CompileWithRenderStatic;
-    
+
+
     /**
      * @var bool
      */
@@ -48,14 +48,16 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
     /**
      * Initialize arguments.
      *
+     * @return void
      * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
+        parent::initializeArguments();
         $this->registerArgument('queueMail', QueueMail::class, 'QueueMail-object for counter');
         $this->registerArgument('queueRecipient', QueueRecipient::class, 'QueueRecipient-object for counter');
     }
-    
+
 
     /**
      * @param array $arguments
@@ -64,14 +66,14 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      * @return string
      */
     public static function renderStatic(
-        array $arguments, 
-        \Closure $renderChildrenClosure, 
+        array $arguments,
+        \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ){
-        
+    ): string {
+
         $queueMail = $arguments['queueMail'];
         $queueRecipient = $arguments['queueRecipient'];
-        
+
         try {
 
             $settings = self::getSettings();
@@ -102,10 +104,10 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
 
                 return '<img src="' . urldecode(
                     $uriBuilder->uriFor(
-                        'opening', 
-                        array(), 
-                        'Tracking', 
-                        'rkwmailer', 
+                        'opening',
+                        array(),
+                        'Tracking',
+                        'rkwmailer',
                         'Rkwmailer')
                     ) . '" width="1" height="1" alt="" />';
             }
@@ -114,9 +116,9 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->log(
-                LogLevel::ERROR, 
+                LogLevel::ERROR,
                 sprintf(
-                    'Error while trying to set pixel-counter: %s', 
+                    'Error while trying to set pixel-counter: %s',
                     $e->getMessage()
                 )
             );
@@ -125,7 +127,7 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
         return '';
     }
 
-    
+
     /**
      * Returns TYPO3 settings
      *
@@ -133,9 +135,9 @@ class PixelCounterViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractV
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    static protected function getSettings($which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS)
+    static protected function getSettings(string $which = ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS): array
     {
-        return \RKW\RkwBasics\Utility\GeneralUtility::getTyposcriptConfiguration('Rkwmailer', $which);
+        return \Madj2k\CoreExtended\Utility\GeneralUtility::getTypoScriptConfiguration('Rkwmailer', $which);
     }
 
 }

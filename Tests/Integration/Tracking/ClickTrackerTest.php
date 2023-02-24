@@ -25,7 +25,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * ClickTrackerTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -45,50 +45,53 @@ class ClickTrackerTest extends FunctionalTestCase
      */
     const NUMBER_OF_STATISTIC_OPENINGS = 3;
 
+
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_registration',
+        'typo3conf/ext/accelerator',
+        'typo3conf/ext/core_extended',
         'typo3conf/ext/rkw_mailer',
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [];
 
-    /**
-     * @var \RKW\RkwMailer\Tracking\ClickTracker
-     */
-    private $subject = null;
 
     /**
-     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository
+     * @var \RKW\RkwMailer\Tracking\ClickTracker|null
      */
-    private $clickStatisticsRepository;
-    
+    private ?ClickTracker $subject = null;
+
+
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\Domain\Repository\ClickStatisticsRepository|null
      */
-    private $objectManager = null;
+    private ?ClickStatisticsRepository $clickStatisticsRepository = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->importDataSet(self::FIXTURE_PATH . '/Database/Global.xml');
-
         $this->setUpFrontendRootPage(
             1,
             [
-                'EXT:rkw_registration/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
             ]
@@ -100,11 +103,8 @@ class ClickTrackerTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(ClickTracker::class);
     }
 
-    
-    
-
     //=============================================
-    
+
     /**
      * @test
      */
@@ -129,6 +129,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertFalse( $result);
         self::assertEmpty($this->clickStatisticsRepository->findAll());
     }
+
 
     /**
      * @test
@@ -193,6 +194,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertEquals(1, $clickStatistics->getCounter());
 
     }
+
 
     /**
      * @test
@@ -345,11 +347,9 @@ class ClickTrackerTest extends FunctionalTestCase
 
         $result = $this->subject->getRedirectUrl($encodedUrl, 99999);
         self::assertEquals($expected, $result);
-        self::assertNotContains('tx_rkwmailer[mid]=', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[mid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
     }
-
-
 
 
     /**
@@ -376,10 +376,9 @@ class ClickTrackerTest extends FunctionalTestCase
         $result = $this->subject->getRedirectUrl($encodedUrl, 200);
         self::assertStringStartsWith($expected, $result);
         self::assertStringEndsWith('?tx_rkwmailer[mid]=200', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
-
 
 
     /**
@@ -407,9 +406,10 @@ class ClickTrackerTest extends FunctionalTestCase
         $result = $this->subject->getRedirectUrl($encodedUrl, 210, 210);
         self::assertStringStartsWith($expected, $result);
         self::assertStringEndsWith('?tx_rkwmailer[mid]=210', $result);
-        self::assertNotContains('tx_rkwmailer[uid]=', $result);
+        self::assertStringNotContainsString('tx_rkwmailer[uid]=', $result);
 
     }
+
 
     /**
      * @test
@@ -456,6 +456,7 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertEmpty($this->subject->getPlainUrlByHash('abc'));
     }
 
+
     /**
      * @test
      */
@@ -475,13 +476,12 @@ class ClickTrackerTest extends FunctionalTestCase
         self::assertEquals('http://aprodi-projekt.de', $result);
     }
 
-
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

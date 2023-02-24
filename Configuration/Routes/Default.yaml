@@ -1,0 +1,17 @@
+routeEnhancers:
+  RkwMailer:
+    type: Extbase
+    namespace: 'tx_rkwmailer_rkwmailer'
+    routes:
+      - routePath: '/rkw-mailer/track/{mid}'
+        _controller: 'Tracking::opening'
+      - routePath: '/rkw-mailer/track/{mid}/{uid}'
+        _controller: 'Tracking::opening'
+      - routePath: '/rkw-mailer/redirect/{mid}'
+        _controller: 'Tracking::redirect'
+      - routePath: '/rkw-mailer/redirect/{mid}/{uid}'
+        _controller: 'Tracking::redirect'
+    defaultController: 'Tracking::redirect'
+    requirements:
+      mid: '[0-9]{1,10000}'
+      uid: '[0-9]{1,10000}'

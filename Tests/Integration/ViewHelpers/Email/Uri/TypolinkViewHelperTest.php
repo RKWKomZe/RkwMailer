@@ -24,7 +24,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * TypolinkViewHelperTest
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -41,64 +41,61 @@ class TypolinkViewHelperTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/rkw_basics',
-        'typo3conf/ext/rkw_mailer',
-        'typo3conf/ext/realurl'
+        'typo3conf/ext/core_extended',
+        'typo3conf/ext/rkw_mailer'
     ];
+
 
     /**
      * @var string[]
      */
     protected $coreExtensionsToLoad = [ ];
 
-    /**
-     * @var \RKW\RkwMailer\View\EmailStandaloneView
-     */
-    private $standAloneViewHelper;
 
-  
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var \RKW\RkwMailer\View\EmailStandaloneView|null
      */
-    private $objectManager;
+    private ?EmailStandaloneView $standAloneViewHelper = null;
+
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager|null
+     */
+    private ?ObjectManager $objectManager = null;
 
 
     /**
      * Setup
      * @throws \Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
-        // define realUrl-config
-        define('TX_REALURL_AUTOCONF_FILE', 'typo3conf/ext/rkw_mailer/Tests/Integration/ViewHelpers/Email/TypolinkViewHelperTest/Fixtures/RealUrlConfiguration.php');
-
         parent::setUp();
 
         $this->importDataSet(__DIR__ . '/TypolinkViewHelperTest/Fixtures/Database/Global.xml');
         $this->setUpFrontendRootPage(
-            100,
+            1,
             [
-                'EXT:realurl/Configuration/TypoScript/setup.typoscript',
-                'EXT:rkw_basics/Configuration/TypoScript/setup.typoscript',
+                'EXT:accelerator/Configuration/TypoScript/setup.typoscript',
+                'EXT:core_extended/Configuration/TypoScript/setup.typoscript',
                 'EXT:rkw_mailer/Configuration/TypoScript/setup.typoscript',
                 self::FIXTURE_PATH . '/Frontend/Configuration/Rootpage.typoscript',
-            ]
+            ],
+            ['rkw-kompetenzzentrum.local' => self::FIXTURE_PATH .  '/Frontend/Configuration/config.yaml']
         );
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 100);
+        $this->standAloneViewHelper = $this->objectManager->get(EmailStandaloneView::class, 1);
         $this->standAloneViewHelper->setTemplateRootPaths(
             [
                 0 => self::FIXTURE_PATH . '/Frontend/Templates'
             ]
         );
-
-
     }
 
+    //=============================================
 
     /**
      * @test
@@ -120,7 +117,7 @@ class TypolinkViewHelperTest extends FunctionalTestCase
          * Given a typolink to an internal page with target, class and title, using the new typolink-style
          * Given a typolink to an internal page with anchor, target, class and title, using the old typolink-style
          * Given a typolink to an internal page with anchor, target, class and title, using the new typolink-style
-         * Given a typolink to an existing file with anchor, target, class and title            
+         * Given a typolink to an existing file with anchor, target, class and title
          * When the ViewHelper is rendered
          * Then the typolink to an external page with target, class and title is returned as absolute link with target, class and title
          * Then the typolink to an external page with anchor, target, class and title is returned as absolute link with anchor, target, class and title
@@ -140,22 +137,14 @@ class TypolinkViewHelperTest extends FunctionalTestCase
         self::assertEquals($expected, $result);
     }
 
-
     //=============================================
 
     /**
      * TearDown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }
-
-
-
-
-
-
-
 
 }

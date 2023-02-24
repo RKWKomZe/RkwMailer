@@ -16,61 +16,60 @@ namespace RKW\RkwMailer\Tracking;
  */
 
 use RKW\RkwMailer\Domain\Model\OpeningStatistics;
+use RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
 use RKW\RkwMailer\Utility\StatisticsUtility;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * OpeningTracker
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class OpeningTracker 
+class OpeningTracker
 {
 
     /**
-     * QueueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * QueueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
-    
+    protected QueueRecipientRepository $queueRecipientRepository;
+
+
     /**
-     * clickStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\OpeningStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $openingStatisticsRepository;
+    protected OpeningStatisticsRepository $openingStatisticsRepository;
+
 
     /**
-     * Persistence Manager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
 
     /**
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
-    
+    protected ?Logger $logger = null;
+
 
     /**
      * Tracks the opening of the email
@@ -82,7 +81,7 @@ class OpeningTracker
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function track(
-        int $queueMailId = 0, 
+        int $queueMailId = 0,
         int $queueMailRecipientId = 0
     ): bool {
 
@@ -98,11 +97,11 @@ class OpeningTracker
             $this->persistTrackingData($queueMail, $queueRecipient);
             return true;
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Persists tracking-data to database
      *
@@ -111,12 +110,12 @@ class OpeningTracker
      * @return void
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \RKW\RkwMailer\Exception
      */
     protected function persistTrackingData (
         \RKW\RkwMailer\Domain\Model\QueueMail $queueMail,
-        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient     
-    ): void
-    {
+        \RKW\RkwMailer\Domain\Model\QueueRecipient $queueRecipient
+    ): void {
 
         // generate hash from recipient
         $hash = StatisticsUtility::generateRecipientHash($queueRecipient);
@@ -146,7 +145,7 @@ class OpeningTracker
             $openingStatistic->setQueueRecipient($queueRecipient);
             $openingStatistic->setHash($hash);
             $openingStatistic->setCounter(1);
-    
+
             $this->openingStatisticsRepository->add($openingStatistic);
             $this->persistenceManager->persistAll();
 
@@ -160,14 +159,14 @@ class OpeningTracker
             );
         }
     }
-    
-    
+
+
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
         if (!$this->logger instanceof Logger) {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);

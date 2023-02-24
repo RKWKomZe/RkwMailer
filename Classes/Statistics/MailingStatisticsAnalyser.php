@@ -1,5 +1,4 @@
 <?php
-
 namespace RKW\RkwMailer\Statistics;
 
 /*
@@ -16,15 +15,21 @@ namespace RKW\RkwMailer\Statistics;
  */
 
 use RKW\RkwMailer\Domain\Model\MailingStatistics;
+use RKW\RkwMailer\Domain\Model\QueueMail;
+use RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository;
+use RKW\RkwMailer\Domain\Repository\QueueMailRepository;
+use RKW\RkwMailer\Domain\Repository\QueueRecipientRepository;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * MailingStatisticsAnalyser
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -32,46 +37,37 @@ class MailingStatisticsAnalyser
 {
 
     /**
-     * persistenceManager
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
-    
+
     /**
-     * queueMailRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueMailRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueMailRepository;
+    protected QueueMailRepository $queueMailRepository;
+
 
     /**
-     * queueRecipientRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\QueueRecipientRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $queueRecipientRepository;
+    protected QueueRecipientRepository $queueRecipientRepository;
 
 
     /**
-     * mailingStatisticsRepository
-     *
      * @var \RKW\RkwMailer\Domain\Repository\MailingStatisticsRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $mailingStatisticsRepository;
+    protected MailingStatisticsRepository $mailingStatisticsRepository;
 
 
     /**
-     * Logger
-     *
-     * @var \TYPO3\CMS\Core\Log\Logger
+     * @var \TYPO3\CMS\Core\Log\Logger|null
      */
-    protected $logger;
+    protected ?Logger $logger = null;
 
 
     /**
@@ -79,14 +75,16 @@ class MailingStatisticsAnalyser
      *
      * @param int $daysAfterSendingFinished Defines how many days after sending has been started the statistics should be updated (default: 30 days)
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function analyse (int $daysAfterSendingFinished = 30): void
     {
-        
+
         // migrate statistics
         if ($queueMailsMigrate = $this->queueMailRepository->findByMissingMailingStatistics()) {
-            
+
             /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
             foreach ($queueMailsMigrate as $queueMail) {
                 $this->analyseQueueMail($queueMail);
@@ -105,7 +103,7 @@ class MailingStatisticsAnalyser
                 'No statistic migration needed.'
             );
         }
-        
+
         // now process statistics according to given time
         $queueMails = $this->queueMailRepository->findByTstampRealSending($daysAfterSendingFinished);
         /** @var \RKW\RkwMailer\Domain\Model\QueueMail $queueMail */
@@ -120,20 +118,22 @@ class MailingStatisticsAnalyser
                 )
             );
         }
-        
+
     }
-    
+
 
     /**
      * analyseQueueMail
      *
      * @param \RKW\RkwMailer\Domain\Model\QueueMail $queueMail
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
-    public function analyseQueueMail (\RKW\RkwMailer\Domain\Model\QueueMail $queueMail): void 
+    public function analyseQueueMail (QueueMail $queueMail): void
     {
-   
+
         // add statistics-object if not yet existent
         if (! $mailingStatistics = $queueMail->getMailingStatistics()) {
 
@@ -141,16 +141,16 @@ class MailingStatisticsAnalyser
             $mailingStatistics = GeneralUtility::makeInstance(MailingStatistics::class);
             $mailingStatistics->setQueueMail($queueMail);
 
-            // migration 
+            // migration
             $mailingStatistics->setTstampFavSending($queueMail->getTstampFavSending());
             $mailingStatistics->setTstampRealSending($queueMail->getTstampRealSending());
             $mailingStatistics->setTstampFinishedSending($queueMail->getTstampSendFinish());
             $mailingStatistics->setSubject($queueMail->getSubject());
             $mailingStatistics->setType($queueMail->getType());
-           
+
             $queueMail->setMailingStatistics($mailingStatistics);
         }
-        
+
         // set current values
         $mailingStatistics->setStatus($queueMail->getStatus());
 
@@ -180,22 +180,22 @@ class MailingStatisticsAnalyser
         } else {
             $this->mailingStatisticsRepository->update($mailingStatistics);
         }
-        
+
         $this->persistenceManager->persistAll();
-       
+
     }
-    
+
 
     /**
      * Returns logger instance
      *
      * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger(): \TYPO3\CMS\Core\Log\Logger
+    protected function getLogger(): Logger
     {
 
         if (!$this->logger instanceof \TYPO3\CMS\Core\Log\Logger) {
-            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         }
 
         return $this->logger;

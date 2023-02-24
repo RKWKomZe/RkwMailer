@@ -14,7 +14,7 @@ namespace RKW\RkwMailer\ViewHelpers\Email;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Class ImageViewHelper
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright Rkw Kompetenzzentrum
+ * @copyright RKW Kompetenzzentrum
  * @package RKW_RkwMailer
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
@@ -46,18 +46,18 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
             // force non-absolute path!
             $this->arguments['absolute'] = 0;
-            
+
             $result = parent::render();
             $return = $this->replacePath($result);
-            
+
         } catch (\Exception $e) {
-     
+
             // try fallback without rendering!
             try {
-                
+
                 // force non-absolute path!
                 $this->arguments['absolute'] = 0;
-                
+
                 $image = $this->imageService->getImage($this->arguments['src'], $this->arguments['image'], $this->arguments['treatIdAsReference']);
                 $imageUri = $this->imageService->getImageUri($image, $this->arguments['absolute']);
 
@@ -91,10 +91,10 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
                 $result = $this->replacePath($this->tag->render());
                 $this->getLogger()->log(
-                    LogLevel::WARNING, 
+                    LogLevel::WARNING,
                     sprintf(
-                        'Using fallback image rendering for image %s. Result: %s', 
-                        $imageUri, 
+                        'Using fallback image rendering for image %s. Result: %s',
+                        $imageUri,
                         $result
                     )
                 );
@@ -112,7 +112,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
         return $return;
     }
 
-    
+
     /**
      * Replaces relative paths and absolute paths to server-root
      *
@@ -122,7 +122,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
     protected function replacePath (string $tag): string
     {
 
-        /* @toDo: Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
+        /* @todo Check if Environment-variables are still valid in TYPO3 8.7 and upwards! */
         $replacePaths = [
             GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
             $_SERVER['TYPO3_PATH_ROOT'] .'/'
@@ -130,8 +130,8 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
         foreach ($replacePaths as $replacePath) {
             $tag = preg_replace(
-                '/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/', 
-                '$1="' . '/$2"', 
+                '/(src|href)="' . str_replace('/', '\/', $replacePath) . '([^"]+)"/',
+                '$1="' . '/$2"',
                 $tag
             );
         }
@@ -141,9 +141,9 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
 
     /**
-     * @return LoggerInterface
+     * @return \TYPO3\CMS\Core\Log\Logger
      */
-    protected function getLogger()
+    protected function getLogger(): Logger
     {
         return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
